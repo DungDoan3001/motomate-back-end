@@ -1,0 +1,16 @@
+﻿using System.Linq.Expressions;
+
+namespace Application.Web.Database.Repository
+{
+    public interface IGenericRepository<T>
+    {
+        T Add(T entity);
+        IEnumerable<T> AddRange(IEnumerable<T> entities);
+        Task<IEnumerable<T>> All();
+        bool Delete(Guid id);
+        bool DeleteRange(IEnumerable<T> entities);
+        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
+        Task<T> GetById(Guid id);
+        T Update(T entity);
+    }
+}
