@@ -1,0 +1,64 @@
+name: Build and deploy ASP.Net
+run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+env:
+  SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotoMate.sln
+  ARTIFACT_NAME: "dotnet-app"
+  PROJECT_NAME: motomate
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0"
+          dotnet-quality: "validated"
+
+      - name: Build with dotnet
+        run: dotnet build ${{ env.SOLUTION_FILE_LOCATION }} --configuration Release
+
+      - name: dotnet publish
+        run: dotnet publish ${{ env.SOLUTION_FILE_LOCATION }} -c Release -o ${{ env.DOTNET_ROOT }}/${{ env.ARTIFACT_NAME }}
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME}}
+          path: ${{ env.DOTNET_ROOT }}/${{ env.ARTIFACT_NAME }}
+
+  deploy:
+    name: Publish to Azure WebApps
+    needs: build
+    runs-on: ubuntu-22.04
+    if: github.ref == 'refs/heads/main' || github.ref == 'ref/heads/develop'
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_NAME}}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.PROJECT_NAME}}
+          slot-name: "Production"
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE}}
+          package: .
+
+      - name: Echo url
+        run: |
+          echo -e "Published url is: ${{ steps.deploy-to-webapp.outputs.webapp-url }}"
