@@ -3,7 +3,7 @@ run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
 
 on:
   push:
-    branches: ["*"]
+    branches: ["main", "develop", "feature/init-github-workflow"]
   pull_request:
     branches: ["main", "develop"]
 
