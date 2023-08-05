@@ -30,13 +30,13 @@ jobs:
         run: dotnet build $SOLUTION_FILE_LOCATION --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish $SOLUTION_FILE_LOCATION -c Release -o ${{env.DOTNET_ROOT}}/$ARTIFACT_NAME
+        run: dotnet publish $SOLUTION_FILE_LOCATION -c Release -o ${{env.DOTNET_ROOT}}/dot-net
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: $ARTIFACT_NAME
-          path: ${{env.DOTNET_ROOT}}/$ARTIFACT_NAME
+          path: ${{env.DOTNET_ROOT}}/dot-net
 
   deploy:
     name: Publish to Azure WebApps
