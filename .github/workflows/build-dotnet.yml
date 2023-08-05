@@ -9,9 +9,8 @@ on:
 
 env:
   SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotoMate.sln
-  RELEASE_PATH: ${{ github.workspace }}/release
-  PROJECT_NAME: motomate
   ARTIFACT_NAME: "dotnet-app"
+  PROJECT_NAME: motomate
 
 jobs:
   build:
@@ -31,13 +30,13 @@ jobs:
         run: dotnet build $SOLUTION_FILE_LOCATION --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish $SOLUTION_FILE_LOCATION -c Release -o $RELEASE_PATH
+        run: dotnet publish $SOLUTION_FILE_LOCATION -c Release -o ${{env.DOTNET_ROOT}}/$ARTIFACT_NAME
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: $ARTIFACT_NAME
-          path: $RELEASE_PATH
+          path: ${{env.DOTNET_ROOT}}/$ARTIFACT_NAME
 
   deploy:
     name: Publish to Azure WebApps
