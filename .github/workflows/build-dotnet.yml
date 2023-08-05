@@ -11,7 +11,7 @@ env:
   SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotoMate.sln
   ARTIFACT_NAME: "dotnet-app"
   PROJECT_NAME: motomate
-  RELEASE_PATH: ${{env.DOTNET_ROOT}}/${{ env.ARTIFACT_NAME}}
+  RELEASE_PATH: ${{ env.DOTNET_ROOT }}/$ARTIFACT_NAME
 
 jobs:
   build:
