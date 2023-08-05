@@ -1,4 +1,4 @@
-name: Build and deploy - ${GITHUB_REF##*/} - $(date +'%Y-%m-%d')
+run-name: Build and deploy on ${{ github.ref_name	 }} by ${{ github.actor }}
 on:
   push:
     branches: ["main", "develop", "feature/init-github-workflow"]
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Building ASP.Net Core Application
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
