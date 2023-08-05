@@ -2,11 +2,11 @@ name: Build and deploy ASP.Net
 run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
 
 on:
+  workflow_dispatch:
   push:
     branches: ["main", "develop"]
   pull_request:
     branches: ["main", "develop"]
-  workflow_dispatch:
 
 env:
   SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotoMate.sln
