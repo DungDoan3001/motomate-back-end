@@ -3,18 +3,21 @@ run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
 
 on:
   push:
-    branches: ["main", "develop", "feature/init-github-workflow"]
+    branches: ["main", "develop"]
   pull_request:
     branches: ["main", "develop"]
 
 env:
   SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotoMate.sln
-  RELEASE_PATH: ${{ github.workspace }}/release
+  RELEASE_PATH: ${{ github.workspace }}/
+  PROJECT_NAME: motomate
+  ARTIFACT_NAME: "$PROJECT_NAME-dotnet-app"
+  AGENT_MACHINE: ubuntu-latest
 
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: $AGENT_MACHINE
     steps:
       - uses: actions/checkout@v2
 
@@ -33,27 +36,28 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
-          name: dotnet-app
+          name: $ARTIFACT_NAME
           path: $RELEASE_PATH
 
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   environment:
-  #     name: 'Production'
-  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+  deploy:
+    name: Publish to Azure WebApps
+    runs-on: $AGENT_MACHINE
+    needs: build
+    environment:
+      name: "Production"
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-  #   steps:
-  #     - name: Download artifact from build job
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: .net-app
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: $ARTIFACT_NAME
 
-  #     - name: Deploy to Azure Web App
-  #       id: deploy-to-webapp
-  #       uses: azure/webapps-deploy@v2
-  #       with:
-  #         app-name: 'GoldenIdea'
-  #         slot-name: 'Production'
-  #         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4AAA8CAA1F16490CA9BD0C09291FA219 }}
-  #         package: .
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: $PROJECT_NAME
+          slot-name: "Production"
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE}}
+          package: .
