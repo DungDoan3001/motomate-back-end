@@ -58,3 +58,6 @@ jobs:
           slot-name: "Production"
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE}}
           package: .
+
+      - name: Echo url
+        run: echo 'Published url is:${{ steps.deploy-to-webapp.outputs.webapp-url }}`
