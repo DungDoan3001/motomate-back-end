@@ -1,9 +1,14 @@
 run-name: Build and deploy on "${{ github.ref_name	 }}" by "${{ github.actor }}"
+
 on:
   push:
     branches: ["main", "develop", "feature/init-github-workflow"]
   pull_request:
     branches: ["main", "develop"]
+
+env:
+  SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotoMate.sln
+  RELEASE_PATH: ${{env.DOTNET_ROOT}}/release
 
 jobs:
   build:
@@ -19,16 +24,16 @@ jobs:
           include-prerelease: false
 
       - name: Build with dotnet
-        run: dotnet build ${{ github.workspace }}/MotoMate.sln --configuration Release
+        run: dotnet build $SOLUTION_FILE_LOCATION --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ${{ github.workspace }}/MotoMate.sln -c Release -o ${{env.DOTNET_ROOT}}/release
+        run: dotnet publish $SOLUTION_FILE_LOCATION -c Release -o $RELEASE_PATH
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/release
+          name: dotnet-app
+          path: $RELEASE_PATH
 
   # deploy:
   #   runs-on: ubuntu-latest
