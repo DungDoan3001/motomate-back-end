@@ -62,4 +62,3 @@ jobs:
       - name: Echo url
         run: |
           echo -e "Published url is: ${{ steps.deploy-to-webapp.outputs.webapp-url }}"
-          EOF
