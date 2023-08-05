@@ -3,8 +3,9 @@ run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
 
 # Only trigger when the code is push or pull request on main or develop.
 on:
+  workflow_dispatch:
   push:
-    branches: ["main", "develop", "feature/refine-pipeline"]
+    branches: ["main", "develop"]
   pull_request:
     branches: ["main", "develop"]
 
