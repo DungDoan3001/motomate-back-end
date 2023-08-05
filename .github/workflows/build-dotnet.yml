@@ -8,7 +8,7 @@ on:
 
 env:
   SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotoMate.sln
-  RELEASE_PATH: ${{env.DOTNET_ROOT}}/release
+  RELEASE_PATH: ${{ github.workspace }}/release
 
 jobs:
   build:
