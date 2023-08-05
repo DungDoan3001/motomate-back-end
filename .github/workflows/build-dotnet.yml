@@ -3,7 +3,7 @@ run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
 
 on:
   push:
-    branches: ["main", "develop", "feature/init-github-workflow"]
+    branches: ["main", "develop"]
   pull_request:
     branches: ["main", "develop"]
 
@@ -42,7 +42,7 @@ jobs:
     name: Publish to Azure WebApps
     needs: build
     runs-on: ubuntu-22.04
-    # if: github.ref == 'refs/heads/main' || github.ref == 'ref/heads/develop'
+    if: github.ref == 'refs/heads/main' || github.ref == 'ref/heads/develop'
 
     steps:
       - name: Download artifact from build job
