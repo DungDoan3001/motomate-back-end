@@ -42,7 +42,7 @@ jobs:
     name: Publish to Azure WebApps
     needs: build
     runs-on: ubuntu-22.04
-    if: ${{  github.ref == 'refs/heads/main' || github.ref == 'ref/heads/develop' }}
+    # if: ${{  github.ref == 'refs/heads/main' || github.ref == 'ref/heads/develop' }}
 
     steps:
       - name: Download artifact from build job
