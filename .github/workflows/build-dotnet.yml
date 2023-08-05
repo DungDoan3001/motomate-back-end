@@ -9,7 +9,7 @@ on:
 
 env:
   SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotoMate.sln
-  RELEASE_PATH: ${{ github.workspace }}/
+  RELEASE_PATH: ${{ github.workspace }}/release
   PROJECT_NAME: motomate
   ARTIFACT_NAME: "dotnet-app"
 
