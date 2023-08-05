@@ -16,7 +16,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-22.04
-    if: ${{ github.ref = "refs/heads/feature/refine-pipeline" }}
+    if: ${{ github.ref == "refs/heads/feature/refine-pipeline" }}
 
     steps:
       - uses: actions/checkout@v2
