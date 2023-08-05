@@ -1,7 +1,7 @@
 name: Building .NET Core Desktop
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main", "develop", "feature/init-github-workflow" ]
   pull_request:
     branches: [ "main", "develop" ]
     
