@@ -17,7 +17,7 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: $AGENT_MACHINE
+    runs-on: ${{ env.AGENT_MACHINE }}
     steps:
       - uses: actions/checkout@v2
 
@@ -41,9 +41,10 @@ jobs:
 
   deploy:
     name: Publish to Azure WebApps
-    runs-on: $AGENT_MACHINE
     needs: build
     if: github.ref == 'refs/heads/main' || github.ref == 'ref/heads/develop'
+    runs-on: ${{ env.AGENT_MACHINE }}
+
     environment:
       name: "Production"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
@@ -62,3 +63,6 @@ jobs:
           slot-name: "Production"
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE}}
           package: .
+
+      - name: Echo url
+        run: echo ${{environment.url}}
