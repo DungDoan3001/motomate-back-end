@@ -2,9 +2,8 @@ name: Build and deploy ASP.Net
 run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
 
 on:
-  workflow_dispatch:
   push:
-    branches: ["main", "develop"]
+    branches: ["*"]
   pull_request:
     branches: ["main", "develop"]
 
@@ -19,7 +18,6 @@ jobs:
   build:
     name: Build
     runs-on: $AGENT_MACHINE
-    if: github.ref == 'refs/heads/main' || github.ref == 'ref/heads/develop'
     steps:
       - uses: actions/checkout@v2
 
@@ -45,6 +43,7 @@ jobs:
     name: Publish to Azure WebApps
     runs-on: $AGENT_MACHINE
     needs: build
+    if: github.ref == 'refs/heads/main' || github.ref == 'ref/heads/develop'
     environment:
       name: "Production"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
