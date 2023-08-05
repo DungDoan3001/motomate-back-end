@@ -1,29 +1,29 @@
-name: Building .NET Core Desktop
+name: Build and deploy - ${GITHUB_REF##*/} - $(date +'%Y-%m-%d')
 on:
   push:
-    branches: [ "main", "develop", "feature/init-github-workflow" ]
+    branches: ["main", "develop", "feature/init-github-workflow"]
   pull_request:
-    branches: [ "main", "develop" ]
-    
+    branches: ["main", "develop"]
+
 jobs:
   build:
     name: Building ASP.Net Core Application
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Set up dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0'
+          dotnet-version: "6.0"
           include-prerelease: false
-          
+
       - name: Build with dotnet
-        run: dotnet build ${{env.DOTNET_ROOT}}/MotoMate.sln --configuration Release
-        
+        run: dotnet build ${{ github.workspace }}/MotoMate.sln --configuration Release
+
       - name: dotnet publish
-        run: dotnet publish ${{env.DOTNET_ROOT}}/MotoMate.sln -c Release -o ${{env.DOTNET_ROOT}}/release
-        
+        run: dotnet publish ${{ github.workspace }}/MotoMate.sln -c Release -o ${{env.DOTNET_ROOT}}/release
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
