@@ -1,7 +1,9 @@
-name: Build and deploy ASP.Net
+name: CICD || Build and deploy ASP.Net
 run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
 
+# Only trigger when the code is push or pull request on main or develop.
 on:
+  workflow_dispatch:
   push:
     branches: ["main", "develop"]
   pull_request:
@@ -11,6 +13,7 @@ env:
   SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotoMate.sln
   ARTIFACT_NAME: "dotnet-app"
   PROJECT_NAME: motomate
+  SLOT_NAME: "Production"
 
 jobs:
   build:
@@ -29,7 +32,7 @@ jobs:
       - name: Build with dotnet
         run: dotnet build ${{ env.SOLUTION_FILE_LOCATION }} --configuration Release
 
-      - name: dotnet publish
+      - name: Dotnet publish
         run: dotnet publish ${{ env.SOLUTION_FILE_LOCATION }} -c Release -o ${{ env.DOTNET_ROOT }}/${{ env.ARTIFACT_NAME }}
 
       - name: Upload artifact for deployment job
@@ -40,9 +43,9 @@ jobs:
 
   deploy:
     name: Publish to Azure WebApps
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-22.04
-    # if: ${{  github.ref == 'refs/heads/main' || github.ref == 'ref/heads/develop' }}
 
     steps:
       - name: Download artifact from build job
@@ -55,7 +58,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.PROJECT_NAME}}
-          slot-name: "Production"
+          slot-name: ${{ env.SLOT_NAME }}
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE}}
           package: .
 
