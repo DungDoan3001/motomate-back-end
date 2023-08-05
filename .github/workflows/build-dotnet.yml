@@ -12,12 +12,12 @@ env:
   RELEASE_PATH: ${{ github.workspace }}/
   PROJECT_NAME: motomate
   ARTIFACT_NAME: "$PROJECT_NAME-dotnet-app"
-  AGENT_MACHINE: ubuntu-latest
 
 jobs:
   build:
     name: Build
-    runs-on: ${{ env.AGENT_MACHINE }}
+    runs-on: ubuntu-22.04
+
     steps:
       - uses: actions/checkout@v2
 
@@ -42,8 +42,8 @@ jobs:
   deploy:
     name: Publish to Azure WebApps
     needs: build
+    runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/main' || github.ref == 'ref/heads/develop'
-    runs-on: ${{ env.AGENT_MACHINE }}
 
     environment:
       name: "Production"
