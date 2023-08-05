@@ -65,4 +65,4 @@ jobs:
           package: .
 
       - name: Echo url
-        run: echo ${{environment.url}}
+        run: echo $url
