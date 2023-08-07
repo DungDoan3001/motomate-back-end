@@ -114,15 +114,16 @@ namespace Applicaton.Web.API.Extensions
             });
         }
 
-        public static void RegistryDependency (this IServiceCollection services)
+        public static void RegistryDependencies (this IServiceCollection services)
         {
-            // Repositories
-            services.AddScoped<IApplicationContext, ApplicationContext>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            // Services
             services.AddScoped<IWeatherForcastService, WeatherForcastService>();
             services.AddScoped<IAuthService, AuthService>();
+        }
+
+        public static void RegistryDatabaseDependencies (this IServiceCollection services)
+        {
+            services.AddScoped<IApplicationContext, ApplicationContext>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
     }
 }

@@ -3,7 +3,8 @@ using Applicaton.Web.API.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.RegistryDependency();
+builder.Services.RegistryDatabaseDependencies();
+builder.Services.RegistryDependencies();
 builder.Services.ConfigureDatabase(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
