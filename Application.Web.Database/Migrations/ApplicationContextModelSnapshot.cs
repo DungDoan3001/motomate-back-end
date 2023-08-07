@@ -116,6 +116,15 @@ namespace Application.Web.Database.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1",
+                            ConcurrencyStamp = "9587ecad-7a70-4aee-9e8c-02b8028b6a06",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

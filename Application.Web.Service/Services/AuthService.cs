@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
+using Application.Web.Database.Constants;
 using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.Models;
 using AutoMapper;
@@ -15,11 +15,13 @@ namespace Application.Web.Service.Services
     {
         private readonly IConfiguration _config;
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
 
-        public AuthService(UserManager<User> userManager, IConfiguration configuration, IMapper mapper)
+        public AuthService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IMapper mapper)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _config = configuration;
             _mapper = mapper;
         }
@@ -28,6 +30,7 @@ namespace Application.Web.Service.Services
         {
             var user = _mapper.Map<User>(userRegistration);
             var result = await _userManager.CreateAsync(user, userRegistration.Password);
+            await _userManager.AddToRoleAsync(user, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
             return result;
         }
 

@@ -1,4 +1,6 @@
-﻿using Application.Web.Database.Models;
+﻿using Application.Web.Database.Constants;
+using Application.Web.Database.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +16,7 @@ namespace Application.Web.Database.Context
         {
 
             base.OnModelCreating(modelBuilder);
+            SeedDatabase(modelBuilder);
 
             //Delete "AspNet" name of identity table
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -24,6 +27,12 @@ namespace Application.Web.Database.Context
                     entityType.SetTableName(tablename.Substring(6));
                 }
             }
+        }
+
+        private void SeedDatabase(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IdentityRole>()
+                            .HasData(SeedDatabaseConstant.DEFAULT_ROLES);
         }
 
         public DbSet<T> GetSet<T>()

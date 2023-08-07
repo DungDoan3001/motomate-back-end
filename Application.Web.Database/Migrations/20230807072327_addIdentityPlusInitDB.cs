@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Application.Web.Database.Migrations
 {
-    public partial class userIdentity : Migration
+    public partial class addIdentityPlusInitDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -156,6 +156,11 @@ namespace Application.Web.Database.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1", "9587ecad-7a70-4aee-9e8c-02b8028b6a06", "User", "USER" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",

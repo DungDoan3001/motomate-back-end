@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230806145235_userIdentity")]
-    partial class userIdentity
+    [Migration("20230807072327_addIdentityPlusInitDB")]
+    partial class addIdentityPlusInitDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -118,6 +118,15 @@ namespace Application.Web.Database.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1",
+                            ConcurrencyStamp = "9587ecad-7a70-4aee-9e8c-02b8028b6a06",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

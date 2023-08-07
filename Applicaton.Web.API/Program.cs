@@ -9,7 +9,6 @@ builder.Services.ConfigureDatabase(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJwt(builder.Configuration);
-
 builder.Services.ConfigureController();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger();
