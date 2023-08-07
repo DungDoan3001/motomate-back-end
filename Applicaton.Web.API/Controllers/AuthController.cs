@@ -1,4 +1,5 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,33 +22,62 @@ namespace Applicaton.Web.API.Controllers
         [HttpPost("sign-up")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationRequestModel userRegistration)
         {
-            var userResult = await _authService.RegisterUserAsync(userRegistration);
-            if(!userResult.Succeeded)
+            try
             {
-                return new BadRequestObjectResult(userResult);
-            } else
+                var userResult = await _authService.RegisterUserAsync(userRegistration);
+                if (!userResult.Succeeded)
+                {
+                    return new BadRequestObjectResult(userResult);
+                }
+                else
+                {
+                    _logger.LogInformation($"[{controllerPrefix}] Created a user with user = {userRegistration.UserName}");
+                    return StatusCode(StatusCodes.Status201Created);
+                }
+            }
+            catch (Exception ex)
             {
-                _logger.LogInformation($"[{controllerPrefix}] Created a user with user = {userRegistration.UserName}");
-                return StatusCode(StatusCodes.Status201Created);
-            } 
+                _logger.LogError($"{controllerPrefix} error at Get(): {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+            
         }
 
         [HttpPost]
         public async Task<IActionResult> Authenticate([FromBody] UserLoginRequestModel userLogin)
         {
-            bool validateResult = await _authService.ValidateUserAsync(userLogin);
-            if(!validateResult)
+            try
             {
-                _logger.LogWarning($"[{controllerPrefix}] An unauthorized access with user: {userLogin.UserName}");
-                return Unauthorized();
-            } else
-            {
-                var token = new
+                bool validateResult = await _authService.ValidateUserAsync(userLogin);
+                if (!validateResult)
                 {
-                    Token = await _authService.CreateTokenAsync(userLogin)
-                };
-                _logger.LogInformation($"[{controllerPrefix}] Created token for user: {userLogin.UserName}");
-                return Ok(token);
+                    _logger.LogWarning($"[{controllerPrefix}] An unauthorized access with user: {userLogin.UserName}");
+                    return Unauthorized();
+                }
+                else
+                {
+                    var token = new
+                    {
+                        Token = await _authService.CreateTokenAsync(userLogin)
+                    };
+                    _logger.LogInformation($"[{controllerPrefix}] Created token for user: {userLogin.UserName}");
+                    return Ok(token);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at Get(): {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
             }
         }
     }
