@@ -1,7 +1,9 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Services;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
@@ -45,10 +47,10 @@ namespace Applicaton.Web.API.Controllers
                     Errors = { ex.Message }
                 });
             }
-            
+
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<IActionResult> Authenticate([FromBody] UserLoginRequestModel userLogin)
         {
             try
@@ -63,9 +65,40 @@ namespace Applicaton.Web.API.Controllers
                 {
                     var token = new
                     {
-                        Token = await _authService.CreateTokenAsync(userLogin)
+                        Token = await _authService.CreateTokenAsync(userLogin.UserName)
                     };
                     _logger.LogInformation($"[{controllerPrefix}] Created token for user: {userLogin.UserName}");
+                    return Ok(token);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at Get(): {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
+
+        [HttpPost("sso/google")]
+        public async Task<IActionResult> GoogleSSOProvider([FromBody] GoogleTokenRequestModel tokenRequest)
+        {
+            try
+            {
+                bool validation = tokenRequest.TokenCredential.IsNullOrEmpty();
+                if (validation)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    var token = new
+                    {
+                        Token = await _authService.HandleGoogleSSOAsync(tokenRequest.TokenCredential)
+                    };
                     return Ok(token);
                 }
             }

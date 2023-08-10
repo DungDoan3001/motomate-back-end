@@ -93,11 +93,17 @@ namespace Applicaton.Web.API.Extensions
         public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtConfig = configuration.GetSection("JwtConfig");
+            var googleConfig = configuration.GetSection("Google");
             var secretKey = jwtConfig["serect"];
             services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddGoogle(options =>
+            {
+                options.ClientId = googleConfig["ClientId"];
+                options.ClientSecret = googleConfig["ClientSecret"];
             })
             .AddJwtBearer(options =>
             {
@@ -124,6 +130,20 @@ namespace Applicaton.Web.API.Extensions
         {
             services.AddScoped<IApplicationContext, ApplicationContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+        }
+
+        public static void ConfigureCors(this IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy.AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .SetIsOriginAllowed(_ => true)
+                          .AllowCredentials();
+                });
+            });
         }
     }
 }

@@ -5,6 +5,7 @@ using Application.Web.Database.Constants;
 using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.Models;
 using AutoMapper;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -15,13 +16,11 @@ namespace Application.Web.Service.Services
     {
         private readonly IConfiguration _config;
         private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
 
-        public AuthService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IMapper mapper)
+        public AuthService(UserManager<User> userManager, IConfiguration configuration, IMapper mapper)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
             _config = configuration;
             _mapper = mapper;
         }
@@ -41,9 +40,31 @@ namespace Application.Web.Service.Services
             return result;
         }
 
-        public async Task<String> CreateTokenAsync(UserLoginRequestModel userLogin)
+        public async Task<string> HandleGoogleSSOAsync(string tokenCredential)
         {
-            User user = await _userManager.FindByNameAsync(userLogin.UserName);
+            GoogleJsonWebSignature.Payload userPayload = await GoogleJsonWebSignature.ValidateAsync(tokenCredential);
+            var user = await _userManager.FindByEmailAsync(userPayload.Email);
+            string jwtToken = "";
+            if(user == null)
+            {
+                string username = ExtractEmailAddress(userPayload.Email);
+                User newUser = new User
+                {
+                    Email = userPayload.Email,
+                    UserName = username,
+                    FirstName = userPayload.GivenName,
+                    LastName = userPayload.FamilyName,
+                };
+                var result = await _userManager.CreateAsync(newUser);
+                if (result.Succeeded) jwtToken = await CreateTokenAsync(newUser.UserName);
+            } else
+                jwtToken = await CreateTokenAsync(user.UserName);
+            return jwtToken;
+        }
+
+        public async Task<string> CreateTokenAsync(string username)
+        {
+            User user = await _userManager.FindByNameAsync(username);
             var signingCreadentials = GetSigningCredentials();
             var claims = await GetClaims(user);
             var tokenOptions = GenerateTokenOptions(signingCreadentials, claims);
@@ -64,7 +85,7 @@ namespace Application.Web.Service.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName)
-            };
+            }; 
 
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
@@ -87,6 +108,14 @@ namespace Application.Web.Service.Services
             );
 
             return tokenOptions;
+        }
+
+        private string ExtractEmailAddress(string email)
+        {
+            int index = email.IndexOf("@");
+            if (index >= 0)
+                return email.Substring(0, index);
+            else return null;
         }
     }
 }
