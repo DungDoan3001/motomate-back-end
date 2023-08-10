@@ -31,8 +31,8 @@ namespace Applicaton.Web.API.Extensions
             {
                 OpenApiInfo apiInfo = new OpenApiInfo
                 {
-                    Title = "MotoMate Swagger UI",
-                    Description = "This is a list of APIs we use to manage the MotoMate Application",
+                    Title = "MotorMate Swagger UI",
+                    Description = "This is a list of APIs we use to manage the MotorMate Application",
                 };
                 options.SwaggerDoc("v1", apiInfo);
 
