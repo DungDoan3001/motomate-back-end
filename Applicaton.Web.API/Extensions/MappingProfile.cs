@@ -12,6 +12,9 @@ namespace Applicaton.Web.API.Extensions
             // WeatherForecast
             CreateMap<WeatherForecast, WeatherForecastResponseModel>();
             CreateMap<WeatherForecastRequestModel, WeatherForecast>();
+
+            // User
+            CreateMap<UserRegistrationRequestModel, User>();
         }
     }
 }
