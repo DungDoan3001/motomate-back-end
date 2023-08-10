@@ -10,9 +10,9 @@ on:
     branches: ["main", "develop"]
 
 env:
-  SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotoMate.sln
+  SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotorMate.sln
   ARTIFACT_NAME: "dotnet-app"
-  PROJECT_NAME: motomate
+  PROJECT_NAME: motormate
   SLOT_NAME: "Production"
 
 jobs:
