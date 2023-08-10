@@ -27,7 +27,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MotoMate v1");
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MotorMate v1");
 });
 
 app.UseHttpsRedirection();
