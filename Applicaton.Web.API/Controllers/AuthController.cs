@@ -1,7 +1,7 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Services;
-using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -39,7 +39,7 @@ namespace Applicaton.Web.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{controllerPrefix} error at Get(): {ex.Message}", ex);
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
                 {
                     Message = "Error while performing action.",
@@ -73,7 +73,7 @@ namespace Applicaton.Web.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{controllerPrefix} error at Get(): {ex.Message}", ex);
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
                 {
                     Message = "Error while performing action.",
@@ -104,7 +104,7 @@ namespace Applicaton.Web.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{controllerPrefix} error at Get(): {ex.Message}", ex);
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
                 {
                     Message = "Error while performing action.",
