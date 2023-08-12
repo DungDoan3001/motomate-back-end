@@ -5,7 +5,7 @@ run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
 on:
   workflow_dispatch:
   push:
-    branches: ["main", "develop"]
+    branches: ["main", "develop", "fix/github-action"]
   pull_request:
     branches: ["main", "develop"]
 
@@ -13,7 +13,8 @@ env:
   SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotorMate.sln
   ARTIFACT_NAME: "dotnet-app"
   PROJECT_NAME: motormate
-  SLOT_NAME: "Production"
+  SLOT_NAME: "production"
+  DOTNET_VERSION: "6.0.x"
 
 jobs:
   build:
@@ -26,8 +27,7 @@ jobs:
       - name: Set up dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "6.0"
-          dotnet-quality: "validated"
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Build with dotnet
         run: dotnet build ${{ env.SOLUTION_FILE_LOCATION }} --configuration Release
@@ -43,9 +43,9 @@ jobs:
 
   deploy:
     name: Publish to Azure WebApps
-    if: |
-      (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main') &&
-      (github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch')
+    # if: |
+    #   (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main') &&
+    #   (github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch')
     needs: build
     runs-on: ubuntu-22.04
 
@@ -63,7 +63,3 @@ jobs:
           slot-name: ${{ env.SLOT_NAME }}
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE}}
           package: .
-
-      - name: Echo url
-        run: |
-          echo -e "Published url is: ${{ steps.deploy-to-webapp.outputs.webapp-url }}"
