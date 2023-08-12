@@ -3,17 +3,18 @@ run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
 
 # Only trigger when the code is push or pull request on main or develop.
 on:
-  workflow_dispatch:
   push:
-    branches: ["main", "develop"]
   pull_request:
     branches: ["main", "develop"]
+  workflow_dispatch:
+
 
 env:
   SOLUTION_FILE_LOCATION: ${{ github.workspace }}/MotorMate.sln
   ARTIFACT_NAME: "dotnet-app"
   PROJECT_NAME: motormate
-  SLOT_NAME: "Production"
+  SLOT_NAME: "production"
+  DOTNET_VERSION: "6.0.x"
 
 jobs:
   build:
@@ -23,19 +24,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up dotnet
+      - name: Set up dotnet - version ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "6.0"
-          dotnet-quality: "validated"
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Build with dotnet
         run: dotnet build ${{ env.SOLUTION_FILE_LOCATION }} --configuration Release
 
-      - name: Dotnet publish
+      - name: Dotnet publish - ${{ env.ARTIFACT_NAME }}
         run: dotnet publish ${{ env.SOLUTION_FILE_LOCATION }} -c Release -o ${{ env.DOTNET_ROOT }}/${{ env.ARTIFACT_NAME }}
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact for deployment job - ${{ env.ARTIFACT_NAME }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.ARTIFACT_NAME}}
@@ -50,12 +50,12 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact from build job - ${{ env.ARTIFACT_NAME }}
         uses: actions/download-artifact@v2
         with:
           name: ${{ env.ARTIFACT_NAME}}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure Web App - ${{ env.PROJECT_NAME }}
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
@@ -63,7 +63,3 @@ jobs:
           slot-name: ${{ env.SLOT_NAME }}
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE}}
           package: .
-
-      - name: Echo url
-        run: |
-          echo -e "Published url is: ${{ steps.deploy-to-webapp.outputs.webapp-url }}"
