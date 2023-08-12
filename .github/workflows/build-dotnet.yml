@@ -5,7 +5,7 @@ run-name: Build and deploy on "${{ github.ref_name }}" by "${{ github.actor }}"
 on:
   workflow_dispatch:
   push:
-    branches: ["main", "develop", "fix/github-action"]
+    branches: ["main", "develop"]
   pull_request:
     branches: ["main", "develop"]
 
@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up dotnet
+      - name: Set up dotnet - version ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
@@ -32,10 +32,10 @@ jobs:
       - name: Build with dotnet
         run: dotnet build ${{ env.SOLUTION_FILE_LOCATION }} --configuration Release
 
-      - name: Dotnet publish
+      - name: Dotnet publish - ${{ env.ARTIFACT_NAME }}
         run: dotnet publish ${{ env.SOLUTION_FILE_LOCATION }} -c Release -o ${{ env.DOTNET_ROOT }}/${{ env.ARTIFACT_NAME }}
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact for deployment job - ${{ env.ARTIFACT_NAME }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.ARTIFACT_NAME}}
@@ -43,19 +43,19 @@ jobs:
 
   deploy:
     name: Publish to Azure WebApps
-    # if: |
-    #   (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main') &&
-    #   (github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch')
+    if: |
+      (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main') &&
+      (github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch')
     needs: build
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact from build job - ${{ env.ARTIFACT_NAME }}
         uses: actions/download-artifact@v2
         with:
           name: ${{ env.ARTIFACT_NAME}}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure Web App - ${{ env.PROJECT_NAME }}
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
