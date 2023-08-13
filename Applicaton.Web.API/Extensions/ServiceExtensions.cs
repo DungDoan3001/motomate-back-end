@@ -35,7 +35,6 @@ namespace Applicaton.Web.API.Extensions
                     Description = "This is a list of APIs we use to manage the MotorMate Application",
                 };
                 options.SwaggerDoc("v1", apiInfo);
-
                 // Generating api description via xml;
                 string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
@@ -79,7 +78,7 @@ namespace Applicaton.Web.API.Extensions
 
         public static void ConfigureIdentity(this IServiceCollection services)
         {
-            var builder = services.AddIdentity<User, IdentityRole>(options =>
+            var builder = services.AddIdentity<User, Role>(options =>
             {
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
@@ -124,6 +123,7 @@ namespace Applicaton.Web.API.Extensions
         {
             services.AddScoped<IWeatherForcastService, WeatherForcastService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IEmailService, EmailService>();
         }
 
         public static void RegistryDatabaseDependencies (this IServiceCollection services)

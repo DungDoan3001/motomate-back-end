@@ -3,6 +3,7 @@ using System;
 using Application.Web.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230813151552_initDB")]
+    partial class initDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,7 +77,7 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "ae05984b-ead7-4314-a187-6cd6ac519c50",
+                            ConcurrencyStamp = "37c4ee52-dd55-4343-9f9c-2de15e945310",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -371,7 +373,8 @@ namespace Application.Web.Database.Migrations
 
             modelBuilder.Entity("Application.Web.Database.Models.User", b =>
                 {
-                    b.Navigation("ResetPassword");
+                    b.Navigation("ResetPassword")
+                        .IsRequired();
 
                     b.Navigation("UserRoles");
                 });

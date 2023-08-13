@@ -9,7 +9,8 @@ namespace Application.Web.Database.Repository
         Task<IEnumerable<T>> All();
         bool Delete(Guid id);
         bool DeleteRange(IEnumerable<T> entities);
-        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
+        Task<List<T>> Find(Expression<Func<T, bool>> predicate);
+        Task<T> FindOne(Expression<Func<T, bool>> predicate);
         Task<T> GetById(Guid id);
         T Update(T entity);
     }
