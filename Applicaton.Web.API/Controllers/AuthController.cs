@@ -58,16 +58,16 @@ namespace Applicaton.Web.API.Controllers
                 bool validateResult = await _authService.ValidateUserAsync(userLogin);
                 if (!validateResult)
                 {
-                    _logger.LogWarning($"[{controllerPrefix}] An unauthorized access with user: {userLogin.UserName}");
+                    _logger.LogWarning($"[{controllerPrefix}] An unauthorized access with user: {userLogin.Email}");
                     return Unauthorized();
                 }
                 else
                 {
                     var token = new
                     {
-                        Token = await _authService.CreateTokenAsync(userLogin.UserName)
+                        Token = await _authService.CreateTokenAsync(userLogin.Email)
                     };
-                    _logger.LogInformation($"[{controllerPrefix}] Created token for user: {userLogin.UserName}");
+                    _logger.LogInformation($"[{controllerPrefix}] Created token for user: {userLogin.Email}");
                     return Ok(token);
                 }
             }
@@ -79,6 +79,54 @@ namespace Applicaton.Web.API.Controllers
                     Message = "Error while performing action.",
                     StatusCode = StatusCodes.Status500InternalServerError,
                     Errors = { ex.Message }
+                });
+            }
+        }
+
+        [HttpPost("change/password")]
+        public async Task<IActionResult> SendResetPasswordEmail([FromBody] EmailResetPasswordRequestModel request)
+        {
+            try
+            {
+                if (request.Email.IsNullOrEmpty())
+                {
+                    return BadRequest("Email is not null");
+                }
+                bool result = await _authService.SendEmailResetPassword(request.Email);
+                return result ? Ok("Confirmed email has been sent") : BadRequest("Can not send the email");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.InnerException.Message }
+                });
+            }
+        }
+
+        [HttpPost("change/password/{encodedToken}")]
+        public async Task<IActionResult> ChangeUserPassword([FromRoute] string encodedToken, [FromBody] ChangePasswordRequestModel changePasswordRequest)
+        {
+            try
+            {
+                if (!changePasswordRequest.NewPassword.Equals(changePasswordRequest.ConfirmPassword))
+                {
+                    return BadRequest("Confirm password is not matched");
+                }
+                bool result = await _authService.ChangePassword(encodedToken, changePasswordRequest);
+                return result ? Ok("Success") : BadRequest("Failed");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.InnerException.Message }
                 });
             }
         }

@@ -9,5 +9,7 @@ namespace Application.Web.Service.Services
         Task<bool> ValidateUserAsync(UserLoginRequestModel userLogin);
         Task<string> HandleGoogleSSOAsync(string tokenCredential);
         Task<string> CreateTokenAsync(string username);
+        Task<bool> SendEmailResetPassword(string userEmail);
+        Task<bool> ChangePassword(string encodedToken, ChangePasswordRequestModel changePasswordRequest);
     }
 }

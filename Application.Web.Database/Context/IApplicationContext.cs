@@ -5,6 +5,7 @@ namespace Application.Web.Database.Context
 {
     public interface IApplicationContext
     {
+        DbSet<ResetPassword> ResetPassword { get; set; }
         //DbSet<BillingInfo> BillingInfo { get; set; }
         //DbSet<CompletedTrip> CompletedTrip { get; set; }
         //DbSet<DriverLicense> DriverLicense { get; set; }

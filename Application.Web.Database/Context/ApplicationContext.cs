@@ -1,19 +1,23 @@
 ﻿using Application.Web.Database.Constants;
 using Application.Web.Database.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Database.Context
 {
-    public class ApplicationContext : IdentityDbContext<User>, IApplicationContext
+    public class ApplicationContext : IdentityDbContext<User, Role, Guid>, IApplicationContext
     {
-        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
+        public ApplicationContext(DbContextOptions options) : base(options) { }
 
         // Place DbSet here:
+        public DbSet<ResetPassword> ResetPassword { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ResetPassword>()
+                .HasOne(rp => rp.User)
+                .WithOne(u => u.ResetPassword)
+                .HasForeignKey<ResetPassword>(rp => rp.UserId);
 
             base.OnModelCreating(modelBuilder);
             SeedDatabase(modelBuilder);
@@ -31,7 +35,7 @@ namespace Application.Web.Database.Context
 
         private void SeedDatabase(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<IdentityRole>()
+            modelBuilder.Entity<Role>()
                             .HasData(SeedDatabaseConstant.DEFAULT_ROLES);
         }
 

@@ -3,6 +3,7 @@ using MimeKit;
 using Microsoft.Extensions.Configuration;
 using Application.Web.Service.Interfaces;
 using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.ServiceModels;
 
 namespace Application.Web.Service.Services
 {
@@ -30,11 +31,11 @@ namespace Application.Web.Service.Services
             _textParse = gmailConfig["TextParse"];
         }
 
-        public async Task<bool> SendEmailAsync(string toName, string toEmail, string subject, string body)
+        public async Task<bool> SendEmailAsync(SendEmailOptions emailOptions)
         {
             try
             {
-                MimeMessage message = CreateEmail(toName, toEmail, subject, body);
+                MimeMessage message = CreateEmail(emailOptions.ToName, emailOptions.ToEmail, emailOptions.Subject, emailOptions.Body);
                 return await SendEmail(message);
             }
             catch (Exception)
@@ -44,11 +45,11 @@ namespace Application.Web.Service.Services
             }
         }
 
-        public async Task<bool> SendBulkBccEmailAsync(List<BulkEmailSendingRequestModel> emailSenders, string subject, string body)
+        public async Task<bool> SendBulkBccEmailAsync(SendBulkEmailOptions bulkEmailOptions)
         {
             try
             {
-                MimeMessage message = CreateBulkBccEmail(emailSenders, subject, body);
+                MimeMessage message = CreateBulkBccEmail(bulkEmailOptions.Emails, bulkEmailOptions.Subject, bulkEmailOptions.Body);
                 return await SendEmail(message);
             }
             catch (Exception)

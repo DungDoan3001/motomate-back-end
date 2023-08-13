@@ -1,9 +1,7 @@
-﻿using Application.Web.Database.DTOs.RequestModels;
-using Application.Web.Database.DTOs.ResponseModels;
+﻿using Application.Web.Database.DTOs.ResponseModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
-using Application.Web.Service.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
@@ -23,11 +21,11 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpGet("send")]
-        public async Task<IActionResult> SendEmailAsync([FromQuery] string toEmail, [FromQuery] string subject)
+        public async Task<IActionResult> SendEmailAsync([FromBody] SendEmailOptions emailOptions)
         {
             try
             {
-                bool result = await _emailService.SendEmailAsync("Name", toEmail, subject, "<h1>Xin chào từ motormate</h1>");
+                bool result = await _emailService.SendEmailAsync(emailOptions);
                 return result ? Ok() : BadRequest();
             }
             catch (Exception ex)
@@ -43,11 +41,11 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpPost("send/bulk")]
-        public async Task<IActionResult> SendEmailAsync([FromBody] List<BulkEmailSendingRequestModel> emailSenders, [FromQuery] string subject, [FromQuery] string body)
+        public async Task<IActionResult> SendEmailAsync([FromBody] SendBulkEmailOptions bulkEmailOptions)
         {
             try
             {
-                bool result = await _emailService.SendBulkBccEmailAsync(emailSenders, subject, body);
+                bool result = await _emailService.SendBulkBccEmailAsync(bulkEmailOptions);
                 return result ? Ok() : BadRequest();
             }
             catch (Exception ex)

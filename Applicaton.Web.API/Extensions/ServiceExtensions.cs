@@ -78,7 +78,7 @@ namespace Applicaton.Web.API.Extensions
 
         public static void ConfigureIdentity(this IServiceCollection services)
         {
-            var builder = services.AddIdentity<User, IdentityRole>(options =>
+            var builder = services.AddIdentity<User, Role>(options =>
             {
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;

@@ -62,9 +62,14 @@ namespace Application.Web.Database.Repository
             return await dbSet.ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate)
+        public async Task<List<T>> Find(Expression<Func<T, bool>> predicate)
         {
             return await dbSet.Where(predicate).ToListAsync();
+        }
+
+        public async Task<T> FindOne(Expression<Func<T, bool>> predicate)
+        {
+            return await dbSet.Where(predicate).FirstOrDefaultAsync();
         }
 
         public T Update(T entity)
