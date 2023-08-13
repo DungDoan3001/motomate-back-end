@@ -90,11 +90,13 @@ namespace Application.Web.Service.Services
                 return false;
             }
             User user = await _userManager.FindByIdAsync(resetPassword.UserId.ToString());
-            var result = await _userManager.ResetPasswordAsync(resetPassword.User, resetPassword.Token, changePasswordRequest.ConfirmPassword);
+            var result = await _userManager.ResetPasswordAsync(user, resetPassword.Token, changePasswordRequest.ConfirmPassword);
             if(!result.Succeeded)
             {
                 return false;
             }
+            _resetPasswordRepo.Delete(resetPassword.Id);
+            await _unitOfWork.CompleteAsync();
             return true;
         }
 
