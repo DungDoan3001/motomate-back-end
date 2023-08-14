@@ -39,9 +39,14 @@ namespace Application.Web.Service.Services
 
         public async Task<IdentityResult> RegisterUserAsync(UserRegistrationRequestModel userRegistration)
         {
-            var user = _mapper.Map<User>(userRegistration);
-            var result = await _userManager.CreateAsync(user, userRegistration.Password);
-            await _userManager.AddToRoleAsync(user, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
+            var user = await _userManager.FindByEmailAsync(userRegistration.Email);
+            if (user != null)
+                throw new StatusCodeException(message: "User existed.", statusCode: StatusCodes.Status409Conflict);
+            if (!userRegistration.Password.Equals(userRegistration.PasswordConfirm))
+                throw new StatusCodeException(message: "Password not match.", statusCode: StatusCodes.Status400BadRequest);
+            var newUser = _mapper.Map<User>(userRegistration);
+            var result = await _userManager.CreateAsync(newUser, userRegistration.Password);
+            await _userManager.AddToRoleAsync(newUser, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
             return result;
         }
 
