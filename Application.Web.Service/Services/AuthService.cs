@@ -155,7 +155,6 @@ namespace Application.Web.Service.Services
 
         private async Task<List<Claim>> GetClaims(User user)
         {
-            // Create claims and claim UserName
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserName),
