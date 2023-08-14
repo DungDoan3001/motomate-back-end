@@ -44,6 +44,14 @@ namespace Applicaton.Web.API.Controllers
                     return StatusCode(StatusCodes.Status201Created);
                 }
             }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
