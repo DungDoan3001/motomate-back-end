@@ -1,1 +1,2 @@
-# MotoMate Project (UOG VietNam)
+# MotorMate Project (UOG VietNam)
+## [![Github action || Build and deploy](https://github.com/DungDoan3001/motomate-back-end/actions/workflows/build-dotnet.yml/badge.svg?branch=develop&event=check_run)](https://github.com/DungDoan3001/motomate-back-end/actions/workflows/build-dotnet.yml)
