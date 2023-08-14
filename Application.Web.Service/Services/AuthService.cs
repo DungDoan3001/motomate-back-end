@@ -117,6 +117,7 @@ namespace Application.Web.Service.Services
                     Picture = userPayload.Picture
                 };
                 var result = await _userManager.CreateAsync(newUser);
+                await _userManager.AddToRoleAsync(user, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
                 if (result.Succeeded) jwtToken = await CreateTokenAsync(newUser.Email);
             } else
                 jwtToken = await CreateTokenAsync(user.Email);
