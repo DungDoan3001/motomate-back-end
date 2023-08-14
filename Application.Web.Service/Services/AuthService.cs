@@ -7,9 +7,11 @@ using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
+using Application.Web.Service.Exceptions;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Google.Apis.Auth;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -37,9 +39,14 @@ namespace Application.Web.Service.Services
 
         public async Task<IdentityResult> RegisterUserAsync(UserRegistrationRequestModel userRegistration)
         {
-            var user = _mapper.Map<User>(userRegistration);
-            var result = await _userManager.CreateAsync(user, userRegistration.Password);
-            await _userManager.AddToRoleAsync(user, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
+            var user = await _userManager.FindByEmailAsync(userRegistration.Email);
+            if (user != null)
+                throw new StatusCodeException(message: "User existed.", statusCode: StatusCodes.Status409Conflict);
+            if (!userRegistration.Password.Equals(userRegistration.PasswordConfirm))
+                throw new StatusCodeException(message: "Password not match.", statusCode: StatusCodes.Status400BadRequest);
+            var newUser = _mapper.Map<User>(userRegistration);
+            var result = await _userManager.CreateAsync(newUser, userRegistration.Password);
+            await _userManager.AddToRoleAsync(newUser, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
             return result;
         }
 
@@ -61,7 +68,7 @@ namespace Application.Web.Service.Services
                 {
                     _resetPasswordRepo.DeleteRange(resetPasswordTokens);
                 }
-                ResetPassword resetPassword = new ResetPassword
+                ResetPassword resetPassword = new()
                 {
                     Token = changePasswordToken,
                     UserId = user.Id
@@ -71,29 +78,35 @@ namespace Application.Web.Service.Services
                 await SendChangePasswordEmailAsync(user, Helpers.GuidBase64.Base64Encode(resetPassword.Id));
                 return true;
             }
-            return false;
+            else
+                throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
+            
         }
 
         public async Task<bool> ChangePassword(string encodedToken, ChangePasswordRequestModel changePasswordRequest)
         {
+            bool isBase64 = Helpers.GuidBase64.IsBase64(encodedToken);
+            if(!isBase64)
+            {
+                throw new StatusCodeException(message: "Invalid Base64 format.", statusCode: StatusCodes.Status400BadRequest);
+            }
             Guid resetPasswordId = Helpers.GuidBase64.Base64Decode(encodedToken);
             ResetPassword resetPassword = await _resetPasswordRepo.FindOne(x => x.Id == resetPasswordId);
             if (resetPassword == null)
             {
-                return false;
+                throw new StatusCodeException(message: "Token is invalid", statusCode: StatusCodes.Status400BadRequest);
             }
             var checkExpire = DateTime.Compare(resetPassword.CreatedDate.AddHours(24), DateTime.UtcNow);
             if(checkExpire == -1)
             {
                 _resetPasswordRepo.Delete(resetPassword.Id);
-                await _unitOfWork.CompleteAsync();
-                return false;
+                throw new StatusCodeException(message: "Token expired.", statusCode: StatusCodes.Status400BadRequest);
             }
             User user = await _userManager.FindByIdAsync(resetPassword.UserId.ToString());
             var result = await _userManager.ResetPasswordAsync(user, resetPassword.Token, changePasswordRequest.ConfirmPassword);
             if(!result.Succeeded)
             {
-                return false;
+                throw new StatusCodeException(message: "Err while handle reset.", statusCode: StatusCodes.Status409Conflict);
             }
             _resetPasswordRepo.Delete(resetPassword.Id);
             await _unitOfWork.CompleteAsync();
@@ -107,8 +120,8 @@ namespace Application.Web.Service.Services
             string jwtToken = "";
             if(user == null)
             {
-                string username = ExtractEmailAddress(userPayload.Email);
-                User newUser = new User
+                string username = Helpers.Helpers.ExtractEmailAddress(userPayload.Email);
+                User newUser = new()
                 {
                     Email = userPayload.Email,
                     UserName = username,
@@ -117,6 +130,7 @@ namespace Application.Web.Service.Services
                     Picture = userPayload.Picture
                 };
                 var result = await _userManager.CreateAsync(newUser);
+                await _userManager.AddToRoleAsync(newUser, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
                 if (result.Succeeded) jwtToken = await CreateTokenAsync(newUser.Email);
             } else
                 jwtToken = await CreateTokenAsync(user.Email);
@@ -134,7 +148,7 @@ namespace Application.Web.Service.Services
 
         private async Task<bool> SendChangePasswordEmailAsync(User user, string encodedToken)
         {
-            SendEmailOptions emailOptions = new SendEmailOptions
+            SendEmailOptions emailOptions = new()
             {
                 ToName = user.FullName,
                 ToEmail = user.Email,
@@ -154,10 +168,11 @@ namespace Application.Web.Service.Services
 
         private async Task<List<Claim>> GetClaims(User user)
         {
-            // Create claims and claim UserName
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim(ClaimTypes.NameIdentifier, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.FullName)
             }; 
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -179,16 +194,7 @@ namespace Application.Web.Service.Services
                 expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expiresIn"])),
                 signingCredentials: signingCredentials
             );
-
             return tokenOptions;
-        }
-
-        private string ExtractEmailAddress(string email)
-        {
-            int index = email.IndexOf("@");
-            if (index >= 0)
-                return email.Substring(0, index);
-            else return null;
         }
     }
 }

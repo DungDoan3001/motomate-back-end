@@ -15,5 +15,12 @@
             byte[] buffer = Convert.FromBase64String(value + "==");
             return new Guid(buffer);
         }
+
+        public static bool IsBase64(string value)
+        {
+            value = value.Replace("_", "/").Replace("-", "+");
+            Span<byte> buffer = new Span<byte>(new byte[value.Length]);
+            return Convert.TryFromBase64String(value, buffer, out int bytesParsed);
+        }
     }
 }

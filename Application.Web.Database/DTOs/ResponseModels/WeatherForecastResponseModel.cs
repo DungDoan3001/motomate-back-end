@@ -14,6 +14,6 @@ namespace Application.Web.Database.DTOs.ResponseModels
 
         public int TemperatureF { get; set; }
 
-        public string? Summary { get; set; }
+        public string Summary { get; set; }
     }
 }

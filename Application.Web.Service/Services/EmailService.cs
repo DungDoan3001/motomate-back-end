@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Application.Web.Service.Interfaces;
 using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
+using Application.Web.Service.Exceptions;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Web.Service.Services
 {
@@ -38,10 +40,10 @@ namespace Application.Web.Service.Services
                 MimeMessage message = CreateEmail(emailOptions.ToName, emailOptions.ToEmail, emailOptions.Subject, emailOptions.Body);
                 return await SendEmail(message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log the exception or do something else
-                throw;
+                throw new StatusCodeException(message: "Error Hit", statusCode: StatusCodes.Status500InternalServerError, ex); 
+               
             }
         }
 
@@ -52,10 +54,9 @@ namespace Application.Web.Service.Services
                 MimeMessage message = CreateBulkBccEmail(bulkEmailOptions.Emails, bulkEmailOptions.Subject, bulkEmailOptions.Body);
                 return await SendEmail(message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log the exception or do something else
-                throw;
+                throw new StatusCodeException(message: "Error Hit", statusCode: StatusCodes.Status500InternalServerError, ex);
             }
         }
 
@@ -70,10 +71,9 @@ namespace Application.Web.Service.Services
                 await smtpClient.DisconnectAsync(true);
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log the exception or do something else
-                throw;
+                throw new StatusCodeException(message: "Error Hit", statusCode: StatusCodes.Status500InternalServerError, ex);
             }
         }
 

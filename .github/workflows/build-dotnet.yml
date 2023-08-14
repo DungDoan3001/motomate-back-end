@@ -48,6 +48,9 @@ jobs:
       (github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch')
     needs: build
     runs-on: ubuntu-22.04
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact from build job - ${{ env.ARTIFACT_NAME }}
