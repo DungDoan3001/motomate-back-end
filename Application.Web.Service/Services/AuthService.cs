@@ -7,7 +7,6 @@ using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
-using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Google.Apis.Auth;
