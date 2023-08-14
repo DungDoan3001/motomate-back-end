@@ -7,6 +7,7 @@ using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Google.Apis.Auth;
@@ -107,7 +108,7 @@ namespace Application.Web.Service.Services
             string jwtToken = "";
             if(user == null)
             {
-                string username = ExtractEmailAddress(userPayload.Email);
+                string username = Helpers.Helpers.ExtractEmailAddress(userPayload.Email);
                 User newUser = new User
                 {
                     Email = userPayload.Email,
@@ -181,16 +182,7 @@ namespace Application.Web.Service.Services
                 expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expiresIn"])),
                 signingCredentials: signingCredentials
             );
-
             return tokenOptions;
-        }
-
-        private string ExtractEmailAddress(string email)
-        {
-            int index = email.IndexOf("@");
-            if (index >= 0)
-                return email.Substring(0, index);
-            else return null;
         }
     }
 }
