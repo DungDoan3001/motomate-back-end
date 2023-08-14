@@ -2,6 +2,7 @@
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Services;
+using Applicaton.Web.API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -83,6 +84,14 @@ namespace Applicaton.Web.API.Controllers
                     return Ok(token);
                 }
             }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
@@ -113,6 +122,14 @@ namespace Applicaton.Web.API.Controllers
                 bool result = await _authService.SendEmailResetPassword(request.Email);
                 return result ? Ok("Confirmed email has been sent") : BadRequest("Can not send the email");
             }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
@@ -142,6 +159,14 @@ namespace Applicaton.Web.API.Controllers
                 }
                 bool result = await _authService.ChangePassword(encodedToken, changePasswordRequest);
                 return result ? Ok("Success") : BadRequest("Failed");
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
             }
             catch (Exception ex)
             {
@@ -179,6 +204,14 @@ namespace Applicaton.Web.API.Controllers
                     };
                     return Ok(token);
                 }
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
             }
             catch (Exception ex)
             {

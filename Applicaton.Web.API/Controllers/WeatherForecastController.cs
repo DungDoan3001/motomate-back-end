@@ -2,6 +2,7 @@ using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Database.Models;
 using Application.Web.Service.Interfaces;
+using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,14 @@ namespace Applicaton.Web.API.Controllers
 
                 return Ok(result);
             }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"{controllerPrefix} error at Get(): {ex.Message}", ex);
@@ -74,7 +83,16 @@ namespace Applicaton.Web.API.Controllers
                     .Map<WeatherForecastResponseModel>(weatherForecast);
 
                 return Created("Weatherforecast created.", result);
-            } catch (Exception ex)
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
             {
                 _logger.LogError($"{controllerPrefix} error at Create(): {ex.Message}", ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel

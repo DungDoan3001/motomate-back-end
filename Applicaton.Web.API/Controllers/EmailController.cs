@@ -2,6 +2,7 @@
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Applicaton.Web.API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
@@ -34,6 +35,14 @@ namespace Applicaton.Web.API.Controllers
                 bool result = await _emailService.SendEmailAsync(emailOptions);
                 return result ? Ok() : BadRequest();
             }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
@@ -59,6 +68,14 @@ namespace Applicaton.Web.API.Controllers
             {
                 bool result = await _emailService.SendBulkBccEmailAsync(bulkEmailOptions);
                 return result ? Ok() : BadRequest();
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
             }
             catch (Exception ex)
             {
