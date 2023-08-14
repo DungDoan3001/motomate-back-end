@@ -1,5 +1,6 @@
 ﻿using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Database.DTOs.ServiceModels;
+using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Applicaton.Web.API.Extensions;
