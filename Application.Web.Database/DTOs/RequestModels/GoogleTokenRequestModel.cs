@@ -2,6 +2,6 @@
 {
     public class GoogleTokenRequestModel
     {
-        public string? TokenCredential { get; set; }
+        public string TokenCredential { get; set; }
     }
 }
