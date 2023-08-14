@@ -20,6 +20,12 @@ namespace Applicaton.Web.API.Controllers
             _emailService = emailService;
         }
 
+        /// <summary>
+        /// Send email to user.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully sent the email.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("send")]
         public async Task<IActionResult> SendEmailAsync([FromBody] SendEmailOptions emailOptions)
         {
@@ -40,8 +46,14 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Send bulk email to users.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully sent the emails.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost("send/bulk")]
-        public async Task<IActionResult> SendEmailAsync([FromBody] SendBulkEmailOptions bulkEmailOptions)
+        public async Task<IActionResult> SendBulkEmailAsync([FromBody] SendBulkEmailOptions bulkEmailOptions)
         {
             try
             {

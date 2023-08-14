@@ -21,6 +21,12 @@ namespace Applicaton.Web.API.Controllers
             _authService = authService;
         }
 
+        /// <summary>
+        /// Sign up and create a user for the system.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="201">Successfully create a user.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost("sign-up")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationRequestModel userRegistration)
         {
@@ -50,6 +56,12 @@ namespace Applicaton.Web.API.Controllers
 
         }
 
+        /// <summary>
+        /// Login and create create a JWT token for the system.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully create a JWT token.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost("login")]
         public async Task<IActionResult> Authenticate([FromBody] UserLoginRequestModel userLogin)
         {
@@ -83,6 +95,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Send an reset password token to user email.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully send an email.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost("change/password")]
         public async Task<IActionResult> SendResetPasswordEmail([FromBody] EmailResetPasswordRequestModel request)
         {
@@ -107,6 +125,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Accquire a token from user and start reset password
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully reset password.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost("change/password/{encodedToken}")]
         public async Task<IActionResult> ChangeUserPassword([FromRoute] string encodedToken, [FromBody] ChangePasswordRequestModel changePasswordRequest)
         {
@@ -131,6 +155,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Login with google and return JWT token
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully create a user and return JWT token.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost("sso/google")]
         public async Task<IActionResult> GoogleSSOProvider([FromBody] GoogleTokenRequestModel tokenRequest)
         {
