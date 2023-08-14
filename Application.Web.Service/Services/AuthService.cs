@@ -117,7 +117,7 @@ namespace Application.Web.Service.Services
                     Picture = userPayload.Picture
                 };
                 var result = await _userManager.CreateAsync(newUser);
-                await _userManager.AddToRoleAsync(user, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
+                await _userManager.AddToRoleAsync(newUser, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
                 if (result.Succeeded) jwtToken = await CreateTokenAsync(newUser.Email);
             } else
                 jwtToken = await CreateTokenAsync(user.Email);
@@ -158,7 +158,9 @@ namespace Application.Web.Service.Services
             // Create claims and claim UserName
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim(ClaimTypes.NameIdentifier, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.FullName)
             }; 
 
             var roles = await _userManager.GetRolesAsync(user);
