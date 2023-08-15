@@ -23,5 +23,12 @@ namespace Application.Web.Database.Queries.ServiceQueries
         {
             return await dbSet .CountAsync();
         }
+
+        public async Task<Brand> GetByBrandNameAsync(string name)
+        {
+            return await dbSet
+                .Where(b => b.Name.Equals(name))
+                .FirstOrDefaultAsync();
+        }
     }
 }

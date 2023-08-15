@@ -18,6 +18,7 @@ namespace Applicaton.Web.API.Extensions
 
             // Brand
             CreateMap<Brand, BrandResponseModel>();
+            CreateMap<BrandRequestModel, Brand>();
         }
     }
 }

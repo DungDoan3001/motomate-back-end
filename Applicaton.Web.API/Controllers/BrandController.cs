@@ -6,6 +6,7 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
@@ -27,7 +28,7 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetBrands([FromQuery] PaginationRequestModel pagination)
+        public async Task<IActionResult> GetBrandsAsync([FromQuery] PaginationRequestModel pagination)
         {
             try
             {
@@ -65,7 +66,7 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBrand([FromRoute] Guid id)
+        public async Task<IActionResult> GetBrandAsync([FromRoute] Guid id)
         {
             try
             {
@@ -96,6 +97,100 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateBrandAsync([FromBody] BrandRequestModel requestModel)
+        {
+            try
+            {
+                if (requestModel.Name.IsNullOrEmpty())
+                    throw new StatusCodeException(message: "Invalid request.", statusCode: StatusCodes.Status400BadRequest);
 
+                var result = await _brandService.CreateBrandAsync(requestModel);
+
+                return Created($"brand/{result.Id}", result);
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateBrandAsync([FromBody] BrandRequestModel requestModel, [FromRoute] Guid id)
+        {
+            try
+            {
+                if (requestModel.Name.IsNullOrEmpty())
+                    throw new StatusCodeException(message: "Invalid request.", statusCode: StatusCodes.Status400BadRequest);
+
+                var result = await _brandService.UpdateBrandAsync(requestModel, id);
+
+                return Ok(result);
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBranchAsync([FromRoute] Guid id)
+        {
+            try
+            {
+                var result = await _brandService.DeleteBrandAsync(id);
+
+                if (!result)
+                    throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);
+                else
+                    return NoContent();
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
     }
 }

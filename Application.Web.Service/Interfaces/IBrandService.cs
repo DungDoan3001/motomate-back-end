@@ -8,5 +8,8 @@ namespace Application.Web.Service.Interfaces
     {
         Task<(IEnumerable<Brand>, PaginationMetadata)> GetBrandsAsync(PaginationRequestModel pagination);
         Task<Brand> GetBrandByIdAsync(Guid brandId);
+        Task<Brand> CreateBrandAsync(BrandRequestModel requestModel);
+        Task<Brand> UpdateBrandAsync(BrandRequestModel requestModel, Guid brandId);
+        Task<bool> DeleteBrandAsync(Guid brandId);
     }
 }

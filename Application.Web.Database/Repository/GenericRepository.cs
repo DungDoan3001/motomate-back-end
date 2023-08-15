@@ -28,7 +28,7 @@ namespace Application.Web.Database.Repository
 
         public virtual IEnumerable<T> AddRange(IEnumerable<T> entities)
         {
-            if (entities.Count() > 0)
+            if (entities.Any())
             {
                 dbSet.AddRange(entities);
                 return entities;

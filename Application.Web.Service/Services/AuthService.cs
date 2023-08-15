@@ -40,42 +40,58 @@ namespace Application.Web.Service.Services
         public async Task<IdentityResult> RegisterUserAsync(UserRegistrationRequestModel userRegistration)
         {
             var user = await _userManager.FindByEmailAsync(userRegistration.Email);
+
             if (user != null)
                 throw new StatusCodeException(message: "User existed.", statusCode: StatusCodes.Status409Conflict);
+
             if (!userRegistration.Password.Equals(userRegistration.PasswordConfirm))
                 throw new StatusCodeException(message: "Password not match.", statusCode: StatusCodes.Status400BadRequest);
+
             var newUser = _mapper.Map<User>(userRegistration);
+
             var result = await _userManager.CreateAsync(newUser, userRegistration.Password);
+
             await _userManager.AddToRoleAsync(newUser, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
+
             return result;
         }
 
         public async Task<bool> ValidateUserAsync(UserLoginRequestModel userLogin)
         {
             User user = await _userManager.FindByEmailAsync(userLogin.Email);
+
             var result = user != null && await _userManager.CheckPasswordAsync(user, userLogin.Password);
+
             return result;
         }
 
         public async Task<bool> SendEmailResetPassword(string userEmail)
         {
             var user = await _userManager.FindByEmailAsync(userEmail);
+
             if (user != null)
             {
                 var changePasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
                 var resetPasswordTokens = await _resetPasswordRepo.Find(x => x.UserId == user.Id);
+
                 if (!resetPasswordTokens.IsNullOrEmpty())
                 {
                     _resetPasswordRepo.DeleteRange(resetPasswordTokens);
                 }
+
                 ResetPassword resetPassword = new()
                 {
                     Token = changePasswordToken,
                     UserId = user.Id
                 };
+
                 _resetPasswordRepo.Add(resetPassword);
+
                 await _unitOfWork.CompleteAsync();
+
                 await SendChangePasswordEmailAsync(user, Helpers.GuidBase64.Base64Encode(resetPassword.Id));
+                
                 return true;
             }
             else
@@ -86,41 +102,53 @@ namespace Application.Web.Service.Services
         public async Task<bool> ChangePassword(string encodedToken, ChangePasswordRequestModel changePasswordRequest)
         {
             bool isBase64 = Helpers.GuidBase64.IsBase64(encodedToken);
+
             if(!isBase64)
-            {
                 throw new StatusCodeException(message: "Invalid Base64 format.", statusCode: StatusCodes.Status400BadRequest);
-            }
+
             Guid resetPasswordId = Helpers.GuidBase64.Base64Decode(encodedToken);
+
             ResetPassword resetPassword = await _resetPasswordRepo.FindOne(x => x.Id == resetPasswordId);
+
             if (resetPassword == null)
-            {
                 throw new StatusCodeException(message: "Token is invalid", statusCode: StatusCodes.Status400BadRequest);
-            }
+
             var checkExpire = DateTime.Compare(resetPassword.CreatedDate.AddHours(24), DateTime.UtcNow);
+
             if(checkExpire == -1)
             {
                 _resetPasswordRepo.Delete(resetPassword.Id);
                 throw new StatusCodeException(message: "Token expired.", statusCode: StatusCodes.Status400BadRequest);
             }
+
             User user = await _userManager.FindByIdAsync(resetPassword.UserId.ToString());
+
             var result = await _userManager.ResetPasswordAsync(user, resetPassword.Token, changePasswordRequest.ConfirmPassword);
+            
             if(!result.Succeeded)
             {
                 throw new StatusCodeException(message: "Err while handle reset.", statusCode: StatusCodes.Status409Conflict);
             }
+
             _resetPasswordRepo.Delete(resetPassword.Id);
+
             await _unitOfWork.CompleteAsync();
+
             return true;
         }
 
         public async Task<string> HandleGoogleSSOAsync(string tokenCredential)
         {
             GoogleJsonWebSignature.Payload userPayload = await GoogleJsonWebSignature.ValidateAsync(tokenCredential);
+            
             var user = await _userManager.FindByEmailAsync(userPayload.Email);
+            
             string jwtToken = "";
+            
             if(user == null)
             {
                 string username = Helpers.Helpers.ExtractEmailAddress(userPayload.Email);
+                
                 User newUser = new()
                 {
                     Email = userPayload.Email,
@@ -129,20 +157,29 @@ namespace Application.Web.Service.Services
                     LastName = userPayload.FamilyName,
                     Picture = userPayload.Picture
                 };
+                
                 var result = await _userManager.CreateAsync(newUser);
+                
                 await _userManager.AddToRoleAsync(newUser, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
+                
                 if (result.Succeeded) jwtToken = await CreateTokenAsync(newUser.Email);
-            } else
+            } 
+            else
                 jwtToken = await CreateTokenAsync(user.Email);
+
             return jwtToken;
         }
 
         public async Task<string> CreateTokenAsync(string email)
         {
             User user = await _userManager.FindByEmailAsync(email);
+
             var signingCreadentials = GetSigningCredentials();
+
             var claims = await GetClaims(user);
+
             var tokenOptions = GenerateTokenOptions(signingCreadentials, claims);
+
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
 
@@ -155,14 +192,18 @@ namespace Application.Web.Service.Services
                 Body = encodedToken,
                 Subject = "[Motormate] Password Reset"
             };
+
             return await _emailService.SendEmailAsync(emailOptions);
         }
 
         private SigningCredentials GetSigningCredentials()
         {
             var jwtConfig = _config.GetSection("JwtConfig");
+
             var key = Encoding.UTF8.GetBytes(jwtConfig["serect"]);
+
             var secret = new SymmetricSecurityKey(key);
+
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
@@ -176,16 +217,19 @@ namespace Application.Web.Service.Services
             }; 
 
             var roles = await _userManager.GetRolesAsync(user);
+
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
+
             return claims;
         }
 
         private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
             var jwtSettings = _config.GetSection("JwtConfig");
+
             var tokenOptions = new JwtSecurityToken
             (
                 issuer: jwtSettings["validIssuer"],
@@ -194,6 +238,7 @@ namespace Application.Web.Service.Services
                 expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expiresIn"])),
                 signingCredentials: signingCredentials
             );
+
             return tokenOptions;
         }
     }

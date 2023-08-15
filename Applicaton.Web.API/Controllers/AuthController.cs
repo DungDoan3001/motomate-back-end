@@ -35,7 +35,6 @@ namespace Applicaton.Web.API.Controllers
             try
             {
                 var userResult = await _authService.RegisterUserAsync(userRegistration);
-
                 if (!userResult.Succeeded)
                 {
                     return new BadRequestObjectResult(userResult);
