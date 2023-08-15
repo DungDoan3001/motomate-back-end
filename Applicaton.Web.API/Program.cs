@@ -4,7 +4,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.RegistryDatabaseDependencies();
-builder.Services.RegistryDependencies();
+builder.Services.RegisterServiceDependencies();
+builder.Services.RegisterQueryDependencies();
 builder.Services.ConfigureDatabase(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();

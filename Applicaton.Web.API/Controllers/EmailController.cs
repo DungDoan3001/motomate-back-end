@@ -28,12 +28,13 @@ namespace Applicaton.Web.API.Controllers
         /// <returns>Status code of the action.</returns>
         /// <response code="200">Successfully sent the email.</response>
         /// <response code="500">There is something wrong while execute.</response>
-        [HttpGet("send")]
+        [HttpPost("send")]
         public async Task<IActionResult> SendEmailAsync([FromBody] SendEmailOptions emailOptions)
         {
             try
             {
                 bool result = await _emailService.SendEmailAsync(emailOptions);
+
                 return result ? Ok() : BadRequest();
             }
             catch (StatusCodeException ex)
@@ -68,6 +69,7 @@ namespace Applicaton.Web.API.Controllers
             try
             {
                 bool result = await _emailService.SendBulkBccEmailAsync(bulkEmailOptions);
+
                 return result ? Ok() : BadRequest();
             }
             catch (StatusCodeException ex)

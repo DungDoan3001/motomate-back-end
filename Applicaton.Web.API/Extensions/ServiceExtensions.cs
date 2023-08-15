@@ -2,6 +2,8 @@
 using System.Text;
 using Application.Web.Database.Context;
 using Application.Web.Database.Models;
+using Application.Web.Database.Queries.Interface;
+using Application.Web.Database.Queries.ServiceQueries;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Interfaces;
 using Application.Web.Service.Services;
@@ -119,11 +121,17 @@ namespace Applicaton.Web.API.Extensions
             });
         }
 
-        public static void RegistryDependencies (this IServiceCollection services)
+        public static void RegisterServiceDependencies (this IServiceCollection services)
         {
             services.AddScoped<IWeatherForcastService, WeatherForcastService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IBrandService, BrandService>();
+        }
+
+        public static void RegisterQueryDependencies (this IServiceCollection services)
+        {
+            services.AddScoped<IBrandQueries, BrandQueries>();
         }
 
         public static void RegistryDatabaseDependencies (this IServiceCollection services)
