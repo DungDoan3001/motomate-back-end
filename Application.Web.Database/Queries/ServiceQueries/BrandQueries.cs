@@ -1,0 +1,27 @@
+﻿using Application.Web.Database.Context;
+using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.Models;
+using Application.Web.Database.Queries.Interface;
+using Microsoft.EntityFrameworkCore;
+
+namespace Application.Web.Database.Queries.ServiceQueries
+{
+    public class BrandQueries : BaseQuery<Brand>, IBrandQueries
+    {
+        public BrandQueries(ApplicationContext dbContext) : base(dbContext) { }
+
+        public async Task<List<Brand>> GetBrandsWithPaginationAync(PaginationRequestModel pagination)
+        {
+            return await dbSet
+                .OrderBy(b => b.Name)
+                .Skip(pagination.pageSize * (pagination.pageNumber - 1))
+                .Take(pagination.pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<int> CountBrandsAsync()
+        {
+            return await dbSet .CountAsync();
+        }
+    }
+}

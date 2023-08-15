@@ -2,6 +2,7 @@ using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Database.Models;
 using Application.Web.Service.Exceptions;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
@@ -54,7 +55,7 @@ namespace Applicaton.Web.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{controllerPrefix} error at Get(): {ex.Message}", ex);
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
                 return StatusCode(StatusCodes.Status500InternalServerError,new ErrorResponseModel
                 {
                     Message = "Error while performing action.",

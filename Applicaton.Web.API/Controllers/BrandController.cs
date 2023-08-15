@@ -1,41 +1,48 @@
-﻿using Application.Web.Database.DTOs.ResponseModels;
-using Application.Web.Database.DTOs.ServiceModels;
+﻿using System.Text.Json;
+using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
-using Applicaton.Web.API.Extensions;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
 {
-    [Route("api/email")]
+    [Route("api/brand")]
     [ApiController]
-    public class EmailController : ControllerBase
+    public class BrandController : ControllerBase
     {
-        private readonly ILogger<AuthController> _logger;
-        private readonly IEmailService _emailService;
-        private readonly string controllerPrefix = "Email";
+        private readonly IBrandService _brandService;
+        private readonly ILogger<BrandController> _logger;
+        private readonly IMapper _mapper;
+        private const string controllerPrefix = "Brand";
+        private const int maxPageSize = 20;
 
-        public EmailController(ILogger<AuthController> logger, IEmailService emailService)
+        public BrandController(ILogger<BrandController> logger, IMapper mapper, IBrandService brandService)
         {
+            _brandService = brandService;
             _logger = logger;
-            _emailService = emailService;
+            _mapper = mapper;
         }
 
-        /// <summary>
-        /// Send email to user.
-        /// </summary>
-        /// <returns>Status code of the action.</returns>
-        /// <response code="200">Successfully sent the email.</response>
-        /// <response code="500">There is something wrong while execute.</response>
-        [HttpPost("send")]
-        public async Task<IActionResult> SendEmailAsync([FromBody] SendEmailOptions emailOptions)
+        [HttpGet]
+        public async Task<IActionResult> GetBrands([FromQuery] PaginationRequestModel pagination)
         {
             try
             {
-                bool result = await _emailService.SendEmailAsync(emailOptions);
+                if (pagination.pageSize > maxPageSize)
+                {
+                    pagination.pageSize = maxPageSize;
+                }
 
-                return result ? Ok() : BadRequest();
+                var (brands, paginationMetadata) = await _brandService.GetBrandsAsync(pagination);
+
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+                var brandsToReturn = _mapper.Map<IEnumerable<BrandResponseModel>>(brands);
+
+                return Ok(brandsToReturn);
             }
             catch (StatusCodeException ex)
             {
@@ -57,20 +64,17 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Send bulk email to users.
-        /// </summary>
-        /// <returns>Status code of the action.</returns>
-        /// <response code="200">Successfully sent the emails.</response>
-        /// <response code="500">There is something wrong while execute.</response>
-        [HttpPost("send/bulk")]
-        public async Task<IActionResult> SendBulkEmailAsync([FromBody] SendBulkEmailOptions bulkEmailOptions)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBrand([FromRoute] Guid id)
         {
             try
             {
-                bool result = await _emailService.SendBulkBccEmailAsync(bulkEmailOptions);
+                var result = await _brandService.GetBrandByIdAsync(id);
 
-                return result ? Ok() : BadRequest();
+                if (result == null)
+                    return NotFound();
+
+                return Ok(_mapper.Map<BrandResponseModel>(result));
             }
             catch (StatusCodeException ex)
             {
@@ -91,5 +95,7 @@ namespace Applicaton.Web.API.Controllers
                 });
             }
         }
+
+
     }
 }

@@ -35,6 +35,7 @@ namespace Applicaton.Web.API.Controllers
             try
             {
                 var userResult = await _authService.RegisterUserAsync(userRegistration);
+
                 if (!userResult.Succeeded)
                 {
                     return new BadRequestObjectResult(userResult);
@@ -78,6 +79,7 @@ namespace Applicaton.Web.API.Controllers
             try
             {
                 bool validateResult = await _authService.ValidateUserAsync(userLogin);
+
                 if (!validateResult)
                 {
                     _logger.LogWarning($"[{controllerPrefix}] An unauthorized access with user: {userLogin.Email}");
@@ -89,6 +91,7 @@ namespace Applicaton.Web.API.Controllers
                     {
                         Token = await _authService.CreateTokenAsync(userLogin.Email)
                     };
+
                     _logger.LogInformation($"[{controllerPrefix}] Created token for user: {userLogin.Email}");
                     return Ok(token);
                 }
@@ -128,7 +131,9 @@ namespace Applicaton.Web.API.Controllers
                 {
                     return BadRequest("Email is not null");
                 }
+
                 bool result = await _authService.SendEmailResetPassword(request.Email);
+
                 return result ? Ok("Confirmed email has been sent") : BadRequest("Can not send the email");
             }
             catch (StatusCodeException ex)
@@ -166,7 +171,9 @@ namespace Applicaton.Web.API.Controllers
                 {
                     return BadRequest("Confirm password is not matched");
                 }
+
                 bool result = await _authService.ChangePassword(encodedToken, changePasswordRequest);
+
                 return result ? Ok("Success") : BadRequest("Failed");
             }
             catch (StatusCodeException ex)
@@ -201,6 +208,7 @@ namespace Applicaton.Web.API.Controllers
             try
             {
                 bool validation = tokenRequest.TokenCredential.IsNullOrEmpty();
+
                 if (validation)
                 {
                     return BadRequest();
