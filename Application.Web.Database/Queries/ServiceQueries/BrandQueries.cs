@@ -14,8 +14,17 @@ namespace Application.Web.Database.Queries.ServiceQueries
         {
             return await dbSet
                 .OrderBy(b => b.Name)
+                .Include(b => b.Collections)
                 .Skip(pagination.pageSize * (pagination.pageNumber - 1))
                 .Take(pagination.pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<List<Brand>> GetAllBrandsAsync()
+        {
+            return await dbSet
+                .OrderBy(b => b.Name)
+                .Include(b => b.Collections)
                 .ToListAsync();
         }
 
@@ -28,6 +37,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
         {
             return await dbSet
                 .Where(b => b.Name.Equals(name))
+                .Include(b => b.Collections)
                 .FirstOrDefaultAsync();
         }
     }

@@ -37,6 +37,13 @@ namespace Application.Web.Service.Services
             return (brandToReturn, paginationMetadata);
         }
 
+        public async Task<IEnumerable<Brand>> GetAllBrandsAsync()
+        {
+            var brandToReturn = await _brandQueries.GetAllBrandsAsync();
+
+            return brandToReturn;
+        }
+
         public async Task<Brand> GetBrandByIdAsync(Guid brandId)
         {
             var result = await _brandRepo.GetById(brandId);

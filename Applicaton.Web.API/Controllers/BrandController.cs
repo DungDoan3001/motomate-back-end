@@ -65,6 +65,35 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllBrandsAsync()
+        {
+            try
+            {
+                var brandToReturn = await _brandService.GetAllBrandsAsync();
+
+                return Ok(brandToReturn);
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBrandAsync([FromRoute] Guid id)
         {

@@ -127,11 +127,15 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IBrandService, BrandService>();
+            services.AddScoped<IModelService, ModelService>();
+            services.AddScoped<ICollectionService, CollectionService>();
         }
 
         public static void RegisterQueryDependencies (this IServiceCollection services)
         {
             services.AddScoped<IBrandQueries, BrandQueries>();
+            services.AddScoped<IModelQueries, ModelQueries>();
+            services.AddScoped<ICollectionQueries, CollectionQueries>();
         }
 
         public static void RegistryDatabaseDependencies (this IServiceCollection services)
