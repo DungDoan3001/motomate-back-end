@@ -4,13 +4,13 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public IEnumerable<BrandCollections> Collections { get; set; }
+        public IEnumerable<CollectionsOfBrand> Collections { get; set; }
     }
 
-    public class BrandCollections
+    public class CollectionsOfBrand
     { 
-        public Guid CollectionId { get; set; }
-        public string CollectionName { get; set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
     }
 
 }

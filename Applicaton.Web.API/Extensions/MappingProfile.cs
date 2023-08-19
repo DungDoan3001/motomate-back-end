@@ -19,10 +19,14 @@ namespace Applicaton.Web.API.Extensions
             // Brand
             CreateMap<Brand, BrandResponseModel>();
             CreateMap<BrandRequestModel, Brand>();
-            CreateMap<Collection, BrandCollections>()
-                .ForMember(dest => dest.CollectionId, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.CollectionName, opt => opt.MapFrom(src => src.Name))
-                .ReverseMap();
+            CreateMap<Collection, CollectionsOfBrand>();
+
+            // Collection
+            CreateMap<Collection, CollectionResponseModel>();
+            CreateMap<CollectionRequestModel, Collection>();
+            CreateMap<Model, ModelsOfCollection>();
+            CreateMap<Brand, BrandOfCollection>();
+
         }
     }
 }

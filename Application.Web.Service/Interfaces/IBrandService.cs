@@ -11,6 +11,6 @@ namespace Application.Web.Service.Interfaces
         Task<Brand> CreateBrandAsync(BrandRequestModel requestModel);
         Task<Brand> UpdateBrandAsync(BrandRequestModel requestModel, Guid brandId);
         Task<bool> DeleteBrandAsync(Guid brandId);
-        Task<IEnumerable<Brand>> GetAllBrandsAsync();
+        Task<List<Brand>> GetAllBrandsAsync();
     }
 }

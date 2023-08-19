@@ -1,11 +1,50 @@
 ﻿using Application.Web.Database.Context;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Database.Queries.ServiceQueries
 {
     public class CollectionQueries : BaseQuery<Collection>, ICollectionQueries
     {
         public CollectionQueries(ApplicationContext dbContext) : base(dbContext) { }
+
+        public async Task<List<Collection>> GetAllCollectionsAsync()
+        {
+            return await dbSet
+                .OrderBy(c => c.Name)
+                .Include(c => c.Models
+                               .OrderBy(m => m.Name))
+                .Include(c => c.Brand)
+                .ToListAsync();
+        }
+
+        public async Task<Collection> GetCollectionByIdAsync(Guid id)
+        {
+            return await dbSet
+                .OrderBy(c => c.Name)
+                .Include(c => c.Models
+                               .OrderBy(m => m.Name))
+                .Include(c => c.Brand)
+                .Where(c => c.Id.Equals(id))
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Collection> GetCollectionByNameAsync(string name)
+        {
+            return await dbSet
+                .OrderBy(c => c.Name)
+                .Include(c => c.Models
+                               .OrderBy(m => m.Name))
+                .Include(c => c.Brand)
+                .Where(c => c.Name.Equals(name))
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> CheckIfCollectionExisted(string name)
+        {
+            return await dbSet
+                .AnyAsync(c => c.Name.Equals(name));
+        }
     }
 }

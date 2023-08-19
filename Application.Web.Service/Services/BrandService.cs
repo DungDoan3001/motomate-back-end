@@ -37,7 +37,7 @@ namespace Application.Web.Service.Services
             return (brandToReturn, paginationMetadata);
         }
 
-        public async Task<IEnumerable<Brand>> GetAllBrandsAsync()
+        public async Task<List<Brand>> GetAllBrandsAsync()
         {
             var brandToReturn = await _brandQueries.GetAllBrandsAsync();
 
@@ -54,9 +54,9 @@ namespace Application.Web.Service.Services
         {
             var newBrand = _mapper.Map<Brand>(requestModel);
 
-            var brand = await _brandQueries.GetByBrandNameAsync(newBrand.Name);
+            var isBrandExisted = await _brandQueries.CheckIfBrandExisted(newBrand.Name);
 
-            if(brand != null)
+            if(isBrandExisted)
                 throw new StatusCodeException(message: "Brand name already exsited.", statusCode: StatusCodes.Status409Conflict);
             else
             {
