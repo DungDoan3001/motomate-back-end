@@ -2,6 +2,7 @@
 using AutoMapper;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Database.DTOs.RequestModels;
+using System.Globalization;
 
 namespace Applicaton.Web.API.Extensions
 {
@@ -27,6 +28,14 @@ namespace Applicaton.Web.API.Extensions
             CreateMap<Model, ModelsOfCollection>();
             CreateMap<Brand, BrandOfCollection>();
 
+            // Color
+            CreateMap<Color, ColorResponseModel>()
+                .ForMember(dest => dest.Color, opt => opt.MapFrom(src => CultureInfo
+                                                                        .CurrentCulture
+                                                                        .TextInfo
+                                                                        .ToTitleCase(src.Name.ToLower())));
+            CreateMap<ColorRequestModel, Color>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Color.ToUpper()));
         }
     }
 }

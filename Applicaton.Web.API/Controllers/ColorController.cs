@@ -1,80 +1,42 @@
-﻿using System.Text.Json;
-using Application.Web.Database.DTOs.RequestModels;
+﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Application.Web.Service.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
-    [Route("api/brand")]
+    [Route("api/color")]
     [ApiController]
-    public class BrandController : ControllerBase
+    public class ColorController : ControllerBase
     {
-        private readonly IBrandService _brandService;
-        private readonly ILogger<BrandController> _logger;
+        private readonly IColorService _colorService;
+        private readonly ILogger<ColorController> _logger;
         private readonly IMapper _mapper;
-        private const string controllerPrefix = "Brand";
+        private const string controllerPrefix = "Color";
         private const int maxPageSize = 20;
 
-        public BrandController(ILogger<BrandController> logger, IMapper mapper, IBrandService brandService)
+        public ColorController(ILogger<ColorController> logger, IMapper mapper, IColorService colorService)
         {
-            _brandService = brandService;
+            _colorService = colorService;
             _logger = logger;
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetBrandsAsync([FromQuery] PaginationRequestModel pagination)
-        {
-            try
-            {
-                if (pagination.pageSize > maxPageSize)
-                {
-                    pagination.pageSize = maxPageSize;
-                }
-
-                var (brands, paginationMetadata) = await _brandService.GetBrandsAsync(pagination);
-
-                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
-
-                var brandsToReturn = _mapper.Map<IEnumerable<BrandResponseModel>>(brands);
-
-                return Ok(brandsToReturn);
-            }
-            catch (StatusCodeException ex)
-            {
-                return StatusCode(ex.StatusCode, new ErrorResponseModel
-                {
-                    Message = ex.Message,
-                    StatusCode = ex.StatusCode
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
-                {
-                    Message = "Error while performing action.",
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Errors = { ex.Message }
-                });
-            }
-        }
-
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllBrandsAsync()
+        public async Task<IActionResult> GetAllColorsAsync()
         {
             try
             {
-                var brands = await _brandService.GetAllBrandsAsync();
+                var colors = await _colorService.GetColorsAsync();
 
-                var brandsToReturn = _mapper.Map<IEnumerable<BrandResponseModel>>(brands);
+                var colorsToReturn = _mapper.Map<IEnumerable<ColorResponseModel>>(colors);
 
-                return Ok(brandsToReturn);
+                return Ok(colorsToReturn);
             }
             catch (StatusCodeException ex)
             {
@@ -97,18 +59,18 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBrandAsync([FromRoute] Guid id)
+        public async Task<IActionResult> GetColorAsync([FromRoute] Guid id)
         {
             try
             {
-                var brand = await _brandService.GetBrandByIdAsync(id);
+                var color = await _colorService.GetColorByIdAsync(id);
 
-                if (brand == null)
+                if (color == null)
                     return NotFound();
 
-                var brandToReturn = _mapper.Map<BrandResponseModel>(brand);
+                var colorToReturn = _mapper.Map<ColorResponseModel>(color);
 
-                return Ok(brandToReturn);
+                return Ok(colorToReturn);
             }
             catch (StatusCodeException ex)
             {
@@ -131,18 +93,18 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBrandAsync([FromBody] BrandRequestModel requestModel)
+        public async Task<IActionResult> CreateColorAsync([FromBody] ColorRequestModel requestModel)
         {
             try
             {
-                if (requestModel.Name.IsNullOrEmpty())
+                if (requestModel.Color.IsNullOrEmpty())
                     throw new StatusCodeException(message: "Invalid request.", statusCode: StatusCodes.Status400BadRequest);
 
-                var brand = await _brandService.CreateBrandAsync(requestModel);
+                var color = await _colorService.CreateColorAsync(requestModel);
 
-                var brandToReturn = _mapper.Map<BrandResponseModel>(brand);
+                var colorToReturn = _mapper.Map<ColorResponseModel>(color);
 
-                return Created($"brand/{brandToReturn.Id}", brandToReturn);
+                return Created($"color/{colorToReturn.Id}", colorToReturn);
             }
             catch (StatusCodeException ex)
             {
@@ -165,18 +127,18 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateBrandAsync([FromBody] BrandRequestModel requestModel, [FromRoute] Guid id)
+        public async Task<IActionResult> UpdateColorAsync([FromBody] ColorRequestModel requestModel, [FromRoute] Guid id)
         {
             try
             {
-                if (requestModel.Name.IsNullOrEmpty())
+                if (requestModel.Color.IsNullOrEmpty())
                     throw new StatusCodeException(message: "Invalid request.", statusCode: StatusCodes.Status400BadRequest);
 
-                var brand = await _brandService.UpdateBrandAsync(requestModel, id);
+                var color = await _colorService.UpdateColorAsync(requestModel, id);
 
-                var brandToReturn = _mapper.Map<BrandResponseModel>(brand);
+                var colorToReturn = _mapper.Map<ColorResponseModel>(color);
 
-                return Ok(brandToReturn);
+                return Ok(colorToReturn);
             }
             catch (StatusCodeException ex)
             {
@@ -199,11 +161,11 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBranchAsync([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteColorhAsync([FromRoute] Guid id)
         {
             try
             {
-                var result = await _brandService.DeleteBrandAsync(id);
+                var result = await _colorService.DeleteColorAsync(id);
 
                 if (!result)
                     throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);
