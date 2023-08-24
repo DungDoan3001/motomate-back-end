@@ -44,7 +44,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
         public async Task<bool> CheckIfCollectionExisted(string name)
         {
             return await dbSet
-                .AnyAsync(c => c.Name.Equals(name));
+                .AnyAsync(c => c.Name.ToUpper().Equals(name.ToUpper()));
         }
     }
 }

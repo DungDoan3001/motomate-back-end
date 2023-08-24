@@ -47,7 +47,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
         public async Task<bool> CheckIfBrandExisted(string name)
         {
             return await dbSet
-                .AnyAsync(b => b.Name.Equals(name));
+                .AnyAsync(b => b.Name.ToUpper().Equals(name.ToUpper()));
         }
     }
 }

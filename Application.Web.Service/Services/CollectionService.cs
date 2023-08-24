@@ -67,11 +67,18 @@ namespace Application.Web.Service.Services
             {
                 var collectionToUpdate = _mapper.Map<CollectionRequestModel, Collection>(requestModel, collection);
 
-                _collectionRepo.Update(collectionToUpdate);
+                var isCollectionExisted = await _collectionQueries.CheckIfCollectionExisted(collectionToUpdate.Name);
 
-                await _unitOfWork.CompleteAsync();
+                if (isCollectionExisted)
+                    throw new StatusCodeException(message: "Collection name already exsited.", statusCode: StatusCodes.Status409Conflict);
+                else
+                {
+                    _collectionRepo.Update(collectionToUpdate);
 
-                return collectionToUpdate;
+                    await _unitOfWork.CompleteAsync();
+
+                    return collectionToUpdate;
+                }
             }
         }
 

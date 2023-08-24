@@ -18,15 +18,41 @@ namespace Applicaton.Web.API.Extensions
             CreateMap<UserRegistrationRequestModel, User>();
 
             // Brand
-            CreateMap<Brand, BrandResponseModel>();
-            CreateMap<BrandRequestModel, Brand>();
-            CreateMap<Collection, CollectionsOfBrand>();
+            CreateMap<Brand, BrandResponseModel>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => CultureInfo
+                                                                        .CurrentCulture
+                                                                        .TextInfo
+                                                                        .ToTitleCase(src.Name)));
+            CreateMap<BrandRequestModel, Brand>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
+
+            CreateMap<Collection, CollectionsOfBrand>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => CultureInfo
+                                                                        .CurrentCulture
+                                                                        .TextInfo
+                                                                        .ToTitleCase(src.Name)));
 
             // Collection
-            CreateMap<Collection, CollectionResponseModel>();
-            CreateMap<CollectionRequestModel, Collection>();
-            CreateMap<Model, ModelsOfCollection>();
-            CreateMap<Brand, BrandOfCollection>();
+            CreateMap<Collection, CollectionResponseModel>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => CultureInfo
+                                                                        .CurrentCulture
+                                                                        .TextInfo
+                                                                        .ToTitleCase(src.Name)));
+            CreateMap<CollectionRequestModel, Collection>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
+
+            CreateMap<Model, ModelsOfCollection>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => CultureInfo
+                                                                        .CurrentCulture
+                                                                        .TextInfo
+                                                                        .ToTitleCase(src.Name)));
+            CreateMap<Brand, BrandOfCollection>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => CultureInfo
+                                                                        .CurrentCulture
+                                                                        .TextInfo
+                                                                        .ToTitleCase(src.Name)));
+
+
 
             // Color
             CreateMap<Color, ColorResponseModel>()
