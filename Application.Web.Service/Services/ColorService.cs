@@ -56,6 +56,45 @@ namespace Application.Web.Service.Services
             }
         }
 
+        // Created colors - alreadyExistedColors - colorsHitErrorWhenCreated
+        public async Task<(IEnumerable<Color>, IEnumerable<string>, IEnumerable<string>)> CreateBulkColorsAsync(List<ColorRequestModel> requestModels)
+        {
+            var colorsSuccessfullyCreated = new List<Color>();
+            var alreadyExistedColors = new List<string>();
+            var colorsHitErrorWhenCreated = new List<string>();
+            
+            foreach (var requestModel in requestModels)
+            {
+                try
+                {
+                    var newColor = _mapper.Map<Color>(requestModel);
+
+                    var isColorExisted = await _colorQueries.CheckIfColorExisted(newColor.Name);
+
+                    if (isColorExisted)
+                        throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);
+                    else
+                    {
+                        _colorRepo.Add(newColor);
+
+                        await _unitOfWork.CompleteAsync();
+
+                        colorsSuccessfullyCreated.Add(newColor);
+                    }
+                }
+                catch (StatusCodeException)
+                {
+                    alreadyExistedColors.Add(requestModel.Color);
+                }
+                catch (Exception)
+                {
+                    colorsHitErrorWhenCreated.Add(requestModel.Color);
+                }
+            }
+
+            return (colorsSuccessfullyCreated, alreadyExistedColors, colorsHitErrorWhenCreated);
+        }
+
         public async Task<Color> UpdateColorAsync(ColorRequestModel requestModel, Guid colorId)
         {
             var color = await _colorRepo.GetById(colorId);

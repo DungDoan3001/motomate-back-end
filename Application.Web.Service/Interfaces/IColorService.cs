@@ -10,5 +10,6 @@ namespace Application.Web.Service.Interfaces
         Task<Color> CreateColorAsync(ColorRequestModel requestModel);
         Task<Color> UpdateColorAsync(ColorRequestModel requestModel, Guid colorId);
         Task<bool> DeleteColorAsync(Guid colorId);
+        Task<(IEnumerable<Color>, IEnumerable<string>, IEnumerable<string>)> CreateBulkColorsAsync(List<ColorRequestModel> requestModels);
     }
 }

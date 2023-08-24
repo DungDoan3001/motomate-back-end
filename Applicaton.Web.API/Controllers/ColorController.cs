@@ -126,6 +126,47 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        [HttpPost("bulk")]
+        public async Task<IActionResult> CreateBulkColorsAsync([FromBody] List<ColorRequestModel> requestModels)
+        {
+            try
+            {
+                if (requestModels.Any(x => x.Color.IsNullOrEmpty()))
+                    throw new StatusCodeException(message: "Invalid request.", statusCode: StatusCodes.Status400BadRequest);
+
+                var (createdColors, alreadyExistedColors, errorWhenCreatingColors) = await _colorService.CreateBulkColorsAsync(requestModels);
+
+                var colorToReturn = _mapper.Map<IEnumerable<ColorResponseModel>>(createdColors);
+
+                var objectToReturn = new
+                {
+                    created = colorToReturn,
+                    alreadyExisted = alreadyExistedColors,
+                    errorWhenCreating = errorWhenCreatingColors
+                };
+
+                return Ok(objectToReturn);
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
+
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateColorAsync([FromBody] ColorRequestModel requestModel, [FromRoute] Guid id)
         {
