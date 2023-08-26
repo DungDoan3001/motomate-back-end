@@ -152,9 +152,13 @@ namespace Applicaton.Web.API.Extensions
             {
                 options.AddPolicy("CorsPolicy", policy =>
                 {
+                    //policy.AllowAnyHeader()
+                    //      .AllowAnyMethod()
+                    //      .SetIsOriginAllowed(_ => true)
+                    //      .AllowCredentials();
                     policy.AllowAnyHeader()
                           .AllowAnyMethod()
-                          .SetIsOriginAllowed(_ => true)
+                          .AllowAnyOrigin()
                           .AllowCredentials();
                 });
             });
