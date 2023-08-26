@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Application.Web.Database.DTOs.RequestModels;
+﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
@@ -10,71 +9,33 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
-    [Route("api/brand")]
+    [Route("api/collection")]
     [ApiController]
-    public class BrandController : ControllerBase
+    public class CollectionController : ControllerBase
     {
-        private readonly IBrandService _brandService;
-        private readonly ILogger<BrandController> _logger;
+        private readonly ILogger<CollectionController> _logger;
         private readonly IMapper _mapper;
-        private const string controllerPrefix = "Brand";
+        private readonly ICollectionService _collectionService;
+        private const string controllerPrefix = "Collection";
         private const int maxPageSize = 20;
 
-        public BrandController(ILogger<BrandController> logger, IMapper mapper, IBrandService brandService)
+        public CollectionController(ILogger<CollectionController> logger, IMapper mapper, ICollectionService collectionService)
         {
-            _brandService = brandService;
             _logger = logger;
             _mapper = mapper;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetBrandsAsync([FromQuery] PaginationRequestModel pagination)
-        {
-            try
-            {
-                if (pagination.pageSize > maxPageSize)
-                {
-                    pagination.pageSize = maxPageSize;
-                }
-
-                var (brands, paginationMetadata) = await _brandService.GetBrandsAsync(pagination);
-
-                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
-
-                var brandsToReturn = _mapper.Map<IEnumerable<BrandResponseModel>>(brands);
-
-                return Ok(brandsToReturn);
-            }
-            catch (StatusCodeException ex)
-            {
-                return StatusCode(ex.StatusCode, new ErrorResponseModel
-                {
-                    Message = ex.Message,
-                    StatusCode = ex.StatusCode
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
-                {
-                    Message = "Error while performing action.",
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Errors = { ex.Message }
-                });
-            }
+            _collectionService = collectionService;
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllBrandsAsync()
+        public async Task<IActionResult> GetAllCollectionsAsync()
         {
             try
             {
-                var brands = await _brandService.GetAllBrandsAsync();
-
-                var brandsToReturn = _mapper.Map<IEnumerable<BrandResponseModel>>(brands);
-
-                return Ok(brandsToReturn);
+                var collections = await _collectionService.GetAllCollectionAsync();
+                
+                var collectionsToReturn = _mapper.Map<IEnumerable<CollectionResponseModel>>(collections);
+                
+                return Ok(collectionsToReturn);
             }
             catch (StatusCodeException ex)
             {
@@ -97,18 +58,15 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBrandAsync([FromRoute] Guid id)
+        public async Task<IActionResult> GetCollectionByIdAsync([FromRoute] Guid id)
         {
             try
             {
-                var brand = await _brandService.GetBrandByIdAsync(id);
+                var collection = await _collectionService.GetCollectionByIdAsync(id);
 
-                if (brand == null)
-                    return NotFound();
+                var collectionToReturn = _mapper.Map<CollectionResponseModel>(collection);
 
-                var brandToReturn = _mapper.Map<BrandResponseModel>(brand);
-
-                return Ok(brandToReturn);
+                return Ok(collectionToReturn);
             }
             catch (StatusCodeException ex)
             {
@@ -131,18 +89,18 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBrandAsync([FromBody] BrandRequestModel requestModel)
+        public async Task<IActionResult> CreateCollectionAsync([FromBody] CollectionRequestModel requestModel)
         {
             try
             {
                 if (requestModel.Name.IsNullOrEmpty())
                     throw new StatusCodeException(message: "Invalid request.", statusCode: StatusCodes.Status400BadRequest);
 
-                var brand = await _brandService.CreateBrandAsync(requestModel);
+                var collection = await _collectionService.CreateCollectionAsync(requestModel);
 
-                var brandToReturn = _mapper.Map<BrandResponseModel>(brand);
+                var collectionReturn = _mapper.Map<CollectionResponseModel>(collection);
 
-                return Created($"brand/{brandToReturn.Id}", brandToReturn);
+                return Created($"collection/{collectionReturn.Id}", collectionReturn);
             }
             catch (StatusCodeException ex)
             {
@@ -165,18 +123,18 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateBrandAsync([FromBody] BrandRequestModel requestModel, [FromRoute] Guid id)
+        public async Task<IActionResult> UpdateCollectionAsync([FromBody] CollectionRequestModel requestModel, [FromRoute] Guid id)
         {
             try
             {
                 if (requestModel.Name.IsNullOrEmpty())
                     throw new StatusCodeException(message: "Invalid request.", statusCode: StatusCodes.Status400BadRequest);
 
-                var brand = await _brandService.UpdateBrandAsync(requestModel, id);
+                var collection = await _collectionService.UpdateCollectionAsync(requestModel, id);
 
-                var brandToReturn = _mapper.Map<BrandResponseModel>(brand);
+                var collectionToReturn = _mapper.Map<CollectionResponseModel>(collection);
 
-                return Ok(brandToReturn);
+                return Ok(collectionToReturn);
             }
             catch (StatusCodeException ex)
             {
@@ -199,11 +157,11 @@ namespace Applicaton.Web.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBranchAsync([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteCollectionAsync([FromRoute] Guid id)
         {
             try
             {
-                var result = await _brandService.DeleteBrandAsync(id);
+                var result = await _collectionService.DeleteCollectionAsync(id);
 
                 if (!result)
                     throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);

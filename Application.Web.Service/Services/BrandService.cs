@@ -37,6 +37,13 @@ namespace Application.Web.Service.Services
             return (brandToReturn, paginationMetadata);
         }
 
+        public async Task<List<Brand>> GetAllBrandsAsync()
+        {
+            var brandToReturn = await _brandQueries.GetAllBrandsAsync();
+
+            return brandToReturn;
+        }
+
         public async Task<Brand> GetBrandByIdAsync(Guid brandId)
         {
             var result = await _brandRepo.GetById(brandId);
@@ -47,9 +54,9 @@ namespace Application.Web.Service.Services
         {
             var newBrand = _mapper.Map<Brand>(requestModel);
 
-            var brand = await _brandQueries.GetByBrandNameAsync(newBrand.Name);
+            var isBrandExisted = await _brandQueries.CheckIfBrandExisted(newBrand.Name);
 
-            if(brand != null)
+            if(isBrandExisted)
                 throw new StatusCodeException(message: "Brand name already exsited.", statusCode: StatusCodes.Status409Conflict);
             else
             {
@@ -71,11 +78,18 @@ namespace Application.Web.Service.Services
             {
                 var brandToUpdate = _mapper.Map<BrandRequestModel, Brand>(requestModel, brand);
 
-                _brandRepo.Update(brandToUpdate);
+                var isBrandExisted = await _brandQueries.CheckIfBrandExisted(brandToUpdate.Name);
 
-                await _unitOfWork.CompleteAsync();
+                if (isBrandExisted)
+                    throw new StatusCodeException(message: "Brand name already exsited.", statusCode: StatusCodes.Status409Conflict);
+                else
+                {
+                    _brandRepo.Update(brandToUpdate);
 
-                return brandToUpdate;
+                    await _unitOfWork.CompleteAsync();
+
+                    return brandToUpdate;
+                }
             }
         }
 
