@@ -1,4 +1,5 @@
 ﻿using Application.Web.Database.Context;
+using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +43,22 @@ namespace Application.Web.Database.Queries.ServiceQueries
         {
             return await dbSet
                 .AnyAsync(c => c.Name.ToUpper().Equals(name.ToUpper()));
+        }
+
+        public async Task<int> CountModelsAysnc()
+        {
+            return await dbSet.CountAsync();
+        }
+
+        public async Task<List<Model>> GetModelsWithPaginationAync(PaginationRequestModel pagination)
+        {
+            return await dbSet
+                .OrderBy(c => c.Name)
+                .Include(c => c.Collection)
+                .Include(c => c.ModelColors).ThenInclude(mc => mc.Color)
+                .Skip(pagination.pageSize * (pagination.pageNumber - 1))
+                .Take(pagination.pageSize)
+                .ToListAsync();
         }
     }
 }
