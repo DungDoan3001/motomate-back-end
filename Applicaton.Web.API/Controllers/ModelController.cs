@@ -1,4 +1,5 @@
-﻿using Application.Web.Database.DTOs.RequestModels;
+﻿using System.Text.Json;
+using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
@@ -25,6 +26,44 @@ namespace Applicaton.Web.API.Controllers
             _modelService = modelService;
             _logger = logger;
             _mapper = mapper;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetModelsAsync([FromQuery] PaginationRequestModel pagination)
+        {
+            try
+            {
+                if (pagination.pageSize > maxPageSize)
+                {
+                    pagination.pageSize = maxPageSize;
+                }
+
+                var (models, paginationMetadata) = await _modelService.GetModelsAsync(pagination);
+
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+                var modelsToReturn = _mapper.Map<IEnumerable<ModelResponseModel>>(models);
+
+                return Ok(modelsToReturn);
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
         }
 
         [HttpGet("all")]

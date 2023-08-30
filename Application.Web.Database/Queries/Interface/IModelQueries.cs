@@ -1,4 +1,5 @@
-﻿using Application.Web.Database.Models;
+﻿using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.Models;
 
 namespace Application.Web.Database.Queries.Interface
 {
@@ -8,5 +9,7 @@ namespace Application.Web.Database.Queries.Interface
         Task<Model> GetModelByIdAsync(Guid id);
         Task<Model> GetModelByNameAsync(string name);
         Task<bool> CheckIfModelExisted(string name);
+        Task<List<Model>> GetModelsWithPaginationAync(PaginationRequestModel pagination);
+        Task<int> CountModelsAysnc();
     }
 }

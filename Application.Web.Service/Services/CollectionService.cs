@@ -1,4 +1,5 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Repository;
@@ -23,6 +24,17 @@ namespace Application.Web.Service.Services
             _collectionRepo = unitOfWork.GetBaseRepo<Collection>();
             _collectionQueries = collectionQueries;
             _mapper = mapper;
+        }
+
+        public async Task<(IEnumerable<Collection>, PaginationMetadata)> GetCollectionsAsync(PaginationRequestModel pagination)
+        {
+            var totalItemCount = await _collectionQueries.CountCollectionsAsync();
+
+            var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+            var collectionsToReturn = await _collectionQueries.GetCollectionsWithPaginationAync(pagination);
+
+            return (collectionsToReturn, paginationMetadata);
         }
 
         public async Task<IEnumerable<Collection>> GetAllCollectionAsync()
