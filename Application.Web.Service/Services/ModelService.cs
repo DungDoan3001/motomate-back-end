@@ -2,7 +2,6 @@
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
-using Application.Web.Database.Queries.ServiceQueries;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
@@ -39,9 +38,9 @@ namespace Application.Web.Service.Services
 
             var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
-            var brandToReturn = await _modelQueries.GetModelsWithPaginationAync(pagination);
+            var modelsToReturn = await _modelQueries.GetModelsWithPaginationAync(pagination);
 
-            return (brandToReturn, paginationMetadata);
+            return (modelsToReturn, paginationMetadata);
         }
 
         public async Task<IEnumerable<Model>> GetAllModelsAsync()
