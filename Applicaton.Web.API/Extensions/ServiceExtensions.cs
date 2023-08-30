@@ -152,11 +152,14 @@ namespace Applicaton.Web.API.Extensions
             {
                 options.AddPolicy("CorsPolicy", policy =>
                 {
+                    string[] exposedHeaders = { "X-Pagination", "content-Type" };
                     //policy.AllowAnyHeader()
                     //      .AllowAnyMethod()
                     //      .SetIsOriginAllowed(_ => true)
                     //      .AllowCredentials();
-                    policy.AllowAnyHeader()
+                    policy
+                          .WithExposedHeaders(exposedHeaders)
+                          .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowAnyOrigin()
                           .AllowCredentials();
