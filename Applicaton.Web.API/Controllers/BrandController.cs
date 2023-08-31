@@ -4,6 +4,7 @@ using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -39,7 +40,8 @@ namespace Applicaton.Web.API.Controllers
 
                 var (brands, paginationMetadata) = await _brandService.GetBrandsAsync(pagination);
 
-                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+                //Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+                Response.AddPaginationHeader(paginationMetadata);
 
                 var brandsToReturn = _mapper.Map<IEnumerable<BrandResponseModel>>(brands);
 
