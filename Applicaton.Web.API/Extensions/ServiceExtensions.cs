@@ -173,7 +173,7 @@ namespace Applicaton.Web.API.Extensions
         public static void AddPaginationHeader(this HttpResponse response, PaginationMetadata pagination)
         {
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-            response.Headers.Add("Access-Control-Allow-Origin", "*");
+            response.Headers.Add("Access-Control-Allow-Origin", "*"); //T add expose headers xong bi block CORS (local) nen tam thoi t add tam. nhu vay
             response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination, options));
             response.Headers.Add("Access-Control-Expose-Headers", "X-Pagination");
         }
