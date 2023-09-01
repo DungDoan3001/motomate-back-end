@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public string Logo { get; set; }
+        public ImageOfBrand Image { get; set; }
         public IEnumerable<CollectionsOfBrand> Collections { get; set; }
     }
 
@@ -14,4 +14,9 @@
         public string Name { get; set; }
     }
 
+    public class ImageOfBrand
+    {
+        public string Image { get; set; }
+        public string PublicId { get; set; }
+    }
 }

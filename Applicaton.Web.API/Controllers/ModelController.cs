@@ -5,6 +5,7 @@ using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Application.Web.Service.Services;
+using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -40,7 +41,8 @@ namespace Applicaton.Web.API.Controllers
 
                 var (models, paginationMetadata) = await _modelService.GetModelsAsync(pagination);
 
-                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+                //Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+                Response.AddPaginationHeader(paginationMetadata);
 
                 var modelsToReturn = _mapper.Map<IEnumerable<ModelResponseModel>>(models);
 

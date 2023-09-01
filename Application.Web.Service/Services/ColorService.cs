@@ -99,6 +99,8 @@ namespace Application.Web.Service.Services
         {
             var color = await _colorRepo.GetById(colorId);
 
+            var originalColorName = color.Name;
+
             if (color == null)
                 throw new StatusCodeException(message: "Color not found.", statusCode: StatusCodes.Status404NotFound);
             else
@@ -107,7 +109,7 @@ namespace Application.Web.Service.Services
 
                 var isColorExisted = await _colorQueries.CheckIfColorExisted(colorToUpdate.Name);
 
-                if (isColorExisted)
+                if (isColorExisted && (colorToUpdate.Name.ToUpper() != originalColorName.ToUpper()))
                     throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);
                 else
                 {

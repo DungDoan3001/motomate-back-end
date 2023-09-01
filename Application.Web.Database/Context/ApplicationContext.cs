@@ -28,6 +28,24 @@ namespace Application.Web.Database.Context
                 .HasForeignKey(c => c.BrandId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Brand - Image
+            builder.Entity<BrandImage>()
+                .HasKey(bi => new
+                {
+                    bi.BrandId,
+                    bi.ImageId
+                });
+            builder.Entity<BrandImage>()
+                .HasOne<Brand>(bi => bi.Brand)
+                .WithMany(b => b.BrandImages)
+                .HasForeignKey(bi => bi.BrandId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<BrandImage>()
+                .HasOne<Image>(bi => bi.Image)
+                .WithMany(i => i.BrandImages)
+                .HasForeignKey(bi => bi.ImageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Collection - Model
             builder.Entity<Collection>()
                 .HasMany<Model>(c => c.Models)
