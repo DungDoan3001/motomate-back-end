@@ -51,6 +51,12 @@ namespace Application.Web.Database.Repository
             return true;
         }
 
+        public virtual bool DeleteByEntity(T entity)
+        {
+            dbSet.Remove(entity);
+            return true;
+        }
+
         public virtual bool DeleteRange(IEnumerable<T> entities)
         {
             dbSet.RemoveRange(entities);

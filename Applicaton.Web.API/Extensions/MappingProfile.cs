@@ -21,7 +21,22 @@ namespace Applicaton.Web.API.Extensions
 
             // Brand
             CreateMap<Brand, BrandResponseModel>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())))
+                .AfterMap((src, dest) =>
+                {
+                    var brandImage = new ImageOfBrand();
+
+                    if(src.BrandImages.Any())
+                    {
+                        var image = src.BrandImages.FirstOrDefault().Image;
+
+                        brandImage.Image = image.ImageUrl;
+
+                        brandImage.PublicId = image.PublicId;
+                    };
+
+                    dest.Image = brandImage;
+                });
             CreateMap<BrandRequestModel, Brand>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
 

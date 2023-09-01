@@ -16,6 +16,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .OrderBy(b => b.Name)
                 .Include(b => b.Collections
                                 .OrderBy(c => c.Name))
+                .Include(b => b.BrandImages).ThenInclude(bi => bi.Image)
                 .Skip(pagination.pageSize * (pagination.pageNumber - 1))
                 .Take(pagination.pageSize)
                 .ToListAsync();
@@ -27,6 +28,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .OrderBy(b => b.Name)
                 .Include(b => b.Collections
                                .OrderBy(c => c.Name))
+                .Include(b => b.BrandImages).ThenInclude(bi => bi.Image)
                 .ToListAsync();
         }
 
@@ -41,6 +43,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Where(b => b.Name.Equals(name))
                 .Include(b => b.Collections
                                .OrderBy(c => c.Name))
+                .Include(b => b.BrandImages).ThenInclude(bi => bi.Image)
                 .FirstOrDefaultAsync();
         }
 
@@ -48,6 +51,16 @@ namespace Application.Web.Database.Queries.ServiceQueries
         {
             return await dbSet
                 .AnyAsync(b => b.Name.ToUpper().Equals(name.ToUpper()));
+        }
+
+        public async Task<Brand> GetByIdAsync(Guid brandId)
+        {
+            return await dbSet
+                .Where(b => b.Id.Equals(brandId))
+                .Include(b => b.Collections
+                               .OrderBy(c => c.Name))
+                .Include(b => b.BrandImages).ThenInclude(bi => bi.Image)
+                .FirstOrDefaultAsync();
         }
     }
 }

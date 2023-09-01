@@ -83,6 +83,8 @@ namespace Application.Web.Service.Services
         {
             var model = await _modelQueries.GetModelByIdAsync(modelId);
 
+            var originalModelName = model.Name;
+
             if (model == null)
                 throw new StatusCodeException(message: "Model not found.", statusCode: StatusCodes.Status404NotFound);
             else
@@ -91,7 +93,7 @@ namespace Application.Web.Service.Services
 
                 var isModelExisted = await _modelQueries.CheckIfModelExisted(modelToUpdate.Name);
                 
-                if (isModelExisted)
+                if (isModelExisted && (modelToUpdate.Name.ToUpper() != originalModelName.ToUpper()))
                     throw new StatusCodeException(message: "Model name already exsited.", statusCode: StatusCodes.Status409Conflict);
                 else
                 {

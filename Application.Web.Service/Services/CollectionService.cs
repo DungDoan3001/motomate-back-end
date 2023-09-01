@@ -73,6 +73,8 @@ namespace Application.Web.Service.Services
         {
             var collection = await _collectionRepo.GetById(collectionId);
 
+            var originalCollectionName = collection.Name;
+
             if (collection == null)
                 throw new StatusCodeException(message: "Collection not found.", statusCode: StatusCodes.Status404NotFound);
             else
@@ -81,7 +83,7 @@ namespace Application.Web.Service.Services
 
                 var isCollectionExisted = await _collectionQueries.CheckIfCollectionExisted(collectionToUpdate.Name);
 
-                if (isCollectionExisted)
+                if (isCollectionExisted && (collectionToUpdate.Name.ToUpper() != originalCollectionName.ToUpper()))
                     throw new StatusCodeException(message: "Collection name already exsited.", statusCode: StatusCodes.Status409Conflict);
                 else
                 {
