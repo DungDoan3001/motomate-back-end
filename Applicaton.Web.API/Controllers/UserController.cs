@@ -26,6 +26,12 @@ namespace Applicaton.Web.API.Controllers
             _userService = userService;
         }
 
+        /// <summary>
+        /// Acquire all users information
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get items information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
         public async Task<IActionResult> GetAllUsersAsync()
         {
@@ -57,6 +63,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Acquire user information by username
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("{username}/details")]
         public async Task<IActionResult> GetUserByUsernameAsync([FromRoute] string username)
         {
@@ -91,6 +103,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Acquire current request user information.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("details")]
         public async Task<IActionResult> GetCurrentUserInformationAsync()
         {

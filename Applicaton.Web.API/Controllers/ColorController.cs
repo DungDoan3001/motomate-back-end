@@ -27,6 +27,12 @@ namespace Applicaton.Web.API.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Acquire all colors information
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get items information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
         public async Task<IActionResult> GetAllColorsAsync()
         {
@@ -58,6 +64,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Acquire color information by identification.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetColorAsync([FromRoute] Guid id)
         {
@@ -92,6 +104,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Create color
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="201">Successfully created item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost]
         public async Task<IActionResult> CreateColorAsync([FromBody] ColorRequestModel requestModel)
         {
@@ -126,6 +144,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Create bulk colors.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully created items information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost("bulk")]
         public async Task<IActionResult> CreateBulkColorsAsync([FromBody] List<ColorRequestModel> requestModels)
         {
@@ -167,6 +191,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Update color information by identification.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully udpated item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateColorAsync([FromBody] ColorRequestModel requestModel, [FromRoute] Guid id)
         {
@@ -201,6 +231,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Delete color information by identification.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="204">Successfully deleted items information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteColorhAsync([FromRoute] Guid id)
         {

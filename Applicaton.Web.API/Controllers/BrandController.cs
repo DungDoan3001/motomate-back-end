@@ -28,6 +28,12 @@ namespace Applicaton.Web.API.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Acquire brands information with pagination
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get items information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet]
         public async Task<IActionResult> GetBrandsAsync([FromQuery] PaginationRequestModel pagination)
         {
@@ -67,6 +73,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Acquire all brands information
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get items information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
         public async Task<IActionResult> GetAllBrandsAsync()
         {
@@ -98,6 +110,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Acquire brand information by identification
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBrandAsync([FromRoute] Guid id)
         {
@@ -132,6 +150,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Create a brand
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="201">Successfully created item.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost]
         public async Task<IActionResult> CreateBrandAsync([FromBody] BrandRequestModel requestModel)
         {
@@ -166,6 +190,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Update brand information by identification.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully updated item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateBrandAsync([FromBody] BrandRequestModel requestModel, [FromRoute] Guid id)
         {
@@ -200,6 +230,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Delete brand by identification
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="204">Successfully deleted item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBranchAsync([FromRoute] Guid id)
         {
