@@ -6,6 +6,7 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
@@ -25,8 +26,69 @@ namespace Applicaton.Web.API.Controllers
             _userService = userService;
         }
 
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllUsersAsync()
+        {
+            try
+            {
+                return null;
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
+
+        [HttpGet("{username}/details")]
+        public async Task<IActionResult> GetUserByUsernameAsync([FromRoute] string username)
+        {
+            try
+            {
+                if(username.IsNullOrEmpty())
+                    return BadRequest("username query is not null");
+
+                var userDetail = await _userService.GetUserInformationByUsernameAsync(username);
+
+                var userToReturn = _mapper.Map<User, UserResponseModel>(userDetail);
+
+                return Ok(userToReturn);
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
+
         [HttpGet("details")]
-        public async Task<IActionResult> GetCurrentUserInformation()
+        public async Task<IActionResult> GetCurrentUserInformationAsync()
         {
             try
             {

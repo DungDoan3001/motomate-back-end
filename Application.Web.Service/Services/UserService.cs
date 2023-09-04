@@ -23,5 +23,14 @@ namespace Application.Web.Service.Services
 
             return user;
         }
+
+        public async Task<User> GetUserInformationByUsernameAsync(string username)
+        {
+            User user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+                throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
+
+            return user;
+        }
     }
 }
