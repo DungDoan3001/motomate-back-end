@@ -21,7 +21,7 @@ namespace Application.Web.Database.Models
         public string Address { get; set; }
 
         [Column("date_of_birth")]
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; } = null;
 
         public virtual ResetPassword? ResetPassword { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; }
