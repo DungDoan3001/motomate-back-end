@@ -18,6 +18,7 @@ namespace Applicaton.Web.API.Extensions
 
             // User
             CreateMap<UserRegistrationRequestModel, User>();
+            CreateMap<User, UserResponseModel>();
 
             // Brand
             CreateMap<Brand, BrandResponseModel>()

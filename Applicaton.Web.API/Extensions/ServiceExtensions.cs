@@ -133,6 +133,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<IModelService, ModelService>();
             services.AddScoped<ICollectionService, CollectionService>();
             services.AddScoped<IColorService, ColorService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         public static void RegisterQueryDependencies (this IServiceCollection services)
