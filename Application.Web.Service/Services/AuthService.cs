@@ -90,7 +90,9 @@ namespace Application.Web.Service.Services
 
                 await _unitOfWork.CompleteAsync();
 
-                await SendChangePasswordEmailAsync(user, Helpers.GuidBase64.Base64Encode(resetPassword.Id));
+                string encodedToken = Helpers.GuidBase64.GetEncodedGuid(resetPassword.Id);
+
+                await SendChangePasswordEmailAsync(user, encodedToken);
                 
                 return true;
             }
@@ -101,12 +103,12 @@ namespace Application.Web.Service.Services
 
         public async Task<bool> ChangePassword(string encodedToken, ChangePasswordRequestModel changePasswordRequest)
         {
-            bool isBase64 = Helpers.GuidBase64.IsBase64(encodedToken);
+            bool isBase64 = Helpers.GuidBase64.IsBase64Format(encodedToken);
 
             if(!isBase64)
                 throw new StatusCodeException(message: "Invalid Base64 format.", statusCode: StatusCodes.Status400BadRequest);
 
-            Guid resetPasswordId = Helpers.GuidBase64.Base64Decode(encodedToken);
+            Guid resetPasswordId = Helpers.GuidBase64.GetDecodedGuid(encodedToken);
 
             ResetPassword resetPassword = await _resetPasswordRepo.FindOne(x => x.Id == resetPasswordId);
 
@@ -127,7 +129,7 @@ namespace Application.Web.Service.Services
             
             if(!result.Succeeded)
             {
-                throw new StatusCodeException(message: "Err while handle reset.", statusCode: StatusCodes.Status409Conflict);
+                throw new StatusCodeException(message: "Error while handle reset.", statusCode: StatusCodes.Status409Conflict);
             }
 
             _resetPasswordRepo.Delete(resetPassword.Id);
