@@ -3,6 +3,7 @@ using Application.Web.Service.Exceptions;
 using Application.Web.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Service.Services
 {
@@ -31,6 +32,11 @@ namespace Application.Web.Service.Services
                 throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
 
             return user;
+        }
+
+        public async Task<List<User>> GetAllUsersInformationAsync()
+        {
+            return await _userManager.Users.ToListAsync();
         }
     }
 }

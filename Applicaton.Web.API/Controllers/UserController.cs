@@ -31,7 +31,11 @@ namespace Applicaton.Web.API.Controllers
         {
             try
             {
-                return null;
+                var users = await _userService.GetAllUsersInformationAsync();
+
+                var usersToReturn = _mapper.Map<List<User>, List<UserResponseModel>>(users);
+
+                return Ok(usersToReturn);
             }
             catch (StatusCodeException ex)
             {

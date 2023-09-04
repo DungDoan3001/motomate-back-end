@@ -6,5 +6,6 @@ namespace Application.Web.Service.Interfaces
     {
         Task<User> GetUserInformationByEmailAsync(string email);
         Task<User> GetUserInformationByUsernameAsync(string username);
+        Task<List<User>> GetAllUsersInformationAsync();
     }
 }
