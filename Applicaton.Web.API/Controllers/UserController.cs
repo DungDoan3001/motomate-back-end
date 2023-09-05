@@ -1,9 +1,13 @@
 ﻿using System.Security.Claims;
+using Application.Web.Database.Constants;
+using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Application.Web.Service.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -75,7 +79,7 @@ namespace Applicaton.Web.API.Controllers
             try
             {
                 if(username.IsNullOrEmpty())
-                    return BadRequest("username query is not null");
+                    return BadRequest("username route is not null");
 
                 var userDetail = await _userService.GetUserInformationByUsernameAsync(username);
 
@@ -114,23 +118,97 @@ namespace Applicaton.Web.API.Controllers
         {
             try
             {
-                var identity = HttpContext.User.Identity as ClaimsIdentity;
+                var claimValues = IdentityHelpers.GetCurrentLoginUserClaims(HttpContext.User.Identity as ClaimsIdentity);
 
-                bool isIdentityHaveClaims = identity.Claims.Any();
-
-                if (!isIdentityHaveClaims)
-                    throw new StatusCodeException(message: "User not authenticated.", statusCode: StatusCodes.Status403Forbidden);
-
-                var identityEmail = identity.FindFirst(ClaimTypes.Email);
-
-                if(identityEmail == null)
-                    throw new StatusCodeException(message: "Missing user information.", statusCode: StatusCodes.Status400BadRequest);
-
-                var userDetail = await _userService.GetUserInformationByEmailAsync(identityEmail.Value);
+                var userDetail = await _userService.GetUserInformationByEmailAsync(claimValues.IdentityEmail);
 
                 var userToReturn = _mapper.Map<User, UserResponseModel>(userDetail);
 
                 return Ok(userToReturn);
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
+
+        /// <summary>
+        /// Update current user information.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully updated item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
+        [HttpPatch("{username}")]
+        public async Task<IActionResult> UpdateUserInformation([FromRoute] string username, [FromBody] UserRequestModel requestModel)
+        {
+            try
+            {
+                if (username.IsNullOrEmpty())
+                    return BadRequest("username route is not null");
+
+                var claimValues = IdentityHelpers.GetCurrentLoginUserClaims(HttpContext.User.Identity as ClaimsIdentity);
+
+                if (!claimValues.IdentityUsername.Equals(username) || 
+                    claimValues.IdentityRoles.Any(x => x.Equals(SeedDatabaseConstant.ADMIN.Name)))
+                    return Unauthorized();
+
+                var user = await _userService.UpdateUserAsync(requestModel, username);
+
+                var userToReturn = _mapper.Map<UserResponseModel>(user);
+
+                return Ok(userToReturn);
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
+
+        /// <summary>
+        /// Delete user information.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully updated item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
+        [HttpDelete("{username}")]
+        public async Task<IActionResult> DeleteUserInformation([FromRoute] string username)
+        {
+            try
+            {
+                var result = await _userService.DeleteUserAsync(username);
+
+                if (!result)
+                    throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);
+                else
+                    return NoContent();
             }
             catch (StatusCodeException ex)
             {
