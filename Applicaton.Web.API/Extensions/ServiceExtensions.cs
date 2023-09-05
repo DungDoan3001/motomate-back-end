@@ -127,6 +127,7 @@ namespace Applicaton.Web.API.Extensions
         public static void RegisterServiceDependencies (this IServiceCollection services)
         {
             services.AddScoped<IWeatherForcastService, WeatherForcastService>();
+            services.AddScoped<IUtilitiesService, UtilitiesService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IBrandService, BrandService>();

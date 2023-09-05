@@ -29,6 +29,12 @@ namespace Applicaton.Web.API.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Acquire all models information with pagination.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get items information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet]
         public async Task<IActionResult> GetModelsAsync([FromQuery] PaginationRequestModel pagination)
         {
@@ -68,6 +74,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Acquire all models information
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get items information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
         public async Task<IActionResult> GetAllModelsAsync()
         {
@@ -99,6 +111,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Acquire model information by identification.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetModelByIdAsync([FromRoute] Guid id)
         {
@@ -130,6 +148,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Create a model.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="201">Successfully created item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost]
         public async Task<IActionResult> CreateModelAsync([FromBody] ModelRequestModel requestModel)
         {
@@ -164,6 +188,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Udpate model by identification.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully updated items information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateModelAsync([FromBody] ModelRequestModel requestModel, [FromRoute] Guid id)
         {
@@ -198,6 +228,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Delete model information.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="204">Successfully deleted item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModelAsync([FromRoute] Guid id)
         {

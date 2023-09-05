@@ -28,6 +28,12 @@ namespace Applicaton.Web.API.Controllers
             _collectionService = collectionService;
         }
 
+        /// <summary>
+        /// Acquire colletions information with pagination.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get colletions information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet]
         public async Task<IActionResult> GetCollectionsAsync([FromQuery] PaginationRequestModel pagination)
         {
@@ -67,6 +73,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Acquire all colletions information.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get colletions information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
         public async Task<IActionResult> GetAllCollectionsAsync()
         {
@@ -98,6 +110,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Acquire colletion information with identification.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully get colletion information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCollectionByIdAsync([FromRoute] Guid id)
         {
@@ -129,6 +147,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Create a collection.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="201">Successfully created colletion information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPost]
         public async Task<IActionResult> CreateCollectionAsync([FromBody] CollectionRequestModel requestModel)
         {
@@ -163,6 +187,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Update collection information with identification.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="200">Successfully updated colletion information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateCollectionAsync([FromBody] CollectionRequestModel requestModel, [FromRoute] Guid id)
         {
@@ -197,6 +227,12 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Delete colletion information with identification.
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="204">Successfully deleted colletion information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCollectionAsync([FromRoute] Guid id)
         {

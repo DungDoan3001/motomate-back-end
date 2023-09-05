@@ -19,7 +19,7 @@ namespace Applicaton.Web.API.Extensions
             // User
             CreateMap<UserRegistrationRequestModel, User>();
             CreateMap<User, UserResponseModel>();
-
+            CreateMap<UserRequestModel, User>();
             // Brand
             CreateMap<Brand, BrandResponseModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())))
