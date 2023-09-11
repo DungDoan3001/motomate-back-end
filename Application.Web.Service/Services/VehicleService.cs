@@ -2,6 +2,7 @@
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
+using Application.Web.Database.Queries.ServiceQueries;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Interfaces;
@@ -30,6 +31,13 @@ namespace Application.Web.Service.Services
             var brandToReturn = await _vehicleQueries.GetVehiclesWithPaginationAync(pagination);
 
             return (brandToReturn, paginationMetadata);
+        }
+
+        public async Task<List<Vehicle>> GetAllVehicleAsync()
+        {
+            var brandToReturn = await _vehicleQueries.GetAllVehiclesAsync();
+
+            return brandToReturn;
         }
     }
 }

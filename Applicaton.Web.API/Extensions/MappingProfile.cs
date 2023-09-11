@@ -87,6 +87,31 @@ namespace Applicaton.Web.API.Extensions
 
             CreateMap<ModelRequestModel, Model>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
+
+            // Vehicles
+            CreateMap<Vehicle, VehicleResponseModel>()
+                .AfterMap((src, dest) =>
+                {
+                    var vehicleOwner = new VehicleOwner
+                    {
+                        Name = src.Owner.LastName + " " + src.Owner.FirstName,
+                        Email = src.Owner.Email,
+                        PhoneNumber= src.Owner.PhoneNumber,
+                        Address = src.Owner.Address
+                    };
+
+                    var vehicleSpecifications = new VehicleSpecifications
+                    {
+                        ModelId = src.Model.Id,
+                        ModelName = src.Model.Name,
+                        Year = src.Model.Year,
+                        Capacity = src.Model.Capacity,
+                        CollectionId = src.Model.Collection.Id
+                    };
+
+                    dest.Owner = vehicleOwner;
+                    dest.Specifications = vehicleSpecifications;
+                });
         }
     }
 }

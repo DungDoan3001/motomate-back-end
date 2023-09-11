@@ -7,5 +7,6 @@ namespace Application.Web.Database.Queries.Interface
     {
         Task<List<Vehicle>> GetVehiclesWithPaginationAync(PaginationRequestModel pagination);
         Task<int> CountVehiclesAsync();
+        Task<List<Vehicle>> GetAllVehiclesAsync();
     }
 }

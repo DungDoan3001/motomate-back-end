@@ -20,6 +20,14 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .ToListAsync();
         }
 
+        public async Task<List<Vehicle>> GetAllVehiclesAsync()
+        {
+            return await dbSet
+                .Include(b => b.Model).ThenInclude(m => m.Collection)
+                .Include(b => b.VehicleImages).ThenInclude(bi => bi.Image)
+                .ToListAsync();
+        }
+
         public async Task<int> CountVehiclesAsync()
         {
             return await dbSet.CountAsync();

@@ -124,8 +124,8 @@ namespace Application.Web.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("Capacity")
-                        .HasColumnType("text")
+                    b.Property<int>("Capacity")
+                        .HasColumnType("integer")
                         .HasColumnName("capacity");
 
                     b.Property<Guid>("CollectionId")
@@ -136,8 +136,8 @@ namespace Application.Web.Database.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<string>("Year")
-                        .HasColumnType("text")
+                    b.Property<int>("Year")
+                        .HasColumnType("integer")
                         .HasColumnName("year");
 
                     b.HasKey("Id");
@@ -221,14 +221,14 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("60929087-1227-4efd-af43-e9ae2524eb0e"),
-                            ConcurrencyStamp = "8f05eaa7-d287-47d8-a975-f605978efca6",
+                            ConcurrencyStamp = "eaa8bc0f-869f-401f-a621-c70958ada8ef",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "faa5b583-84d0-4a9d-b38f-c2ffaebb800f",
+                            ConcurrencyStamp = "c912d085-0501-459e-8dff-ddef3bb7d19a",
                             Name = "User",
                             NormalizedName = "USER"
                         });
