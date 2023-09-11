@@ -4,8 +4,8 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public int Year { get; set; }
-        public int Capacity { get; set; }
+        public string Year { get; set; }
+        public string Capacity { get; set; }
         public CollectionOfModel Collection { get; set; }
         public List<ColorOfModel> Colors { get; set; }
     }

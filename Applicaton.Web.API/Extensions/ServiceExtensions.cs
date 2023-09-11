@@ -135,6 +135,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<ICollectionService, CollectionService>();
             services.AddScoped<IColorService, ColorService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IVehicleService, VehicleService>();
         }
 
         public static void RegisterQueryDependencies (this IServiceCollection services)
@@ -143,6 +144,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<IModelQueries, ModelQueries>();
             services.AddScoped<ICollectionQueries, CollectionQueries>();
             services.AddScoped<IColorQueries, ColorQueries>();
+            services.AddScoped<IVehicleQueries, VehicleQueries>();
         }
 
         public static void RegistryDatabaseDependencies (this IServiceCollection services)

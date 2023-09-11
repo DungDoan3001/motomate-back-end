@@ -19,5 +19,7 @@ namespace Application.Web.Database.Models
         public virtual Collection Collection { get; set; }
 
         public virtual ICollection<ModelColor> ModelColors { get; set; }
+
+        public virtual ICollection<Vehicle> Vehicles { get; set; }
     }
 }

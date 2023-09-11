@@ -11,5 +11,7 @@ namespace Application.Web.Database.Models
         public string PublicId { get; set; }
 
         public virtual ICollection<BrandImage> BrandImages { get; set;}
+
+        public virtual ICollection<VehicleImage> VehicleImages { get; set; }
     }
 }

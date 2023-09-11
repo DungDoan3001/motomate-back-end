@@ -71,6 +71,38 @@ namespace Application.Web.Database.Context
                 .HasForeignKey(m => m.ModelId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // User (Owner) - Product
+            builder.Entity<Vehicle>()
+                .HasOne<User>(v => v.Owner)
+                .WithMany(u => u.Vehicles)
+                .HasForeignKey(v => v.OwnerId) 
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Model - Vehicle
+            builder.Entity<Vehicle>()
+                .HasOne<Model>(v => v.Model)
+                .WithMany(m => m.Vehicles)
+                .HasForeignKey(v => v.ModelId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Image - Vehicle
+            builder.Entity<VehicleImage>()
+                .HasKey(vi => new
+                {
+                    vi.VehicleId,
+                    vi.ImageId
+                });
+            builder.Entity<VehicleImage>()
+                .HasOne<Vehicle>(vi => vi.Vehicle)
+                .WithMany(v => v.VehicleImages)
+                .HasForeignKey(vi => vi.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<VehicleImage>()
+                .HasOne<Image>(vi => vi.Image)
+                .WithMany(i => i.VehicleImages)
+                .HasForeignKey(vi => vi.ImageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             base.OnModelCreating(builder);
             SeedDatabase(builder);
 

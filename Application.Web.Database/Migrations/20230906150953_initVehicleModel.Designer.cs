@@ -3,6 +3,7 @@ using System;
 using Application.Web.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230906150953_initVehicleModel")]
+    partial class initVehicleModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,8 +126,8 @@ namespace Application.Web.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<int>("Capacity")
-                        .HasColumnType("integer")
+                    b.Property<string>("Capacity")
+                        .HasColumnType("text")
                         .HasColumnName("capacity");
 
                     b.Property<Guid>("CollectionId")
@@ -136,8 +138,8 @@ namespace Application.Web.Database.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<int>("Year")
-                        .HasColumnType("integer")
+                    b.Property<string>("Year")
+                        .HasColumnType("text")
                         .HasColumnName("year");
 
                     b.HasKey("Id");
@@ -221,14 +223,14 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("60929087-1227-4efd-af43-e9ae2524eb0e"),
-                            ConcurrencyStamp = "eaa8bc0f-869f-401f-a621-c70958ada8ef",
+                            ConcurrencyStamp = "8f05eaa7-d287-47d8-a975-f605978efca6",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "c912d085-0501-459e-8dff-ddef3bb7d19a",
+                            ConcurrencyStamp = "faa5b583-84d0-4a9d-b38f-c2ffaebb800f",
                             Name = "User",
                             NormalizedName = "USER"
                         });

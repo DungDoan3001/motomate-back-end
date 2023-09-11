@@ -24,6 +24,9 @@ namespace Application.Web.Database.Models
         public DateTime? DateOfBirth { get; set; } = null;
 
         public virtual ResetPassword? ResetPassword { get; set; }
+
         public virtual ICollection<UserRole> UserRoles { get; set; }
+
+        public virtual ICollection<Vehicle> Vehicles { get; set; }
     }
 }
