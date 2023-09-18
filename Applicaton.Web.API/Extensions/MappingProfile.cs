@@ -3,6 +3,7 @@ using AutoMapper;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Database.DTOs.RequestModels;
 using System.Globalization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Applicaton.Web.API.Extensions
 {
@@ -89,29 +90,33 @@ namespace Applicaton.Web.API.Extensions
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
 
             // Vehicles
+            CreateMap<VehicleRequestModel, Vehicle>();
             CreateMap<Vehicle, VehicleResponseModel>()
                 .AfterMap((src, dest) =>
                 {
-                    var vehicleOwner = new VehicleOwner
-                    {
-                        Name = src.Owner.LastName + " " + src.Owner.FirstName,
-                        Email = src.Owner.Email,
-                        PhoneNumber= src.Owner.PhoneNumber,
-                        Address = src.Owner.Address
-                    };
-
-                    var vehicleSpecifications = new VehicleSpecifications
+                    var specifications = new VehicleSpecifications
                     {
                         ModelId = src.Model.Id,
                         ModelName = src.Model.Name,
                         Year = src.Model.Year,
                         Capacity = src.Model.Capacity,
-                        CollectionId = src.Model.Collection.Id
+                        CollectionId = src.Model.CollectionId,
+                        CollectionName = src.Model.Collection.Name,
+                        BrandId = src.Model.Collection.Brand.Id,
+                        BrandName = src.Model.Collection.Brand.Name,
                     };
 
-                    dest.Owner = vehicleOwner;
-                    dest.Specifications = vehicleSpecifications;
+                    dest.Specifications = specifications;
                 });
-        }
+
+            CreateMap<User, VehicleOwner>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.Name = src.LastName + " " + src.FirstName;
+					dest.Email = src.Email;
+					dest.PhoneNumber = src.PhoneNumber;
+                    dest.Address = src.Address;
+				});
+		}
     }
 }

@@ -20,7 +20,7 @@ namespace Application.Web.Database.Models
         public string LicensePlate { get; set; }
 
         [Column("insurance_number")]
-        public string InsuranceNunber { get; set; }
+        public string InsuranceNumber { get; set; }
 
         [Column("insurance_expiry")]
         public DateTime InsuranceExpiry { get; set; }

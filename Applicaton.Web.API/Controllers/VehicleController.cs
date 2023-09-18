@@ -3,9 +3,11 @@ using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Application.Web.Service.Services;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
@@ -147,5 +149,53 @@ namespace Applicaton.Web.API.Controllers
                 });
             }
         }
-    }
+
+		/// <summary>
+		/// Create a vehicle
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="201">Successfully created item.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPost]
+		public async Task<IActionResult> CreateVehicleAsync([FromBody] VehicleRequestModel requestModel)
+		{
+			try
+			{
+				VerifyRequestModel(requestModel);
+
+				var vehicle = await _vehicleService.CreateVehicleAsync(requestModel);
+
+				var vehicleToReturn = _mapper.Map<VehicleResponseModel>(vehicle);
+
+				return Created($"vehicle/{vehicleToReturn.Id}", vehicleToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+        private void VerifyRequestModel(VehicleRequestModel requestModel)
+        {
+			if (requestModel.LicensePlate.IsNullOrEmpty())
+				throw new StatusCodeException(message: "Invalid request.", statusCode: StatusCodes.Status400BadRequest);
+
+			if (requestModel.InsuranceNumber.IsNullOrEmpty())
+				throw new StatusCodeException(message: "Invalid request.", statusCode: StatusCodes.Status400BadRequest);
+		}
+	}
 }

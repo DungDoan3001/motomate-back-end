@@ -9,5 +9,8 @@ namespace Application.Web.Database.Queries.Interface
         Task<int> CountVehiclesAsync();
         Task<Vehicle> GetByIdAsync(Guid vehicleId);
 		Task<List<Vehicle>> GetAllVehiclesAsync();
-    }
+        Task<bool> CheckIfLicensePlateExisted(string licensePlate);
+        Task<bool> CheckIfInsuranceNumberExisted(string insuranceNumber);
+
+	}
 }
