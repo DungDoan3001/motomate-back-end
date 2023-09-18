@@ -1,4 +1,4 @@
-﻿using Application.Web.Database.Models;
+using Application.Web.Database.Models;
 using AutoMapper;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Database.DTOs.RequestModels;
