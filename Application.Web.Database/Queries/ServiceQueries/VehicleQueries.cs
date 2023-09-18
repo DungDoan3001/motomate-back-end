@@ -13,8 +13,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
         public async Task<List<Vehicle>> GetVehiclesWithPaginationAync(PaginationRequestModel pagination)
         {
             return await dbSet
-                .Include(b => b.Model).ThenInclude(m => m.Collection)              
-                .Include(b => b.VehicleImages).ThenInclude(bi => bi.Image)
+                .Include(v => v.Model).ThenInclude(m => m.Collection)              
+                .Include(v => v.VehicleImages).ThenInclude(vi => vi.Image)
                 .Skip(pagination.pageSize * (pagination.pageNumber - 1))
                 .Take(pagination.pageSize)
                 .ToListAsync();
@@ -23,9 +23,18 @@ namespace Application.Web.Database.Queries.ServiceQueries
         public async Task<List<Vehicle>> GetAllVehiclesAsync()
         {
             return await dbSet
-                .Include(b => b.Model).ThenInclude(m => m.Collection)
-                .Include(b => b.VehicleImages).ThenInclude(bi => bi.Image)
+                .Include(v => v.Model).ThenInclude(m => m.Collection)
+                .Include(v => v.VehicleImages).ThenInclude(vi => vi.Image)
                 .ToListAsync();
+        }
+
+        public async Task<Vehicle> GetByIdAsync(Guid vehicleId)
+        {
+            return await dbSet
+                .Include(v => v.Model).ThenInclude(m => m.Collection)
+                .Include(v => v.VehicleImages).ThenInclude(vi => vi.Image)
+                .Where(v => v.Id.Equals(vehicleId))
+                .FirstOrDefaultAsync();
         }
 
         public async Task<int> CountVehiclesAsync()

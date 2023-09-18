@@ -39,5 +39,11 @@ namespace Application.Web.Service.Services
 
             return brandToReturn;
         }
-    }
+
+		public async Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId)
+		{
+			var result = await _vehicleQueries.GetByIdAsync(vehicleId);
+			return result;
+		}
+	}
 }

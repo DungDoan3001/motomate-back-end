@@ -8,5 +8,7 @@ namespace Application.Web.Service.Interfaces
     {
         Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesAsync(PaginationRequestModel pagination);
         Task<List<Vehicle>> GetAllVehicleAsync();
-    }
+        Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId);
+
+	}
 }
