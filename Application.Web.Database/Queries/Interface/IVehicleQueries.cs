@@ -1,4 +1,4 @@
-﻿using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.Models;
 
 namespace Application.Web.Database.Queries.Interface
@@ -7,6 +7,10 @@ namespace Application.Web.Database.Queries.Interface
     {
         Task<List<Vehicle>> GetVehiclesWithPaginationAync(PaginationRequestModel pagination);
         Task<int> CountVehiclesAsync();
-        Task<List<Vehicle>> GetAllVehiclesAsync();
-    }
+        Task<Vehicle> GetByIdAsync(Guid vehicleId);
+		    Task<List<Vehicle>> GetAllVehiclesAsync();
+        Task<bool> CheckIfLicensePlateExisted(string licensePlate);
+        Task<bool> CheckIfInsuranceNumberExisted(string insuranceNumber);
+
+	}
 }

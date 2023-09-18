@@ -2,6 +2,7 @@
 {
     public class VehicleResponseModel
     {
+        public Guid Id { get; set; }
         public VehicleOwner Owner { get; set; }
         public VehicleSpecifications Specifications { get; set; }
         public DateTime PurchaseDate { get; set; }
