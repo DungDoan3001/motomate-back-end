@@ -5,8 +5,10 @@ using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
+using LazyCache;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Web.Service.Services
@@ -21,8 +23,10 @@ namespace Application.Web.Service.Services
 		private readonly IVehicleQueries _vehicleQueries;
 		private readonly IUserService _userService;
 		private readonly IModelService _modelService;
+		private readonly IAppCache _cache;
+		private CacheKeyConstants _cacheKeyConstants;
 
-		public VehicleService(IUnitOfWork unitOfWork, IMapper mapper, IVehicleQueries vehicleQueries, IUserService userService, IModelService modelService)
+		public VehicleService(IUnitOfWork unitOfWork, IMapper mapper, IVehicleQueries vehicleQueries, IUserService userService, IModelService modelService, IAppCache cache, CacheKeyConstants cacheKeyConstants)
         {
 			_mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -32,15 +36,24 @@ namespace Application.Web.Service.Services
             _vehicleQueries = vehicleQueries;
 			_userService = userService;
 			_modelService = modelService;
+			_cache = cache;
+			_cacheKeyConstants = cacheKeyConstants;
         }
 
         public async Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery)
 		{
-			var totalItemCount = await _vehicleQueries.CountVehiclesAsync();
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
+
+			var vehicles = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetAllVehiclesAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			var totalItemCount = vehicles.Count;
 
 			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-			var vehicles = await _vehicleQueries.GetAllVehiclesAsync();
 			
 			vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
 
@@ -54,7 +67,14 @@ namespace Application.Web.Service.Services
 
 		public async Task<List<Vehicle>> GetAllVehicleAsync(VehicleQuery vehicleQuery)
         {
-            var vehicles = await _vehicleQueries.GetAllVehiclesAsync();
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
+
+			var vehicles = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetAllVehiclesAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
 
 			var vehiclesToReturn = HandleVehicleQuery(vehicleQuery, vehicles);
 
@@ -63,7 +83,14 @@ namespace Application.Web.Service.Services
 
 		public async Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId)
 		{
-			var vehicle = await _vehicleQueries.GetByIdAsync(vehicleId);
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-ID-{vehicleId}";
+
+			var vehicle = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetByIdAsync(vehicleId),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
 
 			if (vehicle == null)
 				throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
@@ -89,6 +116,16 @@ namespace Application.Web.Service.Services
 			_vehicleImageRepo.AddRange(vehicleImages);
 
 			await _unitOfWork.CompleteAsync();
+
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
 
 			return await GetVehicleByIdAsync(newVehicle.Id);
 		}
@@ -121,6 +158,16 @@ namespace Application.Web.Service.Services
 
 			await _unitOfWork.CompleteAsync();
 
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
 			return await GetVehicleByIdAsync(vehicleToUpdate.Id);
 		}
 
@@ -133,6 +180,16 @@ namespace Application.Web.Service.Services
 			_vehicleRepo.Delete(vehicleId);
 
 			await _unitOfWork.CompleteAsync();
+
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
 
 			return true;
 		}
@@ -170,7 +227,7 @@ namespace Application.Web.Service.Services
 
 			int[] validStatusState = [0, 1, 2];
 
-			if(validStatusState.Contains(newModel.Status))
+			if(!validStatusState.Any(x => x.Equals(newModel.Status)))
 				throw new StatusCodeException(message: "Invalid status number.", statusCode: StatusCodes.Status409Conflict);
 
 			if (newModel.ConditionPercentage > 100 || newModel.ConditionPercentage < 0)
@@ -192,7 +249,7 @@ namespace Application.Web.Service.Services
 
 			int[] validStatusState = [0, 1, 2];
 
-			if (validStatusState.Contains(newModel.Status))
+			if (!validStatusState.Any(x => x.Equals(newModel.Status)))
 				throw new StatusCodeException(message: "Invalid status number.", statusCode: StatusCodes.Status409Conflict);
 
 			if (newModel.ConditionPercentage > 100 || newModel.ConditionPercentage < 0)

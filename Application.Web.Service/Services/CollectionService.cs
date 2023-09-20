@@ -5,8 +5,10 @@ using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
+using LazyCache;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Web.Service.Services
@@ -17,38 +19,67 @@ namespace Application.Web.Service.Services
         private readonly IGenericRepository<Collection> _collectionRepo;
         private readonly ICollectionQueries _collectionQueries;
         private readonly IMapper _mapper;
+        private IAppCache _cache;
+		private CacheKeyConstants _cacheKeyConstants;
 
-        public CollectionService(IUnitOfWork unitOfWork, IMapper mapper, ICollectionQueries collectionQueries)
+		public CollectionService(IUnitOfWork unitOfWork, IMapper mapper, ICollectionQueries collectionQueries, IAppCache cache, CacheKeyConstants cacheKeyConstants)
         {
             _unitOfWork = unitOfWork;
             _collectionRepo = unitOfWork.GetBaseRepo<Collection>();
             _collectionQueries = collectionQueries;
             _mapper = mapper;
+            _cache = cache;
+            _cacheKeyConstants = cacheKeyConstants;
         }
 
         public async Task<(IEnumerable<Collection>, PaginationMetadata)> GetCollectionsAsync(PaginationRequestModel pagination)
         {
-            var totalItemCount = await _collectionQueries.CountCollectionsAsync();
+            var key = $"{_cacheKeyConstants.CollectionCacheKey}-All";
+
+            var collections = await _cache.GetOrAddAsync(
+				key,
+				async () => await _collectionQueries.GetAllCollectionsAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+            _cacheKeyConstants.AddKeyToList(key);
+
+            var totalItemCount = collections.Count;
 
             var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
-            var collectionsToReturn = await _collectionQueries.GetCollectionsWithPaginationAync(pagination);
+            var collectionsToReturn = collections
+                .Skip(pagination.pageSize * (pagination.pageNumber - 1))
+                .Take(pagination.pageSize);
 
             return (collectionsToReturn, paginationMetadata);
         }
 
         public async Task<IEnumerable<Collection>> GetAllCollectionAsync()
         {
-            var collectionToReturn = await _collectionQueries.GetAllCollectionsAsync();
+			var key = $"{_cacheKeyConstants.CollectionCacheKey}-All";
 
-            return collectionToReturn;
+			var collectionsToReturn = await _cache.GetOrAddAsync(
+				key,
+				async () => await _collectionQueries.GetAllCollectionsAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			return collectionsToReturn;
         }
 
         public async Task<Collection> GetCollectionByIdAsync(Guid collectionId)
         {
-            var collectionToReturn = await _collectionQueries.GetCollectionByIdAsync(collectionId);
+            var key = $"{_cacheKeyConstants.CollectionCacheKey}-ID-{collectionId}";
 
-            return collectionToReturn;
+            var collectionToReturn = await _cache.GetOrAddAsync(
+                key,
+                async () => await _collectionQueries.GetCollectionByIdAsync(collectionId),
+                TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			return collectionToReturn;
         }
 
         public async Task<Collection> CreateCollectionAsync(CollectionRequestModel requestModel)
@@ -65,7 +96,17 @@ namespace Application.Web.Service.Services
 
                 await _unitOfWork.CompleteAsync();
 
-                return newCollection;
+				await Task.Run(() =>
+				{
+					foreach (var key in _cacheKeyConstants.CacheKeyList)
+					{
+						_cache.Remove(key);
+					}
+
+					_cacheKeyConstants.CacheKeyList = new List<string>();
+				});
+
+				return newCollection;
             }
         }
 
@@ -91,7 +132,17 @@ namespace Application.Web.Service.Services
 
                     await _unitOfWork.CompleteAsync();
 
-                    return collectionToUpdate;
+					await Task.Run(() =>
+					{
+						foreach (var key in _cacheKeyConstants.CacheKeyList)
+						{
+							_cache.Remove(key);
+						}
+
+						_cacheKeyConstants.CacheKeyList = new List<string>();
+					});
+
+					return collectionToUpdate;
                 }
             }
         }
@@ -107,7 +158,17 @@ namespace Application.Web.Service.Services
 
             await _unitOfWork.CompleteAsync();
 
-            return true;
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
+			return true;
         }
     }
 }
