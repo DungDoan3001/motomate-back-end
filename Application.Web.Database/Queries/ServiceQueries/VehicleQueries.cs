@@ -1,5 +1,6 @@
 using Application.Web.Database.Context;
 using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
 using Microsoft.EntityFrameworkCore;

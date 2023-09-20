@@ -5,8 +5,10 @@ using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
+using LazyCache;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Web.Service.Services
@@ -17,46 +19,91 @@ namespace Application.Web.Service.Services
 		private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<Vehicle> _vehicleRepo;
 		private readonly IGenericRepository<Image> _imageRepo;
-		private readonly IGenericRepository<Database.Models.VehicleImage> _vehicleImageRepo;
+		private readonly IGenericRepository<VehicleImage> _vehicleImageRepo;
 		private readonly IVehicleQueries _vehicleQueries;
+		private readonly IUserService _userService;
+		private readonly IModelService _modelService;
+		private readonly IAppCache _cache;
+		private CacheKeyConstants _cacheKeyConstants;
 
-        public VehicleService(IUnitOfWork unitOfWork, IMapper mapper, IVehicleQueries vehicleQueries)
+		public VehicleService(IUnitOfWork unitOfWork, IMapper mapper, IVehicleQueries vehicleQueries, IUserService userService, IModelService modelService, IAppCache cache, CacheKeyConstants cacheKeyConstants)
         {
 			_mapper = mapper;
             _unitOfWork = unitOfWork;
             _vehicleRepo = unitOfWork.GetBaseRepo<Vehicle>();
 			_imageRepo = unitOfWork.GetBaseRepo<Image>();
-			_vehicleImageRepo = unitOfWork.GetBaseRepo<Database.Models.VehicleImage>();
+			_vehicleImageRepo = unitOfWork.GetBaseRepo<VehicleImage>();
             _vehicleQueries = vehicleQueries;
+			_userService = userService;
+			_modelService = modelService;
+			_cache = cache;
+			_cacheKeyConstants = cacheKeyConstants;
         }
 
-        public async Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesAsync(PaginationRequestModel pagination)
+        public async Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery)
+		{
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
+
+			var vehicles = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetAllVehiclesAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			var totalItemCount = vehicles.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+			
+			vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
+
+			var vehiclesToReturn = vehicles
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+			return (vehiclesToReturn, paginationMetadata);
+		}
+
+		public async Task<List<Vehicle>> GetAllVehicleAsync(VehicleQuery vehicleQuery)
         {
-            var totalItemCount = await _vehicleQueries.CountVehiclesAsync();
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
 
-            var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+			var vehicles = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetAllVehiclesAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
 
-            var brandToReturn = await _vehicleQueries.GetVehiclesWithPaginationAync(pagination);
+			_cacheKeyConstants.AddKeyToList(key);
 
-            return (brandToReturn, paginationMetadata);
-        }
+			var vehiclesToReturn = HandleVehicleQuery(vehicleQuery, vehicles);
 
-        public async Task<List<Vehicle>> GetAllVehicleAsync()
-        {
-            var brandToReturn = await _vehicleQueries.GetAllVehiclesAsync();
-
-            return brandToReturn;
+            return vehiclesToReturn;
         }
 
 		public async Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId)
 		{
-			var result = await _vehicleQueries.GetByIdAsync(vehicleId);
-			return result;
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-ID-{vehicleId}";
+
+			var vehicle = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetByIdAsync(vehicleId),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			if (vehicle == null)
+				throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+			
+			return vehicle;
 		}
 
 		public async Task<Vehicle> CreateVehicleAsync(VehicleRequestModel requestModel)
 		{
 			var newVehicle = _mapper.Map<Vehicle>(requestModel);
+
+			_ = await _userService.GetUserInformationByIdAsync(requestModel.OwnerId);
+			_ = await _modelService.GetModelByIdAsync(requestModel.ModelId);
 
 			await ValidateVehicleAsync(newVehicle);
 
@@ -70,62 +117,82 @@ namespace Application.Web.Service.Services
 
 			await _unitOfWork.CompleteAsync();
 
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
 			return await GetVehicleByIdAsync(newVehicle.Id);
 		}
 
-		//public async Task<Brand> UpdateBrandAsync(BrandRequestModel requestModel, Guid brandId)
-		//{
-		//	var brand = await _brandQueries.GetByIdAsync(brandId);
+		public async Task<Vehicle> UpdateVehicleAsync(VehicleRequestModel requestModel, Guid vehicleId)
+		{
+			var vehicle = await GetVehicleByIdAsync(vehicleId);
 
-		//	var originalBrandName = brand.Name;
+			var originalLicensePlate = vehicle.LicensePlate;
+			var originalInsuranceNumber = vehicle.InsuranceNumber;
+			var originalVehicleImages = vehicle.VehicleImages;
+			var originalImages = originalVehicleImages.Select(x => x.Image);
 
-		//	if (brand == null)
-		//		throw new StatusCodeException(message: "Brand not found.", statusCode: StatusCodes.Status404NotFound);
-		//	else
-		//	{
-		//		var brandToUpdate = _mapper.Map<BrandRequestModel, Brand>(requestModel, brand);
+			var vehicleToUpdate = _mapper.Map<VehicleRequestModel, Vehicle>(requestModel, vehicle);
 
-		//		var isBrandExisted = await _brandQueries.CheckIfBrandExisted(brandToUpdate.Name);
+			_ = await _userService.GetUserInformationByIdAsync(requestModel.OwnerId);
+			_ = await _modelService.GetModelByIdAsync(requestModel.ModelId);
 
-		//		if (isBrandExisted && (brandToUpdate.Name.ToUpper() != originalBrandName.ToUpper()))
-		//			throw new StatusCodeException(message: "Brand name already exsited.", statusCode: StatusCodes.Status409Conflict);
-		//		else
-		//		{
-		//			foreach (var brandImageToDelete in brand.BrandImages)
-		//			{
-		//				_brandImageRepo.DeleteByEntity(brandImageToDelete);
+			await ValidateVehicleAsync(vehicleToUpdate, originalLicensePlate, originalInsuranceNumber);
 
-		//				_imageRepo.Delete(brandImageToDelete.ImageId);
-		//			}
+			var (newImages, vehicleImages) = HandleNewVehicleImages(requestModel, vehicleId);
 
-		//			var (newImage, brandImage) = HandleNewBrandImage(requestModel, brandToUpdate.Id);
+			_imageRepo.DeleteRange(originalImages);
 
-		//			_brandRepo.Update(brandToUpdate);
+			_vehicleRepo.Update(vehicleToUpdate);
 
-		//			_imageRepo.Add(newImage);
+			_imageRepo.AddRange(newImages);
 
-		//			_brandImageRepo.Add(brandImage);
+			_vehicleImageRepo.AddRange(vehicleImages);
 
-		//			await _unitOfWork.CompleteAsync();
+			await _unitOfWork.CompleteAsync();
 
-		//			return brandToUpdate;
-		//		}
-		//	}
-		//}
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
 
-		//public async Task<bool> DeleteBrandAsync(Guid brandId)
-		//{
-		//	var brand = await _brandRepo.GetById(brandId);
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
 
-		//	if (brand == null)
-		//		throw new StatusCodeException(message: "Brand not found.", statusCode: StatusCodes.Status404NotFound);
+			return await GetVehicleByIdAsync(vehicleToUpdate.Id);
+		}
 
-		//	_brandRepo.Delete(brandId);
+		public async Task<bool> DeleteVehicleAsync(Guid vehicleId)
+		{
+			var vehicle = await GetVehicleByIdAsync(vehicleId);
 
-		//	await _unitOfWork.CompleteAsync();
+			_imageRepo.DeleteRange(vehicle.VehicleImages.Select(x => x.Image));
 
-		//	return true;
-		//}
+			_vehicleRepo.Delete(vehicleId);
+
+			await _unitOfWork.CompleteAsync();
+
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
+			return true;
+		}
 
 		private (List<Image>, List<Database.Models.VehicleImage>) HandleNewVehicleImages(VehicleRequestModel requestModel, Guid vehicleId)
 		{
@@ -140,8 +207,8 @@ namespace Application.Web.Service.Services
 					PublicId = image.PublicId
 				};
 
-				var vehicleImage = new Database.Models.VehicleImage
-                {
+				var vehicleImage = new VehicleImage
+				{
 					VehicleId = vehicleId,
 					ImageId = newImage.Id
 				};
@@ -158,11 +225,99 @@ namespace Application.Web.Service.Services
 			var isLicensePlateExisted = await _vehicleQueries.CheckIfLicensePlateExisted(newModel.LicensePlate);
 			var isInsuranceNumberExisted = await _vehicleQueries.CheckIfInsuranceNumberExisted(newModel.InsuranceNumber);
 
+			int[] validStatusState = [0, 1, 2];
+
+			if(!validStatusState.Any(x => x.Equals(newModel.Status)))
+				throw new StatusCodeException(message: "Invalid status number.", statusCode: StatusCodes.Status409Conflict);
+
+			if (newModel.ConditionPercentage > 100 || newModel.ConditionPercentage < 0)
+				throw new StatusCodeException(message: "Invalid percetage number.", statusCode: StatusCodes.Status409Conflict);
+
 			if (isLicensePlateExisted)
-				throw new StatusCodeException(message: "License plate already exsited.", statusCode: StatusCodes.Status409Conflict);
+				throw new StatusCodeException(message: "License plate already existed.", statusCode: StatusCodes.Status409Conflict);
 
 			if (isInsuranceNumberExisted)
-				throw new StatusCodeException(message: "Insurance number already exsited.", statusCode: StatusCodes.Status409Conflict);
+				throw new StatusCodeException(message: "Insurance number already existed.", statusCode: StatusCodes.Status409Conflict);
+
+		}
+
+		private async Task ValidateVehicleAsync(Vehicle newModel, string originalLicensePlate, string originalInsuranceNumber)
+		{
+			var isLicensePateMatchOriginal = newModel.LicensePlate.ToUpper().Equals(originalLicensePlate.ToUpper());
+
+			var isInsuranceNumberMatchOriginal = newModel.InsuranceNumber.ToUpper().Equals(originalInsuranceNumber.ToUpper());
+
+			int[] validStatusState = [0, 1, 2];
+
+			if (!validStatusState.Any(x => x.Equals(newModel.Status)))
+				throw new StatusCodeException(message: "Invalid status number.", statusCode: StatusCodes.Status409Conflict);
+
+			if (newModel.ConditionPercentage > 100 || newModel.ConditionPercentage < 0)
+				throw new StatusCodeException(message: "Invalid percetage number.", statusCode: StatusCodes.Status409Conflict);
+
+			if (!isLicensePateMatchOriginal)
+			{
+				var isLicensePlateExisted = await _vehicleQueries.CheckIfLicensePlateExisted(newModel.LicensePlate);
+
+				if(isLicensePlateExisted)
+					throw new StatusCodeException(message: "License plate already existed.", statusCode: StatusCodes.Status409Conflict);
+			}
+
+			if(!isInsuranceNumberMatchOriginal)
+			{
+				var isInsuranceNumberExisted = await _vehicleQueries.CheckIfInsuranceNumberExisted(newModel.InsuranceNumber);
+
+				if (isInsuranceNumberExisted)
+					throw new StatusCodeException(message: "Insurance number already existed.", statusCode: StatusCodes.Status409Conflict);
+			}
+
+		}
+
+		private static List<Vehicle> HandleVehicleQuery(VehicleQuery vehicleQuery, List<Vehicle> vehicles)
+		{
+			if (!string.IsNullOrEmpty(vehicleQuery.ModelName))
+			{
+				var modelName = vehicleQuery.ModelName.Trim().ToUpper();
+
+				vehicles = vehicles
+					.Where(v => v.Model.Name.ToUpper().Equals(modelName))
+					.ToList();
+			}
+
+			if (!string.IsNullOrEmpty(vehicleQuery.CollectionName))
+			{
+				var collectionName = vehicleQuery.CollectionName.Trim().ToUpper();
+
+				vehicles = vehicles
+					.Where(v => v.Model.Collection.Name.ToUpper().Equals(collectionName))
+					.ToList();
+			}
+
+			if (!string.IsNullOrEmpty(vehicleQuery.BrandName))
+			{
+				var brandName = vehicleQuery.BrandName.Trim().ToUpper();
+
+				vehicles = vehicles
+					.Where(v => v.Model.Collection.Brand.Name.ToUpper().Equals(brandName))
+					.ToList();
+			}
+
+			if(vehicleQuery.IsSortPriceDesc.HasValue)
+			{
+				if(vehicleQuery.IsSortPriceDesc.Value == true)
+				{
+					vehicles = vehicles
+						.OrderByDescending(v => v.Price)
+						.ToList();
+				} else
+				{
+					 vehicles = vehicles
+						.OrderBy(v => v.Price)
+						.ToList();
+				}
+			}
+
+			return vehicles;
 		}
 	}
 }

@@ -5,8 +5,10 @@ using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
+using LazyCache;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Web.Service.Services
@@ -19,8 +21,10 @@ namespace Application.Web.Service.Services
         private readonly IGenericRepository<Image> _imageRepo;
         private readonly IBrandQueries _brandQueries;
         private readonly IMapper _mapper;
+		private IAppCache _cache;
+		private CacheKeyConstants _cacheKeyConstants;
 
-        public BrandService(IUnitOfWork unitOfWork, IBrandQueries brandQueries, IMapper mapper)
+		public BrandService(IUnitOfWork unitOfWork, IBrandQueries brandQueries, IMapper mapper, IAppCache cache, CacheKeyConstants cacheKeyConstants)
         {
             _unitOfWork = unitOfWork;
             _brandRepo = unitOfWork.GetBaseRepo<Brand>();
@@ -28,30 +32,58 @@ namespace Application.Web.Service.Services
             _imageRepo = unitOfWork.GetBaseRepo<Image>();
             _brandQueries = brandQueries;
             _mapper = mapper;
+			_cache = cache;
+            _cacheKeyConstants = cacheKeyConstants;
         }
 
         public async Task<(IEnumerable<Brand>, PaginationMetadata)> GetBrandsAsync(PaginationRequestModel pagination)
         {
-            var totalItemCount = await _brandQueries.CountBrandsAsync();
+            var key = $"{_cacheKeyConstants.BrandCacheKey}-All";
+
+            var brands = await _cache.GetOrAddAsync(
+                key, 
+                async () => await _brandQueries.GetAllBrandsAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+            _cacheKeyConstants.AddKeyToList(key);
+
+			var totalItemCount = brands.Count;
 
             var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
-            var brandToReturn = await _brandQueries.GetBrandsWithPaginationAync(pagination);
+            var brandsToReturn = brands
+                .Skip(pagination.pageSize * (pagination.pageNumber - 1))
+                .Take(pagination.pageSize);
 
-            return (brandToReturn, paginationMetadata);
+			return (brandsToReturn, paginationMetadata);
         }
 
         public async Task<List<Brand>> GetAllBrandsAsync()
         {
-            var brandToReturn = await _brandQueries.GetAllBrandsAsync();
+			var key = $"{_cacheKeyConstants.BrandCacheKey}-All";
 
-            return brandToReturn;
+			var brands = await _cache.GetOrAddAsync(
+                key, 
+                async () => await _brandQueries.GetAllBrandsAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			return brands;
         }
 
         public async Task<Brand> GetBrandByIdAsync(Guid brandId)
         {
-            var result = await _brandRepo.GetById(brandId);
-            return result;
+			var key = $"{_cacheKeyConstants.BrandCacheKey}-ID-{brandId}";
+
+            var result = await _cache.GetOrAddAsync(
+                key, 
+                async () => await _brandQueries.GetByIdAsync(brandId), 
+                TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			return result;
         }
 
         public async Task<Brand> CreateBrandAsync(BrandRequestModel requestModel)
@@ -61,7 +93,7 @@ namespace Application.Web.Service.Services
             var isBrandExisted = await _brandQueries.CheckIfBrandExisted(newBrand.Name);
 
             if(isBrandExisted)
-                throw new StatusCodeException(message: "Brand name already exsited.", statusCode: StatusCodes.Status409Conflict);
+                throw new StatusCodeException(message: "Brand name already existed.", statusCode: StatusCodes.Status409Conflict);
             else
             {
                 var (newImage, brandImage) = HandleNewBrandImage(requestModel, newBrand.Id);
@@ -74,7 +106,17 @@ namespace Application.Web.Service.Services
 
                 await _unitOfWork.CompleteAsync();
 
-                return newBrand;
+				await Task.Run(() =>
+				{
+					foreach (var key in _cacheKeyConstants.CacheKeyList)
+					{
+						_cache.Remove(key);
+					}
+
+					_cacheKeyConstants.CacheKeyList = new List<string>();
+				});
+
+				return newBrand;
             }
         }
 
@@ -93,7 +135,7 @@ namespace Application.Web.Service.Services
                 var isBrandExisted = await _brandQueries.CheckIfBrandExisted(brandToUpdate.Name);
 
                 if (isBrandExisted && (brandToUpdate.Name.ToUpper() != originalBrandName.ToUpper()))
-                    throw new StatusCodeException(message: "Brand name already exsited.", statusCode: StatusCodes.Status409Conflict);
+                    throw new StatusCodeException(message: "Brand name already existed.", statusCode: StatusCodes.Status409Conflict);
                 else
                 {
                     foreach (var brandImageToDelete in brand.BrandImages)
@@ -113,7 +155,17 @@ namespace Application.Web.Service.Services
 
                     await _unitOfWork.CompleteAsync();
 
-                    return brandToUpdate;
+					await Task.Run(() =>
+					{
+						foreach (var key in _cacheKeyConstants.CacheKeyList)
+						{
+							_cache.Remove(key);
+						}
+
+						_cacheKeyConstants.CacheKeyList = new List<string>();
+					});
+
+					return brandToUpdate;
                 }
             }
         }
@@ -129,7 +181,17 @@ namespace Application.Web.Service.Services
 
             await _unitOfWork.CompleteAsync();
 
-            return true;
+            await Task.Run(() =>
+            {
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+                _cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
+			return true;
         }
 
         private (Image, BrandImage) HandleNewBrandImage(BrandRequestModel requestModel, Guid brandId)

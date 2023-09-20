@@ -16,6 +16,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureAutoMapper();
+builder.Services.ConfigureCache();
 
 var app = builder.Build();
 

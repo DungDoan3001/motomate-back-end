@@ -3,6 +3,7 @@ using System;
 using Application.Web.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230920125742_addPriceField")]
+    partial class addPriceField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,14 +223,14 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("60929087-1227-4efd-af43-e9ae2524eb0e"),
-                            ConcurrencyStamp = "2036c1ca-da7e-44ec-a29f-d07ef1258347",
+                            ConcurrencyStamp = "7a0b5379-b893-4578-ba0f-b1568d28b631",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "b8a968d5-e642-46d2-addb-c2cb07c3c485",
+                            ConcurrencyStamp = "245e4f03-ad96-45ae-9cea-80d2111f1e1f",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -341,10 +343,6 @@ namespace Application.Web.Database.Migrations
                     b.Property<string>("LicensePlate")
                         .HasColumnType("text")
                         .HasColumnName("license_plate");
-
-                    b.Property<string>("Location")
-                        .HasColumnType("text")
-                        .HasColumnName("location");
 
                     b.Property<Guid>("ModelId")
                         .HasColumnType("uuid")

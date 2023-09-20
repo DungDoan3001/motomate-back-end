@@ -10,5 +10,7 @@ namespace Application.Web.Service.Interfaces
         Task<List<User>> GetAllUsersInformationAsync();
         Task<User> UpdateUserAsync(UserRequestModel requestModel, string username);
         Task<bool> DeleteUserAsync(string username);
-    }
+        Task<User> GetUserInformationByIdAsync(Guid id);
+
+	}
 }

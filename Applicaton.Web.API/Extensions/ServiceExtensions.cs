@@ -7,6 +7,7 @@ using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Queries.ServiceQueries;
 using Application.Web.Database.UnitOfWork;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Application.Web.Service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -79,6 +80,12 @@ namespace Applicaton.Web.API.Extensions
         public static void ConfigureController(this IServiceCollection services)
         {
             services.AddControllers();
+        }
+
+        public static void ConfigureCache(this IServiceCollection services)
+        {
+            services.AddLazyCache();
+            services.AddSingleton<CacheKeyConstants>();
         }
 
         public static void ConfigureIdentity(this IServiceCollection services)

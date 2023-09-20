@@ -1,7 +1,6 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.Models;
 using Application.Web.Service.Exceptions;
-using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Service.Services
 {
-    public class UserService: IUserService
+	public class UserService: IUserService
     {
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
@@ -29,6 +28,15 @@ namespace Application.Web.Service.Services
 
             return user;
         }
+
+        public async Task<User> GetUserInformationByIdAsync(Guid id)
+        {
+            User user = await _userManager.FindByIdAsync(id.ToString());
+			if (user == null)
+				throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
+
+			return user;
+		}
 
         public async Task<User> GetUserInformationByUsernameAsync(string username)
         {
