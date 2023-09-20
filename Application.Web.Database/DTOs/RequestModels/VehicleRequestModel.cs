@@ -10,6 +10,12 @@ namespace Application.Web.Database.DTOs.RequestModels
 		[Required(ErrorMessage = "Model Id is required.")]
 		public Guid ModelId { get; set; }
 
+		[Required(ErrorMessage = "Price is required.")]
+		public decimal Price { get; set; }
+
+		[Required(ErrorMessage = "Location is required.")]
+		public string Location { get; set; }
+
 		[Required(ErrorMessage = "Purchase date is required.")]
 		public DateTime PurchaseDate { get; set; }
 
@@ -24,6 +30,9 @@ namespace Application.Web.Database.DTOs.RequestModels
 
 		[Required(ErrorMessage = "Expiry date is required.")]
 		public DateTime InsuranceExpiry { get; set; }
+
+		[Required(ErrorMessage = "Status is required")]
+		public int Status { get; set; }
 
 		public List<RequestVehicleImage> Images { get; set; }
 	}

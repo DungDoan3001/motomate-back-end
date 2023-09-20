@@ -61,7 +61,7 @@ namespace Application.Web.Service.Services
             var isBrandExisted = await _brandQueries.CheckIfBrandExisted(newBrand.Name);
 
             if(isBrandExisted)
-                throw new StatusCodeException(message: "Brand name already exsited.", statusCode: StatusCodes.Status409Conflict);
+                throw new StatusCodeException(message: "Brand name already existed.", statusCode: StatusCodes.Status409Conflict);
             else
             {
                 var (newImage, brandImage) = HandleNewBrandImage(requestModel, newBrand.Id);
@@ -93,7 +93,7 @@ namespace Application.Web.Service.Services
                 var isBrandExisted = await _brandQueries.CheckIfBrandExisted(brandToUpdate.Name);
 
                 if (isBrandExisted && (brandToUpdate.Name.ToUpper() != originalBrandName.ToUpper()))
-                    throw new StatusCodeException(message: "Brand name already exsited.", statusCode: StatusCodes.Status409Conflict);
+                    throw new StatusCodeException(message: "Brand name already existed.", statusCode: StatusCodes.Status409Conflict);
                 else
                 {
                     foreach (var brandImageToDelete in brand.BrandImages)

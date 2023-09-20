@@ -1,5 +1,6 @@
 using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
@@ -35,7 +36,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet]
-        public async Task<IActionResult> GetVehiclesAsync([FromQuery] PaginationRequestModel pagination)
+        public async Task<IActionResult> GetVehiclesAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery)
         {
             try
             {
@@ -44,7 +45,7 @@ namespace Applicaton.Web.API.Controllers
                     pagination.pageSize = maxPageSize;
                 }
 
-                var (vehicles, paginationMetadata) = await _vehicleService.GetVehiclesAsync(pagination);
+                var (vehicles, paginationMetadata) = await _vehicleService.GetVehiclesAsync(pagination, vehicleQuery);
 
                 //Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
                 Response.AddPaginationHeader(paginationMetadata);
@@ -80,11 +81,11 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllVehiclesAsync()
+        public async Task<IActionResult> GetAllVehiclesAsync([FromQuery] VehicleQuery vehicleQuery)
         {
             try
             {
-                var vehicles = await _vehicleService.GetAllVehicleAsync();
+                var vehicles = await _vehicleService.GetAllVehicleAsync(vehicleQuery);
 
                 var vehiclesToReturn = _mapper.Map<IEnumerable<VehicleResponseModel>>(vehicles);
 
@@ -188,6 +189,83 @@ namespace Applicaton.Web.API.Controllers
 				});
 			}
 		}
+
+		/// <summary>
+		/// Update vehicle information by identification.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully updated item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPatch("{id}")]
+		public async Task<IActionResult> UpdateVehicleAsync([FromBody] VehicleRequestModel requestModel, [FromRoute] Guid id)
+		{
+			try
+			{
+                VerifyRequestModel(requestModel);
+
+				var vehicle = await _vehicleService.UpdateVehicleAsync(requestModel, id);
+
+				var vehicleToReturn = _mapper.Map<VehicleResponseModel>(vehicle);
+
+				return Ok(vehicleToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+        /// <summary>
+        /// Delete vehicle by identification
+        /// </summary>
+        /// <returns>Status code of the action.</returns>
+        /// <response code="204">Successfully deleted item information.</response>
+        /// <response code="500">There is something wrong while execute.</response>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteVehicleAsync([FromRoute] Guid id)
+        {
+            try
+            {
+                var result = await _vehicleService.DeleteVehicleAsync(id);
+
+                if (!result)
+                    throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);
+                else
+                    return NoContent();
+            }
+            catch (StatusCodeException ex)
+            {
+                return StatusCode(ex.StatusCode, new ErrorResponseModel
+                {
+                    Message = ex.Message,
+                    StatusCode = ex.StatusCode
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+                {
+                    Message = "Error while performing action.",
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Errors = { ex.Message }
+                });
+            }
+        }
 
         private void VerifyRequestModel(VehicleRequestModel requestModel)
         {

@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
 	<NoWarn>$(NoWarn),CA2254,1591</NoWarn>
+	<LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

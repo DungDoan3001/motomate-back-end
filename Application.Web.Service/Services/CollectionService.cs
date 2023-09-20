@@ -58,7 +58,7 @@ namespace Application.Web.Service.Services
             var isCollectionExisted = await _collectionQueries.CheckIfCollectionExisted(newCollection.Name);
 
             if (isCollectionExisted)
-                throw new StatusCodeException(message: "Collection name already exsited.", statusCode: StatusCodes.Status409Conflict);
+                throw new StatusCodeException(message: "Collection name already existed.", statusCode: StatusCodes.Status409Conflict);
             else
             {
                 _collectionRepo.Add(newCollection);
@@ -84,7 +84,7 @@ namespace Application.Web.Service.Services
                 var isCollectionExisted = await _collectionQueries.CheckIfCollectionExisted(collectionToUpdate.Name);
 
                 if (isCollectionExisted && (collectionToUpdate.Name.ToUpper() != originalCollectionName.ToUpper()))
-                    throw new StatusCodeException(message: "Collection name already exsited.", statusCode: StatusCodes.Status409Conflict);
+                    throw new StatusCodeException(message: "Collection name already existed.", statusCode: StatusCodes.Status409Conflict);
                 else
                 {
                     _collectionRepo.Update(collectionToUpdate);

@@ -28,6 +28,12 @@ namespace Application.Web.Database.Models
         [Column("status")]
         public int Status { get; set; } = 0; // 1-2-3 :v i dont know yet
 
+        [Column("price")]
+        public decimal Price { get; set; }
+
+        [Column("location")]
+        public string Location { get; set; }
+
         public virtual User Owner { get; set; }
 
         public virtual Model Model { get; set; }

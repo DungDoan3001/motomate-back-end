@@ -6,6 +6,8 @@
         public VehicleOwner Owner { get; set; }
         public VehicleSpecifications Specifications { get; set; }
         public DateTime PurchaseDate { get; set; }
+        public decimal Price { get; set; }
+        public string Location { get; set; }
         public int ConditionPercentage { get; set; }
         public string LicensePlate { get; set; }
         public string InsuranceNumber { get; set; }

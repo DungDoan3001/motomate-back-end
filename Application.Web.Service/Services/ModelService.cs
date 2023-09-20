@@ -54,7 +54,10 @@ namespace Application.Web.Service.Services
         {
             var modelToReturn = await _modelQueries.GetModelByIdAsync(modelId);
 
-            return modelToReturn;
+			if (modelToReturn == null)
+				throw new StatusCodeException(message: "Model not found.", statusCode: StatusCodes.Status404NotFound);
+
+			return modelToReturn;
         }
 
         public async Task<Model> CreateModelAsync(ModelRequestModel requestModel)
@@ -64,7 +67,7 @@ namespace Application.Web.Service.Services
             var isModelExisted = await _modelQueries.CheckIfModelExisted(newModel.Name);
 
             if (isModelExisted)
-                throw new StatusCodeException(message: "Model name already exsited.", statusCode: StatusCodes.Status409Conflict);
+                throw new StatusCodeException(message: "Model name already existed.", statusCode: StatusCodes.Status409Conflict);
             else
             {
                 var (collection, modelColors) = await HandleModelCollectionAndColors(requestModel, newModel.Id);
@@ -94,7 +97,7 @@ namespace Application.Web.Service.Services
                 var isModelExisted = await _modelQueries.CheckIfModelExisted(modelToUpdate.Name);
                 
                 if (isModelExisted && (modelToUpdate.Name.ToUpper() != originalModelName.ToUpper()))
-                    throw new StatusCodeException(message: "Model name already exsited.", statusCode: StatusCodes.Status409Conflict);
+                    throw new StatusCodeException(message: "Model name already existed.", statusCode: StatusCodes.Status409Conflict);
                 else
                 {
                     var (collection, modelColors) = await HandleModelCollectionAndColors(requestModel, modelToUpdate.Id);
