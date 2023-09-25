@@ -2,11 +2,13 @@
 {
 	public class VehicleQuery
 	{
-		public string? BrandName { get; set; } = string.Empty;
+		public List<string>? Brands { get; set; }
 
-		public string? ModelName { get; set; } = string.Empty;
+		public List<string>? Models { get; set; }
 
-		public string? CollectionName { get; set; } = string.Empty;
+		public List<string>? Collections { get; set; }
+
+		public List<string>? Cities { get; set; }
 
 		public bool? IsSortPriceDesc { get; set; } = null;
 	}

@@ -113,6 +113,8 @@ namespace Application.Web.Service.Services
 
 			await ValidateVehicleAsync(requestModel);
 
+			requestModel.City = "string";
+
 			var newVehicle = _mapper.Map<Vehicle>(requestModel);
 
 			newVehicle.ColorId = await _colorQueries.GetColorIdByColorNameAsync(requestModel.ColorName);
@@ -302,34 +304,47 @@ namespace Application.Web.Service.Services
 
 		private static List<Vehicle> HandleVehicleQuery(VehicleQuery vehicleQuery, List<Vehicle> vehicles)
 		{
-			if (!string.IsNullOrEmpty(vehicleQuery.ModelName))
+			if (vehicleQuery.Models != null && vehicleQuery.Models.Count != 0)
 			{
-				var modelName = vehicleQuery.ModelName.Trim().ToUpper();
-
-				vehicles = vehicles
-					.Where(v => v.Model.Name.ToUpper().Equals(modelName))
-					.ToList();
+				foreach(var model in vehicleQuery.Models)
+				{
+					vehicles = vehicles
+						.Where(x => x.Model.Name.ToUpper().Equals(model.ToUpper()))
+						.ToList();
+				}
 			}
 
-			if (!string.IsNullOrEmpty(vehicleQuery.CollectionName))
+			if (vehicleQuery.Collections != null && vehicleQuery.Collections.Count != 0)
 			{
-				var collectionName = vehicleQuery.CollectionName.Trim().ToUpper();
-
-				vehicles = vehicles
-					.Where(v => v.Model.Collection.Name.ToUpper().Equals(collectionName))
-					.ToList();
+				foreach (var collection in vehicleQuery.Collections)
+				{
+					vehicles = vehicles
+						.Where(x => x.Model.Collection.Name.ToUpper().Equals(collection.ToUpper()))
+						.ToList();
+				}
 			}
 
-			if (!string.IsNullOrEmpty(vehicleQuery.BrandName))
+			if (vehicleQuery.Brands != null && vehicleQuery.Brands.Count != 0)
 			{
-				var brandName = vehicleQuery.BrandName.Trim().ToUpper();
-
-				vehicles = vehicles
-					.Where(v => v.Model.Collection.Brand.Name.ToUpper().Equals(brandName))
-					.ToList();
+				foreach (var brand in vehicleQuery.Brands)
+				{
+					vehicles = vehicles
+						.Where(x => x.Model.Collection.Brand.Name.ToUpper().Equals(brand.ToUpper()))
+						.ToList();
+				}
 			}
 
-			if(vehicleQuery.IsSortPriceDesc.HasValue)
+			if (vehicleQuery.Cities != null && vehicleQuery.Cities.Count != 0)
+			{
+				foreach (var city in vehicleQuery.Cities)
+				{
+					vehicles = vehicles
+						.Where(x => x.City.ToUpper().Equals(city.ToUpper()))
+						.ToList();
+				}
+			}
+
+			if (vehicleQuery.IsSortPriceDesc.HasValue)
 			{
 				if(vehicleQuery.IsSortPriceDesc.Value == true)
 				{

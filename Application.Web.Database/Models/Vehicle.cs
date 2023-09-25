@@ -34,6 +34,9 @@ namespace Application.Web.Database.Models
         [Column("location")]
         public string Location { get; set; }
 
+        [Column("city")]
+        public string City { get; set; }
+
         [Column("FK_color_id")]
         public Guid ColorId { get; set; }
 

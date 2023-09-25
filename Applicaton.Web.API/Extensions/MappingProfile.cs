@@ -91,9 +91,9 @@ namespace Applicaton.Web.API.Extensions
 
             // Vehicles
             CreateMap<VehicleRequestModel, Vehicle>()
-                .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.ColorName.Trim().ToUpper()))
                 .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location.Trim().ToUpper()))
-                .ForMember(dest => dest.LicensePlate, opt => opt.MapFrom(src => src.Location.Trim().ToUpper()))
+                .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City.Trim().ToUpper()))
+                .ForMember(dest => dest.LicensePlate, opt => opt.MapFrom(src => src.LicensePlate.Trim().ToUpper()))
                 .ForMember(dest => dest.InsuranceNumber, opt => opt.MapFrom(src => src.InsuranceNumber.Trim().ToUpper()));
 
             CreateMap<Vehicle, VehicleResponseModel>()
@@ -112,6 +112,7 @@ namespace Applicaton.Web.API.Extensions
                     };
 
                     dest.Location = textInfo.ToTitleCase(src.Location.ToLower());
+                    dest.City = textInfo.ToTitleCase(src.City.ToLower());
                     dest.Color = textInfo.ToTitleCase(src.Color.Name.ToLower());
                     dest.LicensePlate = textInfo.ToTitleCase(src.LicensePlate.ToLower());
                     dest.InsuranceNumber = textInfo.ToTitleCase(src.InsuranceNumber.ToLower());

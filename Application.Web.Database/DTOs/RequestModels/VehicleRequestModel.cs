@@ -16,6 +16,9 @@ namespace Application.Web.Database.DTOs.RequestModels
 		[Required(ErrorMessage = "Location is required.")]
 		public string Location { get; set; }
 
+		[Required(ErrorMessage = "City is required.")]
+		public string City { get; set; }
+
 		[Required(ErrorMessage = "Purchase date is required.")]
 		public DateTime PurchaseDate { get; set; }
 
