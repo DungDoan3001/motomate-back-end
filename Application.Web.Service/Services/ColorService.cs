@@ -42,7 +42,7 @@ namespace Application.Web.Service.Services
         {
             var newColor = _mapper.Map<Color>(requestModel);
 
-            var isColorExisted = await _colorQueries.CheckIfColorExisted(newColor.Name);
+            var isColorExisted = await _colorQueries.CheckIfColorExistedByColorNameAsync(newColor.Name);
 
             if (isColorExisted)
                 throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);
@@ -69,7 +69,7 @@ namespace Application.Web.Service.Services
                 {
                     var newColor = _mapper.Map<Color>(requestModel);
 
-                    var isColorExisted = await _colorQueries.CheckIfColorExisted(newColor.Name);
+                    var isColorExisted = await _colorQueries.CheckIfColorExistedByColorNameAsync(newColor.Name);
 
                     if (isColorExisted)
                         throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);
@@ -107,7 +107,7 @@ namespace Application.Web.Service.Services
             {
                 var colorToUpdate = _mapper.Map<ColorRequestModel, Color>(requestModel, color);
 
-                var isColorExisted = await _colorQueries.CheckIfColorExisted(colorToUpdate.Name);
+                var isColorExisted = await _colorQueries.CheckIfColorExistedByColorNameAsync(colorToUpdate.Name);
 
                 if (isColorExisted && (colorToUpdate.Name.ToUpper() != originalColorName.ToUpper()))
                     throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);

@@ -7,9 +7,11 @@ namespace Application.Web.Database.Queries.Interface
     {
         Task<List<Model>> GetAllModelsAsync();
         Task<Model> GetModelByIdAsync(Guid id);
-        Task<Model> GetModelByNameAsync(string name);
+		Task<Model> GetModelByNameAsync(string name);
         Task<bool> CheckIfModelExisted(string name);
         Task<List<Model>> GetModelsWithPaginationAync(PaginationRequestModel pagination);
         Task<int> CountModelsAysnc();
-    }
+        Task<List<Model>> GetModelsByCollectionIdAsync(Guid collectionId);
+        Task<bool> CheckIfColorExistInModel(string color, Guid modelId);
+	}
 }

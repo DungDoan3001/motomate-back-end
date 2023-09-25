@@ -2,11 +2,14 @@
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
+using Application.Web.Database.Queries.ServiceQueries;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
+using LazyCache;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Web.Service.Services
@@ -20,8 +23,10 @@ namespace Application.Web.Service.Services
         private readonly ICollectionService _collectionService;
         private readonly IColorService _colorService;
         private readonly IMapper _mapper;
+		private readonly IAppCache _cache;
+		private CacheKeyConstants _cacheKeyConstants;
 
-        public ModelService(IUnitOfWork unitOfWork, IMapper mapper, IModelQueries modelQueries, ICollectionService collectionService, IColorService colorService)
+		public ModelService(IUnitOfWork unitOfWork, IMapper mapper, IModelQueries modelQueries, ICollectionService collectionService, IColorService colorService, IAppCache cache, CacheKeyConstants cacheKeyConstants)
         {
             _unitOfWork = unitOfWork;
             _modelRepo = unitOfWork.GetBaseRepo<Model>();
@@ -30,29 +35,58 @@ namespace Application.Web.Service.Services
             _collectionService = collectionService;
             _colorService = colorService;
             _mapper = mapper;
-        }
+            _cache = cache;
+			_cacheKeyConstants = cacheKeyConstants;
+
+		}
 
         public async Task<(IEnumerable<Model>, PaginationMetadata)> GetModelsAsync(PaginationRequestModel pagination)
         {
-            var totalItemCount = await _modelQueries.CountModelsAysnc();
+			var key = $"{_cacheKeyConstants.ModelCacheKey}-All";
+
+            var models = await _cache.GetOrAddAsync(
+                key,
+                async () => await _modelQueries.GetAllModelsAsync(),
+                TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			var totalItemCount = models.Count;
 
             var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
-            var modelsToReturn = await _modelQueries.GetModelsWithPaginationAync(pagination);
+			var modelsToReturn = models
+							.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+							.Take(pagination.pageSize)
+							.ToList();
 
-            return (modelsToReturn, paginationMetadata);
+			return (modelsToReturn, paginationMetadata);
         }
 
         public async Task<IEnumerable<Model>> GetAllModelsAsync()
         {
-            var modelsToReturn = await _modelQueries.GetAllModelsAsync();
+			var key = $"{_cacheKeyConstants.ModelCacheKey}-All";
 
-            return modelsToReturn;
+			var modelsToReturn = await _cache.GetOrAddAsync(
+				key,
+				async () => await _modelQueries.GetAllModelsAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			return modelsToReturn;
         }
 
         public async Task<Model> GetModelByIdAsync(Guid modelId)
         {
-            var modelToReturn = await _modelQueries.GetModelByIdAsync(modelId);
+			var key = $"{_cacheKeyConstants.ModelCacheKey}-ID-{modelId}";
+
+			var modelToReturn = await _cache.GetOrAddAsync(
+			    key,
+				async () => await _modelQueries.GetModelByIdAsync(modelId),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
 
 			if (modelToReturn == null)
 				throw new StatusCodeException(message: "Model not found.", statusCode: StatusCodes.Status404NotFound);
@@ -60,7 +94,21 @@ namespace Application.Web.Service.Services
 			return modelToReturn;
         }
 
-        public async Task<Model> CreateModelAsync(ModelRequestModel requestModel)
+		public async Task<IEnumerable<Model>> GetModelsByCollectionIdAsync(Guid collectionId)
+		{
+			var key = $"{_cacheKeyConstants.ModelCacheKey}-collectionID-{collectionId}";
+
+			var modelsToReturn = await _cache.GetOrAddAsync(
+				key,
+				async () => await _modelQueries.GetModelsByCollectionIdAsync(collectionId),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			return modelsToReturn;
+		}
+
+		public async Task<Model> CreateModelAsync(ModelRequestModel requestModel)
         {
             var newModel = _mapper.Map<Model>(requestModel);
 
@@ -78,7 +126,17 @@ namespace Application.Web.Service.Services
 
                 await _unitOfWork.CompleteAsync();
 
-                return newModel;
+				await Task.Run(() =>
+				{
+					foreach (var key in _cacheKeyConstants.CacheKeyList)
+					{
+						_cache.Remove(key);
+					}
+
+					_cacheKeyConstants.CacheKeyList = new List<string>();
+				});
+
+				return newModel;
             }
         }
 
@@ -110,7 +168,17 @@ namespace Application.Web.Service.Services
 
                     await _unitOfWork.CompleteAsync();
 
-                    return modelToUpdate;
+					await Task.Run(() =>
+					{
+						foreach (var key in _cacheKeyConstants.CacheKeyList)
+						{
+							_cache.Remove(key);
+						}
+
+						_cacheKeyConstants.CacheKeyList = new List<string>();
+					});
+
+					return modelToUpdate;
                 }
             }
         }
@@ -126,7 +194,17 @@ namespace Application.Web.Service.Services
 
             await _unitOfWork.CompleteAsync();
 
-            return true;
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
+			return true;
         }
 
         private async Task<(Collection, List<ModelColor>)> HandleModelCollectionAndColors(ModelRequestModel requestModel, Guid modelId)

@@ -34,6 +34,9 @@ namespace Application.Web.Database.DTOs.RequestModels
 		[Required(ErrorMessage = "Status is required")]
 		public int Status { get; set; }
 
+		[Required(ErrorMessage = "Color is required")]
+		public string ColorName { get; set; }
+
 		public List<RequestVehicleImage> Images { get; set; }
 	}
 

@@ -71,11 +71,18 @@ namespace Application.Web.Database.Context
                 .HasForeignKey(m => m.ModelId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // User (Owner) - Product
+            // User (Owner) - Vehicle
             builder.Entity<Vehicle>()
                 .HasOne<User>(v => v.Owner)
                 .WithMany(u => u.Vehicles)
                 .HasForeignKey(v => v.OwnerId) 
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Color - Vehicle
+            builder.Entity<Vehicle>()
+                .HasOne<Color>(v => v.Color)
+                .WithMany(c => c.Vehicles)
+                .HasForeignKey(v => v.ColorId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Model - Vehicle

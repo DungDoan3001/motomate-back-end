@@ -8,5 +8,6 @@ namespace Application.Web.Database.Models
         public string Name { get; set; }
 
         public virtual ICollection<ModelColor> ModelColors { get; set; }
+        public virtual ICollection<Vehicle> Vehicles { get; set; }
     }
 }
