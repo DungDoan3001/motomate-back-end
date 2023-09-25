@@ -19,7 +19,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .ToListAsync();
         }
 
-        public async Task<Model> GetModelByIdAsync(Guid id)
+        public async Task<Model> GetModelByCollectionIdAsync(Guid id)
         {
             return await dbSet
                 .OrderBy(c => c.Name)
@@ -29,7 +29,17 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Model> GetModelByNameAsync(string name)
+		public async Task<List<Model>> GetModelsByCollectionIdAsync(Guid collectionId)
+		{
+			return await dbSet
+				.OrderBy(c => c.Name)
+				.Include(c => c.Collection)
+				.Include(c => c.ModelColors).ThenInclude(mc => mc.Color)
+				.Where(c => c.CollectionId.Equals(collectionId))
+				.ToListAsync();
+		}
+
+		public async Task<Model> GetModelByNameAsync(string name)
         {
             return await dbSet
                 .OrderBy(c => c.Name)

@@ -12,5 +12,7 @@ namespace Application.Web.Service.Interfaces
         Task<Model> UpdateModelAsync(ModelRequestModel requestModel, Guid modelId);
         Task<bool> DeleteModelAsync(Guid modelId);
         Task<(IEnumerable<Model>, PaginationMetadata)> GetModelsAsync(PaginationRequestModel pagination);
-    }
+        Task<IEnumerable<Model>> GetModelsByCollectionIdAsync(Guid collectionId);
+
+	}
 }

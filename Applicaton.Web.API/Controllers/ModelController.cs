@@ -1,10 +1,8 @@
-﻿using System.Text.Json;
-using Application.Web.Database.DTOs.RequestModels;
+﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
-using Application.Web.Service.Services;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
-    [Route("api/model")]
+	[Route("api/model")]
     [ApiController]
     public class ModelController : ControllerBase
     {
@@ -148,13 +146,50 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Create a model.
-        /// </summary>
-        /// <returns>Status code of the action.</returns>
-        /// <response code="201">Successfully created item information.</response>
-        /// <response code="500">There is something wrong while execute.</response>
-        [HttpPost]
+		/// <summary>
+		/// Acquire model information by  collection identification.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("collection/{collectionId}")]
+		public async Task<IActionResult> GetModelByCollectionIdAsync([FromRoute] Guid collectionId)
+		{
+			try
+			{
+				var models = await _modelService.GetModelsByCollectionIdAsync(collectionId);
+
+				var modelsToReturn = _mapper.Map<IEnumerable<ModelResponseModel>>(models);
+
+				return Ok(modelsToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Create a model.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="201">Successfully created item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPost]
         public async Task<IActionResult> CreateModelAsync([FromBody] ModelRequestModel requestModel)
         {
             try

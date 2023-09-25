@@ -52,7 +52,7 @@ namespace Application.Web.Service.Services
 
         public async Task<Model> GetModelByIdAsync(Guid modelId)
         {
-            var modelToReturn = await _modelQueries.GetModelByIdAsync(modelId);
+            var modelToReturn = await _modelQueries.GetModelByCollectionIdAsync(modelId);
 
 			if (modelToReturn == null)
 				throw new StatusCodeException(message: "Model not found.", statusCode: StatusCodes.Status404NotFound);
@@ -60,7 +60,14 @@ namespace Application.Web.Service.Services
 			return modelToReturn;
         }
 
-        public async Task<Model> CreateModelAsync(ModelRequestModel requestModel)
+		public async Task<IEnumerable<Model>> GetModelsByCollectionIdAsync(Guid collectionId)
+		{
+			var modelsToReturn = await _modelQueries.GetModelsByCollectionIdAsync(collectionId);
+
+			return modelsToReturn;
+		}
+
+		public async Task<Model> CreateModelAsync(ModelRequestModel requestModel)
         {
             var newModel = _mapper.Map<Model>(requestModel);
 
@@ -84,7 +91,7 @@ namespace Application.Web.Service.Services
 
         public async Task<Model> UpdateModelAsync(ModelRequestModel requestModel, Guid modelId)
         {
-            var model = await _modelQueries.GetModelByIdAsync(modelId);
+            var model = await _modelQueries.GetModelByCollectionIdAsync(modelId);
 
             var originalModelName = model.Name;
 
