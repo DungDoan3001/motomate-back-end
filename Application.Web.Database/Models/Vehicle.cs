@@ -34,9 +34,14 @@ namespace Application.Web.Database.Models
         [Column("location")]
         public string Location { get; set; }
 
+        [Column("FK_color_id")]
+        public Guid ColorId { get; set; }
+
         public virtual User Owner { get; set; }
 
         public virtual Model Model { get; set; }
+
+        public virtual Color Color { get; set; }
 
         public virtual ICollection<VehicleImage> VehicleImages { get; set; }
     }

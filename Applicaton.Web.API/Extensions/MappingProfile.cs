@@ -40,7 +40,7 @@ namespace Applicaton.Web.API.Extensions
                     dest.Image = brandImage;
                 });
             CreateMap<BrandRequestModel, Brand>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.Trim().ToUpper()));
 
             CreateMap<Collection, CollectionsOfBrand>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())));
@@ -49,7 +49,7 @@ namespace Applicaton.Web.API.Extensions
             CreateMap<Collection, CollectionResponseModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())));
             CreateMap<CollectionRequestModel, Collection>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.Trim().ToUpper()));
 
             CreateMap<Model, ModelsOfCollection>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())));
@@ -62,7 +62,7 @@ namespace Applicaton.Web.API.Extensions
             CreateMap<Color, ColorResponseModel>()
                 .ForMember(dest => dest.Color, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())));
             CreateMap<ColorRequestModel, Color>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Color.ToUpper()));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Color.Trim().ToUpper()));
 
             // Model
             CreateMap<Model, ModelResponseModel>()
@@ -87,32 +87,36 @@ namespace Applicaton.Web.API.Extensions
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())));
 
             CreateMap<ModelRequestModel, Model>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.Trim().ToUpper()));
 
             // Vehicles
-            CreateMap<VehicleRequestModel, Vehicle>();
+            CreateMap<VehicleRequestModel, Vehicle>()
+                .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.ColorName.Trim().ToUpper()))
+                .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location.Trim().ToUpper()));
+
             CreateMap<Vehicle, VehicleResponseModel>()
                 .AfterMap((src, dest) =>
                 {
                     var specifications = new VehicleSpecifications
                     {
                         ModelId = src.Model.Id,
-                        ModelName = src.Model.Name,
+                        ModelName = textInfo.ToTitleCase(src.Model.Name),
                         Year = src.Model.Year,
                         Capacity = src.Model.Capacity,
                         CollectionId = src.Model.CollectionId,
-                        CollectionName = src.Model.Collection.Name,
+                        CollectionName = textInfo.ToTitleCase(src.Model.Collection.Name),
                         BrandId = src.Model.Collection.Brand.Id,
-                        BrandName = src.Model.Collection.Brand.Name,
+                        BrandName = textInfo.ToTitleCase(src.Model.Collection.Brand.Name),
                     };
 
+                    dest.Color = textInfo.ToTitleCase(src.Color.Name);
                     dest.Specifications = specifications;
                 });
 
             CreateMap<User, VehicleOwner>()
                 .AfterMap((src, dest) =>
                 {
-                    dest.Name = src.LastName + " " + src.FirstName;
+                    dest.Name = textInfo.ToTitleCase(src.LastName + " " + src.FirstName);
 					dest.Email = src.Email;
 					dest.PhoneNumber = src.PhoneNumber;
                     dest.Address = src.Address;

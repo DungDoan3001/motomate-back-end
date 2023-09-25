@@ -2,6 +2,7 @@ using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
+using Application.Web.Database.Queries.ServiceQueries;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
@@ -21,12 +22,17 @@ namespace Application.Web.Service.Services
 		private readonly IGenericRepository<Image> _imageRepo;
 		private readonly IGenericRepository<VehicleImage> _vehicleImageRepo;
 		private readonly IVehicleQueries _vehicleQueries;
+		private readonly IModelQueries _modelQueries;
+		private readonly IColorQueries _colorQueries;
 		private readonly IUserService _userService;
 		private readonly IModelService _modelService;
 		private readonly IAppCache _cache;
 		private CacheKeyConstants _cacheKeyConstants;
 
-		public VehicleService(IUnitOfWork unitOfWork, IMapper mapper, IVehicleQueries vehicleQueries, IUserService userService, IModelService modelService, IAppCache cache, CacheKeyConstants cacheKeyConstants)
+		public VehicleService(IUnitOfWork unitOfWork, IMapper mapper, 
+								IVehicleQueries vehicleQueries, IColorQueries colorQueries, IModelQueries modelQueries, 
+								IUserService userService, IModelService modelService, 
+								IAppCache cache, CacheKeyConstants cacheKeyConstants)
         {
 			_mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -34,6 +40,8 @@ namespace Application.Web.Service.Services
 			_imageRepo = unitOfWork.GetBaseRepo<Image>();
 			_vehicleImageRepo = unitOfWork.GetBaseRepo<VehicleImage>();
             _vehicleQueries = vehicleQueries;
+			_modelQueries = modelQueries;
+			_colorQueries = colorQueries;
 			_userService = userService;
 			_modelService = modelService;
 			_cache = cache;
@@ -100,12 +108,15 @@ namespace Application.Web.Service.Services
 
 		public async Task<Vehicle> CreateVehicleAsync(VehicleRequestModel requestModel)
 		{
-			var newVehicle = _mapper.Map<Vehicle>(requestModel);
-
 			_ = await _userService.GetUserInformationByIdAsync(requestModel.OwnerId);
 			_ = await _modelService.GetModelByIdAsync(requestModel.ModelId);
 
-			await ValidateVehicleAsync(newVehicle);
+			await ValidateVehicleAsync(requestModel);
+
+			var newVehicle = _mapper.Map<Vehicle>(requestModel);
+
+			newVehicle.ColorId = await _colorQueries.GetColorIdByColorNameAsync(requestModel.ColorName);
+			newVehicle.Status = 0;
 
 			var (newImages, vehicleImages) = HandleNewVehicleImages(requestModel, newVehicle.Id);
 
@@ -135,16 +146,21 @@ namespace Application.Web.Service.Services
 			var vehicle = await GetVehicleByIdAsync(vehicleId);
 
 			var originalLicensePlate = vehicle.LicensePlate;
+			
 			var originalInsuranceNumber = vehicle.InsuranceNumber;
+			
 			var originalVehicleImages = vehicle.VehicleImages;
+			
 			var originalImages = originalVehicleImages.Select(x => x.Image);
-
-			var vehicleToUpdate = _mapper.Map<VehicleRequestModel, Vehicle>(requestModel, vehicle);
 
 			_ = await _userService.GetUserInformationByIdAsync(requestModel.OwnerId);
 			_ = await _modelService.GetModelByIdAsync(requestModel.ModelId);
 
-			await ValidateVehicleAsync(vehicleToUpdate, originalLicensePlate, originalInsuranceNumber);
+			await ValidateVehicleAsync(requestModel, originalLicensePlate, originalInsuranceNumber);
+			
+			var vehicleToUpdate = _mapper.Map<VehicleRequestModel, Vehicle>(requestModel, vehicle);
+
+			vehicleToUpdate.ColorId = await _colorQueries.GetColorIdByColorNameAsync(requestModel.ColorName);
 
 			var (newImages, vehicleImages) = HandleNewVehicleImages(requestModel, vehicleId);
 
@@ -220,10 +236,13 @@ namespace Application.Web.Service.Services
 			return (imageList, vehicleImageList);
 		}
 
-		private async Task ValidateVehicleAsync(Vehicle newModel)
+		private async Task ValidateVehicleAsync(VehicleRequestModel newModel)
 		{
 			var isLicensePlateExisted = await _vehicleQueries.CheckIfLicensePlateExisted(newModel.LicensePlate);
+			
 			var isInsuranceNumberExisted = await _vehicleQueries.CheckIfInsuranceNumberExisted(newModel.InsuranceNumber);
+			
+			var idColorExisted = await _modelQueries.CheckIfColorExistInModel(newModel.ColorName, newModel.ModelId);
 
 			int[] validStatusState = [0, 1, 2];
 
@@ -236,16 +255,21 @@ namespace Application.Web.Service.Services
 			if (isLicensePlateExisted)
 				throw new StatusCodeException(message: "License plate already existed.", statusCode: StatusCodes.Status409Conflict);
 
+			if (!idColorExisted)
+				throw new StatusCodeException(message: "Color not found in model.", statusCode: StatusCodes.Status409Conflict);
+
 			if (isInsuranceNumberExisted)
 				throw new StatusCodeException(message: "Insurance number already existed.", statusCode: StatusCodes.Status409Conflict);
 
 		}
 
-		private async Task ValidateVehicleAsync(Vehicle newModel, string originalLicensePlate, string originalInsuranceNumber)
+		private async Task ValidateVehicleAsync(VehicleRequestModel newModel, string originalLicensePlate, string originalInsuranceNumber)
 		{
-			var isLicensePateMatchOriginal = newModel.LicensePlate.ToUpper().Equals(originalLicensePlate.ToUpper());
+			var isLicensePlateMatchOriginal = newModel.LicensePlate.ToUpper().Equals(originalLicensePlate.ToUpper());
 
 			var isInsuranceNumberMatchOriginal = newModel.InsuranceNumber.ToUpper().Equals(originalInsuranceNumber.ToUpper());
+
+			var idColorExisted = await _modelQueries.CheckIfColorExistInModel(newModel.ColorName, newModel.ModelId);
 
 			int[] validStatusState = [0, 1, 2];
 
@@ -255,7 +279,10 @@ namespace Application.Web.Service.Services
 			if (newModel.ConditionPercentage > 100 || newModel.ConditionPercentage < 0)
 				throw new StatusCodeException(message: "Invalid percetage number.", statusCode: StatusCodes.Status409Conflict);
 
-			if (!isLicensePateMatchOriginal)
+			if (!idColorExisted)
+				throw new StatusCodeException(message: "Color not found in model.", statusCode: StatusCodes.Status409Conflict);
+
+			if (!isLicensePlateMatchOriginal)
 			{
 				var isLicensePlateExisted = await _vehicleQueries.CheckIfLicensePlateExisted(newModel.LicensePlate);
 

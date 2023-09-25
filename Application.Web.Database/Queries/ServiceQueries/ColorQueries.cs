@@ -16,10 +16,24 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .ToListAsync();
         }
 
-        public async Task<bool> CheckIfColorExisted(string color)
+        public async Task<Guid> GetColorIdByColorNameAsync(string color)
+        {
+            return await dbSet
+                .Where(c => c.Name.ToUpper().Equals(color.ToUpper()))
+                .Select(c => c.Id)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> CheckIfColorExistedByColorNameAsync(string color)
         {
             return await dbSet
                 .AnyAsync(c => c.Name.ToUpper().Equals(color.ToUpper()));
         }
-    }
+
+		public async Task<bool> CheckIfColorExistedByColorIdAsync(Guid colorId)
+		{
+			return await dbSet
+				.AnyAsync(c => c.Id.Equals(colorId));
+		}
+	}
 }

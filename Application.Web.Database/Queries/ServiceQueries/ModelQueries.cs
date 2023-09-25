@@ -29,6 +29,16 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<bool> CheckIfColorExistInModel(string color, Guid modelId)
+        {
+            return await dbSet
+                .Include(m => m.ModelColors).ThenInclude(mc => mc.Color)
+                .Where(m => m.Id.Equals(modelId))
+                .AnyAsync(m => m.ModelColors
+                                .Any(mc => mc.Color.Name.ToUpper()
+                                            .Equals(color.ToUpper())));
+        }
+
 		public async Task<List<Model>> GetModelsByCollectionIdAsync(Guid collectionId)
 		{
 			return await dbSet

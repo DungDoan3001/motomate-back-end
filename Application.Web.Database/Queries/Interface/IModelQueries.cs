@@ -12,5 +12,6 @@ namespace Application.Web.Database.Queries.Interface
         Task<List<Model>> GetModelsWithPaginationAync(PaginationRequestModel pagination);
         Task<int> CountModelsAysnc();
         Task<List<Model>> GetModelsByCollectionIdAsync(Guid collectionId);
+        Task<bool> CheckIfColorExistInModel(string color, Guid modelId);
 	}
 }

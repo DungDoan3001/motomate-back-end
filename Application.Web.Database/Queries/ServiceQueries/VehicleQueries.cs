@@ -1,13 +1,12 @@
 using Application.Web.Database.Context;
 using Application.Web.Database.DTOs.RequestModels;
-using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Database.Queries.ServiceQueries
 {
-    public class VehicleQueries : BaseQuery<Vehicle>, IVehicleQueries
+	public class VehicleQueries : BaseQuery<Vehicle>, IVehicleQueries
     {
         public VehicleQueries(ApplicationContext dbContext) : base(dbContext) { }
 
@@ -17,6 +16,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
 				.Include(v => v.VehicleImages).ThenInclude(vi => vi.Image)
                 .Include(v => v.Owner)
+                .Include(c => c.Color)
                 .Skip(pagination.pageSize * (pagination.pageNumber - 1))
                 .Take(pagination.pageSize)
                 .ToListAsync();
@@ -28,6 +28,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
                 .Include(v => v.VehicleImages).ThenInclude(vi => vi.Image)
 				.Include(v => v.Owner)
+				.Include(c => c.Color)
 				.ToListAsync();
         }
 
@@ -37,6 +38,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
                 .Include(v => v.VehicleImages).ThenInclude(vi => vi.Image)
                 .Include(v => v.Owner)
+                .Include(c => c.Color)
                 .Where(v => v.Id.Equals(vehicleId))
                 .FirstOrDefaultAsync();
         }
