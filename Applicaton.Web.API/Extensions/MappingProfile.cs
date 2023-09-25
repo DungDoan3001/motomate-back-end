@@ -92,7 +92,9 @@ namespace Applicaton.Web.API.Extensions
             // Vehicles
             CreateMap<VehicleRequestModel, Vehicle>()
                 .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.ColorName.Trim().ToUpper()))
-                .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location.Trim().ToUpper()));
+                .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location.Trim().ToUpper()))
+                .ForMember(dest => dest.LicensePlate, opt => opt.MapFrom(src => src.Location.Trim().ToUpper()))
+                .ForMember(dest => dest.InsuranceNumber, opt => opt.MapFrom(src => src.InsuranceNumber.Trim().ToUpper()));
 
             CreateMap<Vehicle, VehicleResponseModel>()
                 .AfterMap((src, dest) =>
@@ -100,23 +102,29 @@ namespace Applicaton.Web.API.Extensions
                     var specifications = new VehicleSpecifications
                     {
                         ModelId = src.Model.Id,
-                        ModelName = textInfo.ToTitleCase(src.Model.Name),
+                        ModelName = textInfo.ToTitleCase(src.Model.Name.ToLower()),
                         Year = src.Model.Year,
                         Capacity = src.Model.Capacity,
                         CollectionId = src.Model.CollectionId,
-                        CollectionName = textInfo.ToTitleCase(src.Model.Collection.Name),
+                        CollectionName = textInfo.ToTitleCase(src.Model.Collection.Name.ToLower()),
                         BrandId = src.Model.Collection.Brand.Id,
-                        BrandName = textInfo.ToTitleCase(src.Model.Collection.Brand.Name),
+                        BrandName = textInfo.ToTitleCase(src.Model.Collection.Brand.Name.ToLower()),
                     };
 
-                    dest.Color = textInfo.ToTitleCase(src.Color.Name);
+                    dest.Location = textInfo.ToTitleCase(src.Location.ToLower());
+                    dest.Color = textInfo.ToTitleCase(src.Color.Name.ToLower());
+                    dest.LicensePlate = textInfo.ToTitleCase(src.LicensePlate.ToLower());
+                    dest.InsuranceNumber = textInfo.ToTitleCase(src.InsuranceNumber.ToLower());
+                    
                     dest.Specifications = specifications;
                 });
 
             CreateMap<User, VehicleOwner>()
                 .AfterMap((src, dest) =>
                 {
-                    dest.Name = textInfo.ToTitleCase(src.LastName + " " + src.FirstName);
+                    var fullName = src.LastName + " " + src.FirstName;
+
+					dest.Name = textInfo.ToTitleCase(fullName.ToLower());
 					dest.Email = src.Email;
 					dest.PhoneNumber = src.PhoneNumber;
                     dest.Address = src.Address;
