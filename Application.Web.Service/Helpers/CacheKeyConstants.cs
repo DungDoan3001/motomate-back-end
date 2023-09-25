@@ -10,6 +10,7 @@ namespace Application.Web.Service.Helpers
 		public string BrandCacheKey = "Brand";
 		public string CollectionCacheKey = "Collection";
 		public string VehicleCacheKey = "Vehicle";
+		public string ModelCacheKey = "Model";
 
 		public List<string> CacheKeyList = new List<string>();
 

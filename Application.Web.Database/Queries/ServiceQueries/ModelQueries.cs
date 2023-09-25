@@ -19,7 +19,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .ToListAsync();
         }
 
-        public async Task<Model> GetModelByCollectionIdAsync(Guid id)
+        public async Task<Model> GetModelByIdAsync(Guid id)
         {
             return await dbSet
                 .OrderBy(c => c.Name)
