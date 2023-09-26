@@ -28,9 +28,10 @@ namespace Applicaton.Web.API.Extensions
             services.AddDbContext<ApplicationContext>(option =>
                 option.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(ApplicationContext).Assembly.FullName)));
-        }
+			AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+		}
 
-        public static void ConfigureSwagger(this IServiceCollection services)
+		public static void ConfigureSwagger(this IServiceCollection services)
         {
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>

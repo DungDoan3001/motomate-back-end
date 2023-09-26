@@ -113,8 +113,6 @@ namespace Application.Web.Service.Services
 
 			await ValidateVehicleAsync(requestModel);
 
-			requestModel.City = "string";
-
 			var newVehicle = _mapper.Map<Vehicle>(requestModel);
 
 			newVehicle.ColorId = await _colorQueries.GetColorIdByColorNameAsync(requestModel.ColorName);
