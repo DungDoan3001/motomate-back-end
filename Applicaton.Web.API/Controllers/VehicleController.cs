@@ -111,7 +111,7 @@ namespace Applicaton.Web.API.Controllers
         }
 
 		/// <summary>
-		/// Acquire all vehicles information
+		/// Acquire all vehicles by owner indentification.
 		/// </summary>
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
@@ -146,6 +146,89 @@ namespace Applicaton.Web.API.Controllers
 				});
 			}
 		}
+
+		/// <summary>
+		/// Lock and unlock vehicle by vehicle indentification.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPost("{vehicleId}/lock")]
+		public async Task<IActionResult> LockVehicleAsync([FromRoute] Guid vehicleId)
+		{
+			try
+			{
+				var (result, isVehicleLocked) = await _vehicleService.HandleLockVehicleAsync(vehicleId);
+
+                return result ? Ok(new
+                {
+                    Id = vehicleId,
+                    IsLocked = isVehicleLocked
+                }) : throw new StatusCodeException("Error!", StatusCodes.Status500InternalServerError);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Update vehicle status.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPost("{vehicleId}/status/{statusNumber}")]
+		public async Task<IActionResult> UpdateVehicleStatusAsync([FromRoute] Guid vehicleId, [FromRoute] int statusNumber)
+		{
+			try
+			{
+				if (!Constants.validStatusNumbers.Contains(statusNumber))
+				{
+					return BadRequest("Invalid status number");
+				}
+
+				var vehicle = await _vehicleService.UpdateVehicleStatusAsync(vehicleId, statusNumber);
+
+				var vehicleToReturn = _mapper.Map<VehicleResponseModel>(vehicle);
+
+				return Ok(vehicleToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+
 
 		/// <summary>
 		/// Acquire vehicle information by identification
@@ -232,7 +315,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
-		[HttpPatch("{id}")]
+		[HttpPut("{id}")]
 		public async Task<IActionResult> UpdateVehicleAsync([FromBody] VehicleRequestModel requestModel, [FromRoute] Guid id)
 		{
 			try

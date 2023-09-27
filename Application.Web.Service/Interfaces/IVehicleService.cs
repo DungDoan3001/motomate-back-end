@@ -13,5 +13,7 @@ namespace Application.Web.Service.Interfaces
         Task<Vehicle> UpdateVehicleAsync(VehicleRequestModel requestModel, Guid vehicleId);
         Task<bool> DeleteVehicleAsync(Guid vehicleId);
         Task<List<Vehicle>> GetAllVehiclesByOwnerIdAsync(VehicleQuery vehicleQuery, Guid ownerId);
+        Task<(bool, bool)> HandleLockVehicleAsync(Guid vehicleId);
+        Task<Vehicle> UpdateVehicleStatusAsync(Guid vehicleId, int statusNumber);
 	}
 }

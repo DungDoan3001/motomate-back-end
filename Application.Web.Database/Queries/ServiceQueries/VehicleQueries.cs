@@ -14,7 +14,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
         {
             return await dbSet
                 .Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
-				.Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
+                .Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
                                 .ThenInclude(vi => vi.Image)
                 .Include(v => v.Owner)
                 .Include(c => c.Color)

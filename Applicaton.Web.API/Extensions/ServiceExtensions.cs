@@ -42,6 +42,7 @@ namespace Applicaton.Web.API.Extensions
                     Description = "This is a list of APIs we use to manage the MotorMate Application",
                 };
                 options.SwaggerDoc("v1", apiInfo);
+
                 // Generating api description via xml;
                 string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
@@ -70,7 +71,7 @@ namespace Applicaton.Web.API.Extensions
                         Array.Empty<string>()
                     }
                 });
-            });
+			});
         }
         
         public static void ConfigureAutoMapper(this IServiceCollection services)

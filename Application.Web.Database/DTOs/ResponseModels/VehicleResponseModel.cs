@@ -6,15 +6,20 @@
         public VehicleOwner Owner { get; set; }
         public VehicleSpecifications Specifications { get; set; }
         public DateTime PurchaseDate { get; set; }
+        public bool IsAvaiable { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsLocked { get; set; }
         public string Color { get; set; }
         public decimal Price { get; set; }
-        public string Location { get; set; }
+        public string Address { get; set; }
+        public string District { get; set; }
+        public string Ward { get; set; }
         public string City { get; set; }
         public int ConditionPercentage { get; set; }
         public string LicensePlate { get; set; }
         public string InsuranceNumber { get; set; }
         public DateTime InsuranceExpiry { get; set; }
-        public int Status { get; set; }
+        public string Status { get; set; }
         public List<ImageOfVehicle> Images { get; set; }
     }
 

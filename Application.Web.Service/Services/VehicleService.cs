@@ -2,7 +2,6 @@ using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
-using Application.Web.Database.Queries.ServiceQueries;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
@@ -122,6 +121,52 @@ namespace Application.Web.Service.Services
 			return vehicle;
 		}
 
+		public async Task<(bool, bool)> HandleLockVehicleAsync(Guid vehicleId)
+		{
+			var vehicle = await _vehicleRepo.GetById(vehicleId);
+
+			vehicle.IsLocked = !vehicle.IsLocked;
+
+			_vehicleRepo.Update(vehicle);
+
+			await _unitOfWork.CompleteAsync();
+
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
+			return (true, vehicle.IsLocked);
+		}
+
+		public async Task<Vehicle> UpdateVehicleStatusAsync(Guid vehicleId, int statusNumber)
+		{
+			var vehicle = await _vehicleRepo.GetById(vehicleId);
+
+			vehicle.Status = statusNumber;
+
+			_vehicleRepo.Update(vehicle);
+
+			await _unitOfWork.CompleteAsync();
+
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
+			return await GetVehicleByIdAsync(vehicleId);
+		}
+
 		public async Task<Vehicle> CreateVehicleAsync(VehicleRequestModel requestModel)
 		{
 			_ = await _userService.GetUserInformationByIdAsync(requestModel.OwnerId);
@@ -132,7 +177,8 @@ namespace Application.Web.Service.Services
 			var newVehicle = _mapper.Map<Vehicle>(requestModel);
 
 			newVehicle.ColorId = await _colorQueries.GetColorIdByColorNameAsync(requestModel.ColorName);
-			newVehicle.Status = 0;
+
+			HandleVehicleStaticValue(newVehicle);
 
 			var (newImages, vehicleImages) = HandleNewVehicleImages(requestModel, newVehicle.Id);
 
@@ -157,6 +203,7 @@ namespace Application.Web.Service.Services
 			return await GetVehicleByIdAsync(newVehicle.Id);
 		}
 
+		
 		public async Task<Vehicle> UpdateVehicleAsync(VehicleRequestModel requestModel, Guid vehicleId)
 		{
 			var vehicle = await GetVehicleByIdAsync(vehicleId);
@@ -252,6 +299,14 @@ namespace Application.Web.Service.Services
 			return (imageList, vehicleImageList);
 		}
 
+		private static void HandleVehicleStaticValue(Vehicle newVehicle)
+		{
+			newVehicle.Status = 0;
+			newVehicle.IsActive = true;
+			newVehicle.IsAvailable = true;
+			newVehicle.IsLocked = false;
+		}
+
 		private async Task ValidateVehicleAsync(VehicleRequestModel newModel)
 		{
 			var isLicensePlateExisted = await _vehicleQueries.CheckIfLicensePlateExisted(newModel.LicensePlate);
@@ -259,11 +314,6 @@ namespace Application.Web.Service.Services
 			var isInsuranceNumberExisted = await _vehicleQueries.CheckIfInsuranceNumberExisted(newModel.InsuranceNumber);
 			
 			var idColorExisted = await _modelQueries.CheckIfColorExistInModel(newModel.ColorName, newModel.ModelId);
-
-			int[] validStatusState = [0, 1, 2];
-
-			if(!validStatusState.Any(x => x.Equals(newModel.Status)))
-				throw new StatusCodeException(message: "Invalid status number.", statusCode: StatusCodes.Status409Conflict);
 
 			if (newModel.ConditionPercentage > 100 || newModel.ConditionPercentage < 0)
 				throw new StatusCodeException(message: "Invalid percetage number.", statusCode: StatusCodes.Status409Conflict);
@@ -286,11 +336,6 @@ namespace Application.Web.Service.Services
 			var isInsuranceNumberMatchOriginal = newModel.InsuranceNumber.ToUpper().Equals(originalInsuranceNumber.ToUpper());
 
 			var idColorExisted = await _modelQueries.CheckIfColorExistInModel(newModel.ColorName, newModel.ModelId);
-
-			int[] validStatusState = [0, 1, 2];
-
-			if (!validStatusState.Any(x => x.Equals(newModel.Status)))
-				throw new StatusCodeException(message: "Invalid status number.", statusCode: StatusCodes.Status409Conflict);
 
 			if (newModel.ConditionPercentage > 100 || newModel.ConditionPercentage < 0)
 				throw new StatusCodeException(message: "Invalid percetage number.", statusCode: StatusCodes.Status409Conflict);

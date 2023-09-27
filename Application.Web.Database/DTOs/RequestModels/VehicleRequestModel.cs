@@ -13,8 +13,14 @@ namespace Application.Web.Database.DTOs.RequestModels
 		[Required(ErrorMessage = "Price is required.")]
 		public decimal Price { get; set; }
 
-		[Required(ErrorMessage = "Location is required.")]
-		public string Location { get; set; }
+		[Required(ErrorMessage = "Address is required.")]
+		public string Address { get; set; }
+
+		[Required(ErrorMessage = "District is required.")]
+		public string District { get; set; }
+
+		[Required(ErrorMessage = "Ward is required.")]
+		public string Ward { get; set; }
 
 		[Required(ErrorMessage = "City is required.")]
 		public string City { get; set; }
@@ -34,8 +40,8 @@ namespace Application.Web.Database.DTOs.RequestModels
 		[Required(ErrorMessage = "Expiry date is required.")]
 		public DateTime InsuranceExpiry { get; set; }
 
-		[Required(ErrorMessage = "Status is required")]
-		public int Status { get; set; }
+		[Required(ErrorMessage = "IsActive is required")]
+		public int IsActive { get; set; }
 
 		[Required(ErrorMessage = "Color is required")]
 		public string ColorName { get; set; }
