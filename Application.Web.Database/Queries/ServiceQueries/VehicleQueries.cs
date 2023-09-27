@@ -32,7 +32,18 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.ToListAsync();
         }
 
-        public async Task<Vehicle> GetByIdAsync(Guid vehicleId)
+		public async Task<List<Vehicle>> GetAllVehiclesByOwnerIdAsync(Guid ownerId)
+		{
+			return await dbSet
+				.Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
+				.Include(v => v.VehicleImages).ThenInclude(vi => vi.Image)
+				.Include(v => v.Owner)
+				.Include(c => c.Color)
+                .Where(v => v.OwnerId.Equals(ownerId))
+				.ToListAsync();
+		}
+
+		public async Task<Vehicle> GetByIdAsync(Guid vehicleId)
         {
             return await dbSet
                 .Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)

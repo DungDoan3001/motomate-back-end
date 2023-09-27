@@ -72,10 +72,15 @@ namespace Applicaton.Web.API.Extensions
                 });
             });
         }
-
+        
         public static void ConfigureAutoMapper(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
+        }
+
+        public static void ConfigureSignalR(this IServiceCollection services)
+        {
+            services.AddSignalR();
         }
 
         public static void ConfigureController(this IServiceCollection services)
@@ -128,6 +133,22 @@ namespace Applicaton.Web.API.Extensions
                     ValidIssuer = jwtConfig["validIssuer"],
                     ValidAudience = jwtConfig["validAudience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+
+                        if(!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/messages")))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 };
             });
         }

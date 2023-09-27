@@ -1,4 +1,5 @@
 using Applicaton.Web.API.Extensions;
+using Applicaton.Web.API.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJwt(builder.Configuration);
 builder.Services.ConfigureCors();
 builder.Services.ConfigureController();
+builder.Services.ConfigureSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger();
 builder.Services.AddSwaggerGen();
@@ -39,5 +41,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<ChatHub>("/messages");
 
 app.Run();

@@ -111,6 +111,16 @@ namespace Applicaton.Web.API.Extensions
                         BrandName = textInfo.ToTitleCase(src.Model.Collection.Brand.Name.ToLower()),
                     };
 
+                    var vehicleImages = new List<ImageOfVehicle>();
+                    foreach(var image in src.VehicleImages)
+                    {
+                        vehicleImages.Add(new ImageOfVehicle
+                        {
+                            Image = image.Image.ImageUrl,
+                            PublicId = image.Image.PublicId
+                        });
+                    }
+
                     dest.Location = textInfo.ToTitleCase(src.Location.ToLower());
                     dest.City = textInfo.ToTitleCase(src.City.ToLower());
                     dest.Color = textInfo.ToTitleCase(src.Color.Name.ToLower());
@@ -118,6 +128,7 @@ namespace Applicaton.Web.API.Extensions
                     dest.InsuranceNumber = textInfo.ToTitleCase(src.InsuranceNumber.ToLower());
                     
                     dest.Specifications = specifications;
+                    dest.Images = vehicleImages;
                 });
 
             CreateMap<User, VehicleOwner>()
@@ -125,7 +136,10 @@ namespace Applicaton.Web.API.Extensions
                 {
                     var fullName = src.LastName + " " + src.FirstName;
 
+                    dest.OwnerId = src.Id;
 					dest.Name = textInfo.ToTitleCase(fullName.ToLower());
+					dest.Username = textInfo.ToTitleCase(src.UserName.ToLower());
+                    dest.Picture = src.Picture;
 					dest.Email = src.Email;
 					dest.PhoneNumber = src.PhoneNumber;
                     dest.Address = src.Address;

@@ -73,7 +73,7 @@ namespace Application.Web.Service.Services
 			return (vehiclesToReturn, paginationMetadata);
 		}
 
-		public async Task<List<Vehicle>> GetAllVehicleAsync(VehicleQuery vehicleQuery)
+		public async Task<List<Vehicle>> GetAllVehiclesAsync(VehicleQuery vehicleQuery)
         {
 			var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
 
@@ -88,6 +88,22 @@ namespace Application.Web.Service.Services
 
             return vehiclesToReturn;
         }
+
+		public async Task<List<Vehicle>> GetAllVehiclesByOwnerIdAsync(VehicleQuery vehicleQuery, Guid ownerId)
+		{
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-Owner-{ownerId}";
+
+			var vehicles = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetAllVehiclesByOwnerIdAsync(ownerId),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			var vehiclesToReturn = HandleVehicleQuery(vehicleQuery, vehicles);
+
+			return vehiclesToReturn;
+		}
 
 		public async Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId)
 		{
