@@ -196,7 +196,7 @@ namespace Applicaton.Web.API.Controllers
         /// <returns>Status code of the action.</returns>
         /// <response code="200">Successfully updated item information.</response>
         /// <response code="500">There is something wrong while execute.</response>
-        [HttpPatch("{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBrandAsync([FromBody] BrandRequestModel requestModel, [FromRoute] Guid id)
         {
             try

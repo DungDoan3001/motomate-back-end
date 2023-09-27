@@ -3,11 +3,11 @@ using AutoMapper;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Database.DTOs.RequestModels;
 using System.Globalization;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Application.Web.Service.Helpers;
 
 namespace Applicaton.Web.API.Extensions
 {
-    public class MappingProfile : Profile
+	public class MappingProfile : Profile
     {
         public MappingProfile()
         {
@@ -91,7 +91,9 @@ namespace Applicaton.Web.API.Extensions
 
             // Vehicles
             CreateMap<VehicleRequestModel, Vehicle>()
-                .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location.Trim().ToUpper()))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address.Trim().ToUpper()))
+                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District.Trim().ToUpper()))
+                .ForMember(dest => dest.Ward, opt => opt.MapFrom(src => src.Ward.Trim().ToUpper()))
                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City.Trim().ToUpper()))
                 .ForMember(dest => dest.LicensePlate, opt => opt.MapFrom(src => src.LicensePlate.Trim().ToUpper()))
                 .ForMember(dest => dest.InsuranceNumber, opt => opt.MapFrom(src => src.InsuranceNumber.Trim().ToUpper()));
@@ -111,13 +113,32 @@ namespace Applicaton.Web.API.Extensions
                         BrandName = textInfo.ToTitleCase(src.Model.Collection.Brand.Name.ToLower()),
                     };
 
-                    dest.Location = textInfo.ToTitleCase(src.Location.ToLower());
+                    var vehicleImages = new List<ImageOfVehicle>();
+
+                    foreach(var image in src.VehicleImages)
+                    {
+                        vehicleImages.Add(new ImageOfVehicle
+                        {
+                            Image = image.Image.ImageUrl,
+                            PublicId = image.Image.PublicId
+                        });
+                    }
+
+                    dest.Address = textInfo.ToTitleCase(src.Address.ToLower());
+                    dest.Ward = textInfo.ToTitleCase(src.Ward.ToLower());
+                    dest.District = textInfo.ToTitleCase(src.District.ToLower());
                     dest.City = textInfo.ToTitleCase(src.City.ToLower());
                     dest.Color = textInfo.ToTitleCase(src.Color.Name.ToLower());
                     dest.LicensePlate = textInfo.ToTitleCase(src.LicensePlate.ToLower());
                     dest.InsuranceNumber = textInfo.ToTitleCase(src.InsuranceNumber.ToLower());
+                    dest.Status = textInfo.ToTitleCase(Constants.statusValues[src.Status].ToLower());
                     
+                    dest.IsAvaiable = src.IsAvailable;
+                    dest.IsActive = src.IsActive;
+                    dest.IsLocked = src.IsLocked;
+
                     dest.Specifications = specifications;
+                    dest.Images = vehicleImages;
                 });
 
             CreateMap<User, VehicleOwner>()
@@ -125,7 +146,10 @@ namespace Applicaton.Web.API.Extensions
                 {
                     var fullName = src.LastName + " " + src.FirstName;
 
+                    dest.OwnerId = src.Id;
 					dest.Name = textInfo.ToTitleCase(fullName.ToLower());
+					dest.Username = textInfo.ToTitleCase(src.UserName.ToLower());
+                    dest.Picture = src.Picture;
 					dest.Email = src.Email;
 					dest.PhoneNumber = src.PhoneNumber;
                     dest.Address = src.Address;

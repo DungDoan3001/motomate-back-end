@@ -26,16 +26,31 @@ namespace Application.Web.Database.Models
         public DateTime InsuranceExpiry { get; set; }
 
         [Column("status")]
-        public int Status { get; set; } = 0; // 1-2-3 :v i dont know yet
+        public int Status { get; set; } = 0; // 1-2-3 Waiting, Approve, Deny
 
         [Column("price")]
         public decimal Price { get; set; }
 
-        [Column("location")]
-        public string Location { get; set; }
+        [Column("address")]
+        public string Address { get; set; }
+
+		[Column("district")]
+		public string District { get; set; }
+
+        [Column("ward")]
+        public string Ward { get; set; }
 
         [Column("city")]
         public string City { get; set; }
+
+        [Column("is_active")]
+        public bool IsActive { get; set; } = true;
+
+        [Column("is_lock")]
+        public bool IsLocked { get; set; } = false;
+
+		[Column("is_available")]
+		public bool IsAvailable { get; set; } = true;
 
         [Column("FK_color_id")]
         public Guid ColorId { get; set; }

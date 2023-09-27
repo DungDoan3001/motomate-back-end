@@ -7,10 +7,13 @@ namespace Application.Web.Service.Interfaces
     public interface IVehicleService
     {
         Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery);
-		Task<List<Vehicle>> GetAllVehicleAsync(VehicleQuery vehicleQuery);
+		Task<List<Vehicle>> GetAllVehiclesAsync(VehicleQuery vehicleQuery);
         Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId);
         Task<Vehicle> CreateVehicleAsync(VehicleRequestModel requestModel);
         Task<Vehicle> UpdateVehicleAsync(VehicleRequestModel requestModel, Guid vehicleId);
         Task<bool> DeleteVehicleAsync(Guid vehicleId);
+        Task<List<Vehicle>> GetAllVehiclesByOwnerIdAsync(VehicleQuery vehicleQuery, Guid ownerId);
+        Task<(bool, bool)> HandleLockVehicleAsync(Guid vehicleId);
+        Task<Vehicle> UpdateVehicleStatusAsync(Guid vehicleId, int statusNumber);
 	}
 }

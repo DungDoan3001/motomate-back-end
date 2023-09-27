@@ -42,6 +42,7 @@ namespace Applicaton.Web.API.Extensions
                     Description = "This is a list of APIs we use to manage the MotorMate Application",
                 };
                 options.SwaggerDoc("v1", apiInfo);
+
                 // Generating api description via xml;
                 string xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
@@ -70,12 +71,17 @@ namespace Applicaton.Web.API.Extensions
                         Array.Empty<string>()
                     }
                 });
-            });
+			});
         }
-
+        
         public static void ConfigureAutoMapper(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
+        }
+
+        public static void ConfigureSignalR(this IServiceCollection services)
+        {
+            services.AddSignalR();
         }
 
         public static void ConfigureController(this IServiceCollection services)
@@ -128,6 +134,22 @@ namespace Applicaton.Web.API.Extensions
                     ValidIssuer = jwtConfig["validIssuer"],
                     ValidAudience = jwtConfig["validAudience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+
+                        if(!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/messages")))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 };
             });
         }
