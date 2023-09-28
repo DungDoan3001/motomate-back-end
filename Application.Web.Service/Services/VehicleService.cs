@@ -285,7 +285,7 @@ namespace Application.Web.Service.Services
 			{
 				var newImage = new Image
 				{
-					ImageUrl = image.ImageUrl,
+					ImageUrl = image.Image,
 					PublicId = image.PublicId
 				};
 
