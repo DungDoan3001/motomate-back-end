@@ -229,6 +229,8 @@ namespace Application.Web.Service.Services
 
 			_imageRepo.DeleteRange(originalImages);
 
+			await _unitOfWork.CompleteAsync();
+
 			_vehicleRepo.Update(vehicleToUpdate);
 
 			_imageRepo.AddRange(newImages);
