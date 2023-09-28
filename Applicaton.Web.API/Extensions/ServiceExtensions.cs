@@ -6,6 +6,7 @@ using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Queries.ServiceQueries;
+using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;

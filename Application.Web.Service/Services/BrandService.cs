@@ -140,10 +140,10 @@ namespace Application.Web.Service.Services
                 {
                     foreach (var brandImageToDelete in brand.BrandImages)
                     {
-                        _brandImageRepo.DeleteByEntity(brandImageToDelete);
-
                         _imageRepo.Delete(brandImageToDelete.ImageId);
                     }
+
+                    await _unitOfWork.CompleteAsync();
 
                     var (newImage, brandImage) = HandleNewBrandImage(requestModel, brandToUpdate.Id);
 
