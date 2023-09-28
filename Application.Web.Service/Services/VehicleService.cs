@@ -206,7 +206,10 @@ namespace Application.Web.Service.Services
 		
 		public async Task<Vehicle> UpdateVehicleAsync(VehicleRequestModel requestModel, Guid vehicleId)
 		{
-			var vehicle = await GetVehicleByIdAsync(vehicleId);
+			var vehicle = await _vehicleQueries.GetByIdAsync(vehicleId);
+
+			if (vehicle == null)
+				throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
 
 			var originalLicensePlate = vehicle.LicensePlate;
 			
@@ -220,16 +223,14 @@ namespace Application.Web.Service.Services
 			_ = await _modelService.GetModelByIdAsync(requestModel.ModelId);
 
 			await ValidateVehicleAsync(requestModel, originalLicensePlate, originalInsuranceNumber);
-			
-			var vehicleToUpdate = _mapper.Map<VehicleRequestModel, Vehicle>(requestModel, vehicle);
-
-			vehicleToUpdate.ColorId = await _colorQueries.GetColorIdByColorNameAsync(requestModel.ColorName);
 
 			var (newImages, vehicleImages) = HandleNewVehicleImages(requestModel, vehicleId);
 
 			_imageRepo.DeleteRange(originalImages);
 
-			await _unitOfWork.CompleteAsync();
+			var vehicleToUpdate = _mapper.Map<VehicleRequestModel, Vehicle>(requestModel, vehicle);
+
+			var colorId = await _colorQueries.GetColorIdByColorNameAsync(requestModel.ColorName);
 
 			_vehicleRepo.Update(vehicleToUpdate);
 
