@@ -104,6 +104,47 @@ namespace Application.Web.Service.Services
 			return vehiclesToReturn;
 		}
 
+		public async Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesByStatusAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery, string statusRoute)
+		{
+			if(!Constants.statusValues.Any(x => x.Value.ToUpper().Trim() ==  statusRoute.ToUpper().Trim()))
+			{
+				throw new StatusCodeException(message: "Invalid status.", statusCode: StatusCodes.Status400BadRequest);
+			}
+
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
+
+			var vehicles = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetAllVehiclesAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			var totalItemCount = vehicles.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+			vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
+
+			var statusNumber = Constants.statusValues
+								.Where(x => x.Value
+												.ToUpper()
+												.Trim()
+												.Equals(statusRoute
+														.ToUpper()
+														.Trim()))
+												.Select(x => x.Key)
+												.FirstOrDefault();
+
+			var vehiclesToReturn = vehicles
+				.Where(v => v.Status.Equals(statusNumber))
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+			return (vehiclesToReturn, paginationMetadata);
+		}
+
 		public async Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId)
 		{
 			var key = $"{_cacheKeyConstants.VehicleCacheKey}-ID-{vehicleId}";
@@ -366,44 +407,80 @@ namespace Application.Web.Service.Services
 
 		private static List<Vehicle> HandleVehicleQuery(VehicleQuery vehicleQuery, List<Vehicle> vehicles)
 		{
-			if (vehicleQuery.Models != null && vehicleQuery.Models.Count != 0)
+			if (vehicleQuery.Brands != null && vehicleQuery.Brands.Count != 0)
 			{
-				foreach(var model in vehicleQuery.Models)
+				var vehicleQueryHolder = new List<Vehicle>();
+				foreach (var brand in vehicleQuery.Brands)
 				{
-					vehicles = vehicles
-						.Where(x => x.Model.Name.ToUpper().Equals(model.ToUpper()))
+					var result = vehicles
+						.Where(x => x.Model.Collection.Brand.Name
+										.ToUpper()
+										.Trim()
+										.Contains(brand
+													.ToUpper()
+													.Trim()))
 						.ToList();
+
+					vehicleQueryHolder.AddRange(result);
 				}
+				vehicles = vehicleQueryHolder;
 			}
 
 			if (vehicleQuery.Collections != null && vehicleQuery.Collections.Count != 0)
 			{
+				var vehicleQueryHolder = new List<Vehicle>();
 				foreach (var collection in vehicleQuery.Collections)
 				{
-					vehicles = vehicles
-						.Where(x => x.Model.Collection.Name.ToUpper().Equals(collection.ToUpper()))
+					var result = vehicles
+						.Where(x => x.Model.Collection.Name
+										.ToUpper()
+										.Trim()
+										.Contains(collection
+													.ToUpper()
+													.Trim()))
 						.ToList();
+
+					vehicleQueryHolder.AddRange(result);
 				}
+				vehicles = vehicleQueryHolder;
 			}
 
-			if (vehicleQuery.Brands != null && vehicleQuery.Brands.Count != 0)
+			if (vehicleQuery.Models != null && vehicleQuery.Models.Count != 0)
 			{
-				foreach (var brand in vehicleQuery.Brands)
+				var vehicleQueryHolder = new List<Vehicle>();
+				foreach(var model in vehicleQuery.Models)
 				{
-					vehicles = vehicles
-						.Where(x => x.Model.Collection.Brand.Name.ToUpper().Equals(brand.ToUpper()))
+					var result = vehicles
+						.Where(x => x.Model.Name
+										.ToUpper()
+										.Trim()
+										.Contains(model
+													.ToUpper()
+													.Trim()))
 						.ToList();
+
+					vehicleQueryHolder.AddRange(result);
 				}
+				vehicles = vehicleQueryHolder;
 			}
 
 			if (vehicleQuery.Cities != null && vehicleQuery.Cities.Count != 0)
 			{
+				var vehicleQueryHolder = new List<Vehicle>();
 				foreach (var city in vehicleQuery.Cities)
 				{
-					vehicles = vehicles
-						.Where(x => x.City.ToUpper().Equals(city.ToUpper()))
+					var result = vehicles
+						.Where(x => x.City
+										.ToUpper()
+										.Trim()
+										.Contains(city
+													.ToUpper()
+													.Trim()))
 						.ToList();
+
+					vehicleQueryHolder.AddRange(result);
 				}
+				vehicles = vehicleQueryHolder;
 			}
 
 			if (vehicleQuery.IsSortPriceDesc.HasValue)
