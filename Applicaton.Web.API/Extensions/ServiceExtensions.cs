@@ -37,11 +37,19 @@ namespace Applicaton.Web.API.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
-                OpenApiInfo apiInfo = new OpenApiInfo
+                var startTime = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")).ToString();
+                
+                var swaggerDescription = "## Description. \n\n" +
+				"- This is a list of APIs we use to manage the MotorMate Application. Please note that the MotorMate Application relies on these APIs to deliver a seamless and feature-rich experience to our users. \n\n" +
+                "\n\n" +
+                $"* Last udpatet at: __{startTime}__ \n\n";
+
+				OpenApiInfo apiInfo = new OpenApiInfo
                 {
                     Title = "MotorMate Swagger UI",
-                    Description = "This is a list of APIs we use to manage the MotorMate Application",
-                };
+                    Description = swaggerDescription,
+                    Version = "develop"
+				};
                 options.SwaggerDoc("v1", apiInfo);
 
                 // Generating api description via xml;
