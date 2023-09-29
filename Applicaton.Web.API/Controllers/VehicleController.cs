@@ -35,7 +35,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet]
-        public async Task<IActionResult> GetVehiclesAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery)
+        public async Task<IActionResult> GetVehiclesByStatusAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery)
         {
             try
             {
@@ -122,6 +122,51 @@ namespace Applicaton.Web.API.Controllers
 			try
 			{
 				var vehicles = await _vehicleService.GetAllVehiclesByOwnerIdAsync(vehicleQuery, ownerId);
+
+				var vehiclesToReturn = _mapper.Map<IEnumerable<VehicleResponseModel>>(vehicles);
+
+				return Ok(vehiclesToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Acquire vehicles per status information with pagination. valid input are "pending", "approved", "denied"
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("status/{statusRoute}")]
+		public async Task<IActionResult> GetVehiclesAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery, [FromRoute] string statusRoute)
+		{
+			try
+			{
+				if (pagination.pageSize > maxPageSize)
+				{
+					pagination.pageSize = maxPageSize;
+				}
+
+				var (vehicles, paginationMetadata) = await _vehicleService.GetVehiclesByStatusAsync(pagination, vehicleQuery, statusRoute);
+
+				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+				Response.AddPaginationHeader(paginationMetadata);
 
 				var vehiclesToReturn = _mapper.Map<IEnumerable<VehicleResponseModel>>(vehicles);
 

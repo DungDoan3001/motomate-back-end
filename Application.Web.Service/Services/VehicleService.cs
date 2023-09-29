@@ -104,6 +104,47 @@ namespace Application.Web.Service.Services
 			return vehiclesToReturn;
 		}
 
+		public async Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesByStatusAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery, string statusRoute)
+		{
+			if(!Constants.statusValues.Any(x => x.Value.ToUpper().Trim() ==  statusRoute.ToUpper().Trim()))
+			{
+				throw new StatusCodeException(message: "Invalid status.", statusCode: StatusCodes.Status400BadRequest);
+			}
+
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
+
+			var vehicles = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetAllVehiclesAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			var totalItemCount = vehicles.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+			vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
+
+			var statusNumber = Constants.statusValues
+								.Where(x => x.Value
+												.ToUpper()
+												.Trim()
+												.Equals(statusRoute
+														.ToUpper()
+														.Trim()))
+												.Select(x => x.Key)
+												.FirstOrDefault();
+
+			var vehiclesToReturn = vehicles
+				.Where(v => v.Status.Equals(statusNumber))
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+			return (vehiclesToReturn, paginationMetadata);
+		}
+
 		public async Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId)
 		{
 			var key = $"{_cacheKeyConstants.VehicleCacheKey}-ID-{vehicleId}";
