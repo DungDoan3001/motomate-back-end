@@ -6,5 +6,8 @@ namespace Application.Web.Database.DTOs.RequestModels
     {
         [Required(ErrorMessage = "Color name is required.")]
         public string Color { get; set; }
+
+        [Required(ErrorMessage = "Hex code is required.")]
+        public string HexCode { get; set; }
     }
 }
