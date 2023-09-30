@@ -9,7 +9,6 @@
         public bool IsAvaiable { get; set; }
         public bool IsActive { get; set; }
         public bool IsLocked { get; set; }
-        public string Color { get; set; }
         public decimal Price { get; set; }
         public string Address { get; set; }
         public string District { get; set; }
@@ -42,6 +41,10 @@
         public string Year { get; set; }
 
         public string Capacity { get; set; }
+
+        public string Color { get; set; }
+
+        public string HexCode { get; set; }
 
         public Guid CollectionId { get; set; }
         public string CollectionName { get; set; }

@@ -76,7 +76,8 @@ namespace Applicaton.Web.API.Extensions
                         colors.Add(new ColorOfModel
                         {
                             Id = modelColor.Color.Id,
-                            Color = textInfo.ToTitleCase(modelColor.Color.Name.ToLower())
+                            Color = textInfo.ToTitleCase(modelColor.Color.Name.ToLower()),
+                            HexCode = modelColor.Color.HexCode
                         });
                     }
 
@@ -111,7 +112,9 @@ namespace Applicaton.Web.API.Extensions
                         CollectionName = textInfo.ToTitleCase(src.Model.Collection.Name.ToLower()),
                         BrandId = src.Model.Collection.Brand.Id,
                         BrandName = textInfo.ToTitleCase(src.Model.Collection.Brand.Name.ToLower()),
-                    };
+                        Color = textInfo.ToTitleCase(src.Color.Name.ToLower()),
+                        HexCode = src.Color.HexCode,
+				    };
 
                     var vehicleImages = new List<ImageOfVehicle>();
 
@@ -128,7 +131,6 @@ namespace Applicaton.Web.API.Extensions
                     dest.Ward = textInfo.ToTitleCase(src.Ward.ToLower());
                     dest.District = textInfo.ToTitleCase(src.District.ToLower());
                     dest.City = textInfo.ToTitleCase(src.City.ToLower());
-                    dest.Color = textInfo.ToTitleCase(src.Color.Name.ToLower());
                     dest.LicensePlate = textInfo.ToTitleCase(src.LicensePlate.ToLower());
                     dest.InsuranceNumber = textInfo.ToTitleCase(src.InsuranceNumber.ToLower());
                     dest.Status = textInfo.ToTitleCase(Constants.statusValues[src.Status].ToLower());
