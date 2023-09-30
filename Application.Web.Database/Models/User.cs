@@ -28,5 +28,9 @@ namespace Application.Web.Database.Models
         public virtual ICollection<UserRole> UserRoles { get; set; }
 
         public virtual ICollection<Vehicle> Vehicles { get; set; }
+
+        public virtual ICollection<ChatMember> ChatMembers { get; set; }
+
+        public virtual ICollection<Message> Messages { get; set; }
     }
 }

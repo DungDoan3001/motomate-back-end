@@ -5,18 +5,17 @@ namespace Application.Web.Database.Context
 {
     public interface IApplicationContext
     {
-        DbSet<ResetPassword> ResetPassword { get; set; }
-        //DbSet<BillingInfo> BillingInfo { get; set; }
-        //DbSet<CompletedTrip> CompletedTrip { get; set; }
-        //DbSet<DriverLicense> DriverLicense { get; set; }
-        //DbSet<IncompleteTrip> IncompleteTrip { get; set; }
-        //DbSet<PaymentMethod> PaymentMethod { get; set; }
-        //DbSet<TripRequest> TripRequest { get; set; }
-        //DbSet<User> Users { get; set; }
-        //DbSet<UserType> UserType { get; set; }
-        //DbSet<UserTypeType> UserTypeType { get; set; }
-        //DbSet<Vehicle> Vehicle { get; set; }
+		DbSet<Brand> Brands { get; set; }
+		DbSet<BrandImage> BrandImages { get; set; }
+		DbSet<Collection> Collections { get; set; }
+		DbSet<Color> Colors { get; set; }
+		DbSet<Image> Images { get; set; }
+		DbSet<Model> Models { get; set; }
+		DbSet<ModelColor> ModelColors { get; set; }
+		DbSet<ResetPassword> ResetPasswords { get; set; }
+		DbSet<Vehicle> Vehicles { get; set; }
+		DbSet<VehicleImage> VehicleImages { get; set; }
 
-        DbSet<T> GetSet<T>() where T : class;
+		DbSet<T> GetSet<T>() where T : class;
     }
 }

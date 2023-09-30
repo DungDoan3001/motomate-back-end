@@ -58,11 +58,11 @@ namespace Application.Web.Service.Services
 
 			_cacheKeyConstants.AddKeyToList(key);
 
-			var totalItemCount = vehicles.Count;
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-			
 			vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
+
+			var totalItemCount = vehicles.Count;
+			
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
 			var vehiclesToReturn = vehicles
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
@@ -120,10 +120,6 @@ namespace Application.Web.Service.Services
 
 			_cacheKeyConstants.AddKeyToList(key);
 
-			var totalItemCount = vehicles.Count;
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
 			vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
 
 			var statusNumber = Constants.statusValues
@@ -135,6 +131,12 @@ namespace Application.Web.Service.Services
 														.Trim()))
 												.Select(x => x.Key)
 												.FirstOrDefault();
+
+			var totalItemCount = vehicles
+				.Where(v => v.Status.Equals(statusNumber))
+				.Count();
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
 			var vehiclesToReturn = vehicles
 				.Where(v => v.Status.Equals(statusNumber))
@@ -247,11 +249,8 @@ namespace Application.Web.Service.Services
 		
 		public async Task<Vehicle> UpdateVehicleAsync(VehicleRequestModel requestModel, Guid vehicleId)
 		{
-			var vehicle = await _vehicleQueries.GetByIdAsync(vehicleId);
-
-			if (vehicle == null)
-				throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
-
+			var vehicle = await _vehicleQueries.GetByIdAsync(vehicleId) ?? throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+			
 			var originalLicensePlate = vehicle.LicensePlate;
 			
 			var originalInsuranceNumber = vehicle.InsuranceNumber;
@@ -317,7 +316,7 @@ namespace Application.Web.Service.Services
 			return true;
 		}
 
-		private (List<Image>, List<Database.Models.VehicleImage>) HandleNewVehicleImages(VehicleRequestModel requestModel, Guid vehicleId)
+		private static (List<Image>, List<Database.Models.VehicleImage>) HandleNewVehicleImages(VehicleRequestModel requestModel, Guid vehicleId)
 		{
 			var imageList = new List<Image>();
 			var vehicleImageList = new List<Database.Models.VehicleImage>();

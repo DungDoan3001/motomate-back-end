@@ -42,7 +42,7 @@ namespace Applicaton.Web.API.Extensions
                 var swaggerDescription = "## Description. \n\n" +
 				"- This is a list of APIs we use to manage the MotorMate Application. Please note that the MotorMate Application relies on these APIs to deliver a seamless and feature-rich experience to our users. \n\n" +
                 "\n\n" +
-                $"* Last udpatet at: __{startTime}__ \n\n";
+                $"* Last updated at: __{startTime}__ \n\n";
 
 				OpenApiInfo apiInfo = new OpenApiInfo
                 {
