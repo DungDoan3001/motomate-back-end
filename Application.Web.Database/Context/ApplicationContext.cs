@@ -14,7 +14,7 @@ namespace Application.Web.Database.Context
         public DbSet<BrandImage> BrandImages { get; set; }
         public DbSet<Collection> Collections { get; set; }
         public DbSet<Color> Colors { get; set; }
-        public DbSet <Image> Images { get; set; }
+        public DbSet<Image> Images { get; set; }
         public DbSet<Model> Models { get; set; }
         public DbSet<ModelColor> ModelColors { get; set; }
         public DbSet<ResetPassword> ResetPasswords { get; set; }
