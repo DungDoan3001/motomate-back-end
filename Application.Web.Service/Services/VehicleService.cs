@@ -249,11 +249,8 @@ namespace Application.Web.Service.Services
 		
 		public async Task<Vehicle> UpdateVehicleAsync(VehicleRequestModel requestModel, Guid vehicleId)
 		{
-			var vehicle = await _vehicleQueries.GetByIdAsync(vehicleId);
-
-			if (vehicle == null)
-				throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
-
+			var vehicle = await _vehicleQueries.GetByIdAsync(vehicleId) ?? throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+			
 			var originalLicensePlate = vehicle.LicensePlate;
 			
 			var originalInsuranceNumber = vehicle.InsuranceNumber;
@@ -319,7 +316,7 @@ namespace Application.Web.Service.Services
 			return true;
 		}
 
-		private (List<Image>, List<Database.Models.VehicleImage>) HandleNewVehicleImages(VehicleRequestModel requestModel, Guid vehicleId)
+		private static (List<Image>, List<Database.Models.VehicleImage>) HandleNewVehicleImages(VehicleRequestModel requestModel, Guid vehicleId)
 		{
 			var imageList = new List<Image>();
 			var vehicleImageList = new List<Database.Models.VehicleImage>();
