@@ -58,11 +58,11 @@ namespace Application.Web.Service.Services
 
 			_cacheKeyConstants.AddKeyToList(key);
 
-			var totalItemCount = vehicles.Count;
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-			
 			vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
+
+			var totalItemCount = vehicles.Count;
+			
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
 			var vehiclesToReturn = vehicles
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
@@ -120,10 +120,6 @@ namespace Application.Web.Service.Services
 
 			_cacheKeyConstants.AddKeyToList(key);
 
-			var totalItemCount = vehicles.Count;
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
 			vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
 
 			var statusNumber = Constants.statusValues
@@ -135,6 +131,12 @@ namespace Application.Web.Service.Services
 														.Trim()))
 												.Select(x => x.Key)
 												.FirstOrDefault();
+
+			var totalItemCount = vehicles
+				.Where(v => v.Status.Equals(statusNumber))
+				.Count();
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
 			var vehiclesToReturn = vehicles
 				.Where(v => v.Status.Equals(statusNumber))
