@@ -6,6 +6,7 @@ using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
@@ -13,21 +14,25 @@ namespace Application.Web.Service.Services
 {
     public class ChatService : IChatService
 	{
-        private readonly IUnitOfWork _unitOfWork;
+		private readonly IMapper _mapper;
+		private readonly IUnitOfWork _unitOfWork;
 		private readonly IGenericRepository<Chat> _chatRepo;
 		private readonly IGenericRepository<Message> _messageRepo;
 		private readonly IGenericRepository<ChatMember> _chatMemberRepo;
 		private readonly UserManager<User> _userManager;
 		private readonly IChatQueries _chatQueries;
+		private readonly IMessageQueries _messageQueries;
 
-		public ChatService(IUnitOfWork unitOfWork, UserManager<User> userManager, IChatQueries chatQueries)
+		public ChatService(IMapper mapper, IUnitOfWork unitOfWork, UserManager<User> userManager, IChatQueries chatQueries, IMessageQueries messageQueries)
         {
+			_mapper = mapper;
             _unitOfWork = unitOfWork;
             _chatRepo = unitOfWork.GetBaseRepo<Chat>();
             _messageRepo = unitOfWork.GetBaseRepo<Message>();
             _chatMemberRepo = unitOfWork.GetBaseRepo<ChatMember>();
             _userManager = userManager;
 			_chatQueries = chatQueries;
+			_messageQueries = messageQueries;
 
 		}
 
@@ -58,7 +63,7 @@ namespace Application.Web.Service.Services
 			return await _chatQueries.GetChatByChatId(newChat.Id);
 		}
 
-		public async Task<(List<Chat>, PaginationMetadata)> GetAllChatsByUserAsync(PaginationRequestModel pagination, Guid userId)
+		public async Task<(IEnumerable<Chat>, PaginationMetadata)> GetAllChatsByUserAsync(PaginationRequestModel pagination, Guid userId)
 		{
 			var chats = await _chatQueries.GetAllChatsByUserIdAsync(userId);
 
@@ -72,6 +77,58 @@ namespace Application.Web.Service.Services
 				.ToList();
 
 			return (chatsToReturn, paginationMetadata);
+		}
+
+		public async Task<(IEnumerable<Message>, PaginationMetadata)> GetAllMessagesByChatId(PaginationRequestModel pagination, Guid chatId)
+		{
+			await CheckIfChatExisted(chatId);
+
+			var messages = await _messageQueries.GetAllMessageByChatId(chatId);
+			
+			var totalItemCount = messages.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageNumber, pagination.pageNumber);
+
+			var messagesToReturn = messages
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize);
+
+			return (messagesToReturn, paginationMetadata);
+		}
+
+
+		public async Task<Message> CreateMessageAsync(MessageRequestModel messageRequest, Guid chatId)
+		{
+			await CheckIfChatExisted(chatId);
+			await HandleCheckingUser(messageRequest, chatId);
+
+			var newMessage = _mapper.Map<Message>(messageRequest);
+
+			newMessage.ChatId = chatId;
+
+			_messageRepo.Add(newMessage);
+
+			await _unitOfWork.CompleteAsync();
+
+			return await _messageQueries.GetMessageByIdAsync(newMessage.Id);
+		}
+
+		private async Task HandleCheckingUser(MessageRequestModel messageRequest, Guid chatId)
+		{
+			var user = await _userManager.FindByIdAsync(messageRequest.SenderId.ToString()) ?? throw new StatusCodeException(message: "User is not valid", statusCode: StatusCodes.Status404NotFound);
+
+			var isUserExistsInChat = await _chatQueries.CheckIfUserExistedInChat(chatId, user.Id);
+
+			if (!isUserExistsInChat)
+				throw new StatusCodeException(message: "User is not a member in chat", statusCode: StatusCodes.Status409Conflict);
+		}
+
+		private async Task CheckIfChatExisted(Guid chatId)
+		{
+			var isChatExisted = await _chatQueries.CheckIfChatExisted(chatId);
+
+			if (!isChatExisted)
+				throw new StatusCodeException(message: "Chat does not existed.", statusCode: StatusCodes.Status404NotFound);
 		}
 
 		private async Task<Dictionary<Guid, string>> HandleValidUserRequest(ChatRequestModel chatRequest)

@@ -39,5 +39,19 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Where(x => x.Id.Equals(chatId))
 				.FirstOrDefaultAsync();
 		}
+
+		public async Task<bool> CheckIfChatExisted(Guid chatId)
+		{
+			return await dbSet
+				.AnyAsync(x => x.Id.Equals(chatId));
+		}
+
+		public async Task<bool> CheckIfUserExistedInChat(Guid chatId, Guid userId)
+		{
+			return await dbSet
+				.Include(x => x.ChatMembers)
+				.Where(x => x.Id.Equals(chatId))
+				.AnyAsync(x => x.ChatMembers.Any(x => x.UserId.Equals(userId)));
+		}
 	}
 }
