@@ -156,6 +156,49 @@ namespace Applicaton.Web.API.Extensions
 					dest.PhoneNumber = src.PhoneNumber;
                     dest.Address = src.Address;
 				});
+
+            CreateMap<Chat, ChatResponseModel>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.Id = src.Id;
+                    dest.LastUpdatedAt = src.LastUpdatedAt;
+
+                    var members = new List<MemberOfChat>();
+                    foreach(var member in src.ChatMembers)
+                    {
+                        members.Add(new MemberOfChat
+                        {
+                            Id = member.User.Id,
+                            Username = member.User.UserName,
+                            Avatar = member.User.Picture
+                        });
+                    };
+
+                    dest.Members = members;
+                });
+
+            CreateMap<Message, MessageResponseModel>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.Id = src.Id;
+                    dest.Message = src.Content;
+                    dest.Time = src.CreatedAt;
+
+                    dest.User = new MemberOfMessage
+                    {
+                        Id = src.Sender.Id,
+                        Username = src.Sender.UserName,
+                        Avatar = src.Sender.Picture
+                    };
+                });
+
+            CreateMap<MessageRequestModel, Message>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.SenderId = src.SenderId;
+                    dest.Content = src.Message;
+                    dest.CreatedAt = DateTime.UtcNow;
+                });
 		}
     }
 }
