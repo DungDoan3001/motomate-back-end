@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Application.Web.Database.Context;
@@ -6,7 +6,6 @@ using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Queries.ServiceQueries;
-using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
@@ -16,11 +15,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using static Google.Apis.Requests.BatchRequest;
 
 namespace Applicaton.Web.API.Extensions
 {
-    public static class ServiceExtensions
+	public static class ServiceExtensions
     {
 
         // Database Connection
