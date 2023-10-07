@@ -202,15 +202,17 @@ namespace Applicaton.Web.API.Extensions
                 options.AddPolicy("CorsPolicy", policy =>
                 {
                     string[] exposedHeaders = { "X-Pagination", "content-Type" };
-                    //policy.AllowAnyHeader()
-                    //      .AllowAnyMethod()
-                    //      .SetIsOriginAllowed(_ => true)
-                    //      .AllowCredentials();
-                    policy
-                          .WithExposedHeaders(exposedHeaders)
+                    string[] allowOrigins = { 
+                                                "https://motormate.vercel.app",
+                                                "http://localhost:3000/"
+                                            };
+
+
+                    policy.WithExposedHeaders(exposedHeaders)
+                          .SetIsOriginAllowed(_ => true)
+                          .WithOrigins(allowOrigins)
                           .AllowAnyHeader()
                           .AllowAnyMethod()
-                          .SetIsOriginAllowed(_ => true)
                           .AllowCredentials();
                 });
             });

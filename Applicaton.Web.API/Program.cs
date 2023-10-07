@@ -29,12 +29,16 @@ var app = builder.Build();
 //}
 
 app.UseSwagger();
+
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "MotorMate v1");
 });
 
-//app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
+
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
