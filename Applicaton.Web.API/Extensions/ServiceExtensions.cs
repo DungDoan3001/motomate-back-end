@@ -210,7 +210,7 @@ namespace Applicaton.Web.API.Extensions
                           .WithExposedHeaders(exposedHeaders)
                           .AllowAnyHeader()
                           .AllowAnyMethod()
-                          .AllowAnyOrigin()
+                          .SetIsOriginAllowed(_ => true)
                           .AllowCredentials();
                 });
             });
