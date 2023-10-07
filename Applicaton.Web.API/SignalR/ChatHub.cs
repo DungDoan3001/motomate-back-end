@@ -44,7 +44,7 @@ namespace Applicaton.Web.API.SignalR
 
 			await Groups.AddToGroupAsync(Context.ConnectionId, userId);
 
-			var chats = await _chatService.GetAllChatsByUserAsync(paginationData, Guid.Parse(userId));
+			var (chats, pagination) = await _chatService.GetAllChatsByUserAsync(paginationData, Guid.Parse(userId));
 
 			var chatDtos = _mapper.Map<IEnumerable<ChatResponseModel>>(chats);
 
