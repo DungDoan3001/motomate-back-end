@@ -13,6 +13,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 		{
 			return await dbSet
 				.Include(x => x.ChatMembers).ThenInclude(x => x.User)
+				.Include(x => x.Messages.OrderByDescending(x => x.CreatedAt).Take(1)).ThenInclude(x => x.Sender)
 				.Where(x => x.ChatMembers.Any(x => x.UserId.Equals(userId)))
 				.OrderByDescending(x => x.LastUpdatedAt)
 				.ToListAsync();

@@ -157,6 +157,7 @@ namespace Applicaton.Web.API.Extensions
                     dest.Address = src.Address;
 				});
 
+            // Chats
             CreateMap<Chat, ChatResponseModel>()
                 .AfterMap((src, dest) =>
                 {
@@ -175,8 +176,27 @@ namespace Applicaton.Web.API.Extensions
                     };
 
                     dest.Members = members;
+
+                    if(src.Messages.Count > 0)
+                    {
+                        var latestMessge = src.Messages.FirstOrDefault();
+
+                        dest.LatestMessage = new MessageResponseModel
+                        {
+                            Id = latestMessge.Id,
+                            Message = latestMessge.Content,
+                            Time = latestMessge.CreatedAt,
+                            User = new MemberOfMessage
+                            {
+                                Id = latestMessge.Sender.Id,
+                                Username = latestMessge.Sender.UserName,
+                                Avatar = latestMessge.Sender.Picture
+                            }
+                        };
+                    }
                 });
 
+            // Messages
             CreateMap<Message, MessageResponseModel>()
                 .AfterMap((src, dest) =>
                 {
