@@ -54,5 +54,16 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Where(x => x.Id.Equals(chatId))
 				.AnyAsync(x => x.ChatMembers.Any(x => x.UserId.Equals(userId)));
 		}
+
+		public async Task<List<Guid>> GetAllUserIdsInChatByChatIdAsync(Guid chatId)
+		{
+			var members = await dbSet
+				.Include(x => x.ChatMembers)
+				.Where(x => x.Id.Equals(chatId))
+				.Select(x => x.ChatMembers.Select(x => x.UserId).ToList())
+				.FirstOrDefaultAsync();
+
+			return members;
+		}
 	}
 }

@@ -9,5 +9,6 @@ namespace Application.Web.Database.Queries.Interface
         Task<Chat> GetChatByChatId(Guid chatId);
         Task<bool> CheckIfChatExisted(Guid chatId);
         Task<bool> CheckIfUserExistedInChat(Guid chatId, Guid userId);
+        Task<List<Guid>> GetAllUserIdsInChatByChatIdAsync(Guid chatId);
 	}
 }
