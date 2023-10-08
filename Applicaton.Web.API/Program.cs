@@ -46,8 +46,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<ChatHub>("/messages");
+app.MapHub<ChatHub>("messages");
 
-app.MapHub<MessageHub>("/chat-details");
+app.MapHub<MessageHub>("chat-details");
 
 app.Run();
