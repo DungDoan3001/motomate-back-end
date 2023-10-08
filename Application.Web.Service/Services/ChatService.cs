@@ -113,6 +113,7 @@ namespace Application.Web.Service.Services
 			return await _messageQueries.GetMessageByIdAsync(newMessage.Id);
 		}
 
+		
 		private async Task HandleCheckingUser(MessageRequestModel messageRequest, Guid chatId)
 		{
 			var user = await _userManager.FindByIdAsync(messageRequest.SenderId.ToString()) ?? throw new StatusCodeException(message: "User is not valid", statusCode: StatusCodes.Status404NotFound);

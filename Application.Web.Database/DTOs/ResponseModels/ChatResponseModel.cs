@@ -5,6 +5,7 @@
 		public Guid Id { get; set; }
 		public DateTime LastUpdatedAt { get; set; }
 		public List<MemberOfChat> Members { get; set; }
+		public MessageResponseModel LatestMessage { get; set; }
 	}
 
 	public sealed class MemberOfChat

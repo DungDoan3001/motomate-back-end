@@ -48,7 +48,7 @@ namespace Applicaton.Web.API.SignalR
 
 			var chatDtos = _mapper.Map<IEnumerable<ChatResponseModel>>(chats);
 
-			await Clients.Caller.SendAsync("LoadChats", chatDtos);
+			await Clients.Caller.SendAsync("LoadChats", chatDtos, pagination);
 		}
 	}
 }
