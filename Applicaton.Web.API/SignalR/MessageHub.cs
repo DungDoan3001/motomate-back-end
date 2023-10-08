@@ -8,10 +8,10 @@ namespace Applicaton.Web.API.SignalR
 {
 	public class MessageHub : Hub
 	{
-		private readonly Mapper _mapper;
+		private readonly IMapper _mapper;
 		private readonly IChatService _chatService;
 
-		public MessageHub(Mapper mapper ,IChatService chatService)
+		public MessageHub(IMapper mapper ,IChatService chatService)
 		{
 			_mapper = mapper;
 			_chatService = chatService;
