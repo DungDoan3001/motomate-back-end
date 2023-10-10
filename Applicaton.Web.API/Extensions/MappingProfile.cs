@@ -184,6 +184,7 @@ namespace Applicaton.Web.API.Extensions
                         dest.LatestMessage = new MessageResponseModel
                         {
                             Id = latestMessge.Id,
+                            ChatId = latestMessge.ChatId,
                             Message = latestMessge.Content,
                             Time = latestMessge.CreatedAt,
                             User = new MemberOfMessage
@@ -201,6 +202,7 @@ namespace Applicaton.Web.API.Extensions
                 .AfterMap((src, dest) =>
                 {
                     dest.Id = src.Id;
+                    dest.ChatId = src.ChatId;
                     dest.Message = src.Content;
                     dest.Time = src.CreatedAt;
 
