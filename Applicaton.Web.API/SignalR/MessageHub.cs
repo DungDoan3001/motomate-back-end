@@ -57,9 +57,11 @@ namespace Applicaton.Web.API.SignalR
 			{
 				var (chats, pagination) = await _chatService.GetAllChatsByUserAsync(paginationRequest, member);
 
-				var chatDtos = _mapper.Map<IEnumerable<ChatResponseModel>>(chats);
+				var chatResponse = _mapper.Map<IEnumerable<ChatResponseModel>>(chats);
 
-				await Clients.Group(member.ToString()).SendAsync("NewChatUpdate:", chatDtos, pagination);
+				var chatsToReturn = chatResponse.OrderByDescending(x => x.LatestMessage.Time);
+
+				await Clients.Group(member.ToString()).SendAsync("NewChatUpdate:", chatsToReturn, pagination);
 			}
 		}
 

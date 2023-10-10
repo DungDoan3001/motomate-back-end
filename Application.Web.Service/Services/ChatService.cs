@@ -72,6 +72,7 @@ namespace Application.Web.Service.Services
 			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
 			var chatsToReturn = chats
+				.OrderByDescending(chat => chat.LastUpdatedAt)
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
 				.Take(pagination.pageSize)
 				.ToList();
@@ -90,6 +91,7 @@ namespace Application.Web.Service.Services
 			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageNumber, pagination.pageNumber);
 
 			var messagesToReturn = messages
+				.OrderBy(message => message.CreatedAt)
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
 				.Take(pagination.pageSize);
 
@@ -99,14 +101,18 @@ namespace Application.Web.Service.Services
 
 		public async Task<Message> CreateMessageAsync(MessageRequestModel messageRequest, Guid chatId)
 		{
-			await CheckIfChatExisted(chatId);
+			var chat = await CheckIfChatExisted(chatId);
 			await HandleCheckingUser(messageRequest, chatId);
 
 			var newMessage = _mapper.Map<Message>(messageRequest);
 
-			newMessage.ChatId = chatId;
+			newMessage.ChatId = chat.Id;
+
+			chat.LastUpdatedAt = DateTime.UtcNow;
 
 			_messageRepo.Add(newMessage);
+
+			_chatRepo.Update(chat);
 
 			await _unitOfWork.CompleteAsync();
 
@@ -124,12 +130,14 @@ namespace Application.Web.Service.Services
 				throw new StatusCodeException(message: "User is not a member in chat", statusCode: StatusCodes.Status409Conflict);
 		}
 
-		private async Task CheckIfChatExisted(Guid chatId)
+		private async Task<Chat> CheckIfChatExisted(Guid chatId)
 		{
-			var isChatExisted = await _chatQueries.CheckIfChatExisted(chatId);
+			var chat = await _chatQueries.GetChatByChatId(chatId);
 
-			if (!isChatExisted)
+			if (chat == null)
 				throw new StatusCodeException(message: "Chat does not existed.", statusCode: StatusCodes.Status404NotFound);
+			
+			return chat;
 		}
 
 		private async Task<Dictionary<Guid, string>> HandleValidUserRequest(ChatRequestModel chatRequest)
