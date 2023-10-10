@@ -14,7 +14,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 			return await dbSet
 				.Include(x => x.Sender)
 				.Where(x => x.ChatId.Equals(chatId))
-				.OrderBy(x => x.CreatedAt)
+				.OrderByDescending(x => x.CreatedAt)
 				.ToListAsync();
 		}
 
