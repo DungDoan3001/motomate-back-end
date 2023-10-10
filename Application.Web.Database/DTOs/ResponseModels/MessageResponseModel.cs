@@ -3,6 +3,7 @@
 	public sealed class MessageResponseModel
 	{
 		public Guid Id { get; set; }
+		public Guid ChatId { get; set; }
 		public string Message { get; set; }
 		public DateTime Time { get; set; }
 		public MemberOfMessage User { get; set; }
