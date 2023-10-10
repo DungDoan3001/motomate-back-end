@@ -215,7 +215,8 @@ namespace Application.Web.Service.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserName),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.FullName)
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim("Avatar", user.Picture)
             }; 
 
             var roles = await _userManager.GetRolesAsync(user);
