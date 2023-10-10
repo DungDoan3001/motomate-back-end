@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Application.Web.Service.Services
 {
-    public class ChatService : IChatService
+	public class ChatService : IChatService
 	{
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
@@ -24,19 +24,19 @@ namespace Application.Web.Service.Services
 		private readonly IMessageQueries _messageQueries;
 
 		public ChatService(IMapper mapper, IUnitOfWork unitOfWork, UserManager<User> userManager, IChatQueries chatQueries, IMessageQueries messageQueries)
-        {
+		{
 			_mapper = mapper;
-            _unitOfWork = unitOfWork;
-            _chatRepo = unitOfWork.GetBaseRepo<Chat>();
-            _messageRepo = unitOfWork.GetBaseRepo<Message>();
-            _chatMemberRepo = unitOfWork.GetBaseRepo<ChatMember>();
-            _userManager = userManager;
+			_unitOfWork = unitOfWork;
+			_chatRepo = unitOfWork.GetBaseRepo<Chat>();
+			_messageRepo = unitOfWork.GetBaseRepo<Message>();
+			_chatMemberRepo = unitOfWork.GetBaseRepo<ChatMember>();
+			_userManager = userManager;
 			_chatQueries = chatQueries;
 			_messageQueries = messageQueries;
 
 		}
 
-        public async Task<Chat> CreateChatAsync(ChatRequestModel chatRequest)
+		public async Task<Chat> CreateChatAsync(ChatRequestModel chatRequest)
 		{
 			Dictionary<Guid, string> validUsers = await HandleValidUserRequest(chatRequest);
 
@@ -85,10 +85,10 @@ namespace Application.Web.Service.Services
 			await CheckIfChatExisted(chatId);
 
 			var messages = await _messageQueries.GetAllMessageByChatId(chatId);
-			
+
 			var totalItemCount = messages.Count;
 
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageNumber, pagination.pageNumber);
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
 			var messagePaging = messages
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
@@ -120,7 +120,7 @@ namespace Application.Web.Service.Services
 			return await _messageQueries.GetMessageByIdAsync(newMessage.Id);
 		}
 
-		
+
 		private async Task HandleCheckingUser(MessageRequestModel messageRequest, Guid chatId)
 		{
 			var user = await _userManager.FindByIdAsync(messageRequest.SenderId.ToString()) ?? throw new StatusCodeException(message: "User is not valid", statusCode: StatusCodes.Status404NotFound);
@@ -137,7 +137,7 @@ namespace Application.Web.Service.Services
 
 			if (chat == null)
 				throw new StatusCodeException(message: "Chat does not existed.", statusCode: StatusCodes.Status404NotFound);
-			
+
 			return chat;
 		}
 
