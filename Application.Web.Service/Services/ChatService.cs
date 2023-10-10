@@ -1,4 +1,4 @@
-﻿using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
@@ -90,10 +90,11 @@ namespace Application.Web.Service.Services
 
 			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageNumber, pagination.pageNumber);
 
-			var messagesToReturn = messages
-				.OrderBy(message => message.CreatedAt)
+			var messagePaging = messages
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
 				.Take(pagination.pageSize);
+
+			var messagesToReturn = messagePaging.OrderBy(x => x.CreatedAt);
 
 			return (messagesToReturn, paginationMetadata);
 		}
