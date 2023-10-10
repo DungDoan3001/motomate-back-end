@@ -74,6 +74,7 @@ namespace Application.Web.Service.Services
 			var chatsToReturn = chats
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
 				.Take(pagination.pageSize)
+				.OrderByDescending(x => x.Messages.Select(x => x.CreatedAt))
 				.ToList();
 
 			return (chatsToReturn, paginationMetadata);
