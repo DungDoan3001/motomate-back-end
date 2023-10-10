@@ -202,8 +202,11 @@ namespace Applicaton.Web.API.Extensions
                     string[] exposedHeaders = { "X-Pagination", "content-Type" };
                     string[] allowOrigins = { 
                                                 "https://motormate.vercel.app",
-                                                "http://localhost:3000/"
-                                            };
+                                                "http://motormate.vercel.app",
+                                                "http://localhost:3000",
+												"https://motormate-admin.vercel.app",
+												"http://motormate-admin.vercel.app",
+											};
 
 
                     policy.WithExposedHeaders(exposedHeaders)
