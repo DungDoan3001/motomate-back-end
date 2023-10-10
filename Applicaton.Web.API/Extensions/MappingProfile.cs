@@ -162,7 +162,6 @@ namespace Applicaton.Web.API.Extensions
                 .AfterMap((src, dest) =>
                 {
                     dest.Id = src.Id;
-                    dest.LastUpdatedAt = src.LastUpdatedAt;
 
                     var members = new List<MemberOfChat>();
                     foreach(var member in src.ChatMembers)

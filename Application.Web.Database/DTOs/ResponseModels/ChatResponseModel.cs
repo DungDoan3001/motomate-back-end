@@ -3,7 +3,6 @@
 	public sealed class ChatResponseModel
 	{
 		public Guid Id { get; set; }
-		public DateTime LastUpdatedAt { get; set; }
 		public List<MemberOfChat> Members { get; set; }
 		public MessageResponseModel LatestMessage { get; set; }
 	}
