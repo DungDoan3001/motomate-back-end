@@ -4,7 +4,6 @@ using Application.Web.Database.Models;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
-using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

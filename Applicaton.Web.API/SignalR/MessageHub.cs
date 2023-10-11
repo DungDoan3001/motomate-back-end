@@ -15,12 +15,14 @@ namespace Applicaton.Web.API.SignalR
 		private readonly IMapper _mapper;
 		private readonly IChatService _chatService;
 		private readonly IChatQueries _chatQueries;
+		private readonly IHubContext<ChatHub> _chatHubContext;
 
-		public MessageHub(IMapper mapper ,IChatService chatService, IChatQueries chatQueries)
+		public MessageHub(IMapper mapper ,IChatService chatService, IChatQueries chatQueries, IHubContext<ChatHub> chatHubContext)
 		{
 			_mapper = mapper;
 			_chatService = chatService;
 			_chatQueries = chatQueries;
+			_chatHubContext = chatHubContext;
 		}
 
 		public async Task CreateMessageAsync(MessageRequestModel requestModel)
@@ -61,7 +63,7 @@ namespace Applicaton.Web.API.SignalR
 
 				var chatsToReturn = chatResponse.OrderByDescending(x => x.LatestMessage.Time);
 
-				await Clients.Group(member.ToString()).SendAsync("NewChatUpdate:", chatsToReturn, pagination);
+				await _chatHubContext.Clients.Group(member.ToString()).SendAsync("LoadChats", chatsToReturn, pagination);
 			}
 		}
 

@@ -404,3 +404,6 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio
 Applicaton.Web.API/Properties/ServiceDependencies/motormate - Zip Deploy/profile.arm.json
+
+# Visual studio code .gitignore
+.vscode/

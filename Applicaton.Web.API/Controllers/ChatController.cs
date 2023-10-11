@@ -3,16 +3,13 @@ using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
-using Application.Web.Service.Services;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
-	[Route("api/chat")]
+    [Route("api/chat")]
 	[ApiController]
 	public class ChatController : ControllerBase
 	{
