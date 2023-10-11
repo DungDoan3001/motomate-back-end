@@ -2,12 +2,10 @@
 using Application.Web.Database.Constants;
 using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
-using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
-using Application.Web.Service.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;

@@ -1,7 +1,6 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Interfaces;
-using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 
@@ -15,7 +14,7 @@ namespace Applicaton.Web.API.SignalR
 		public ChatHub(IMapper mapper, IChatService chatService)
 		{
 			_chatService = chatService;
-			_mapper = mapper;	
+			_mapper = mapper;
 		}
 
 		public async Task CreateChatAsync(ChatRequestModel requestModel)
