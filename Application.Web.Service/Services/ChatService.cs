@@ -41,8 +41,21 @@ namespace Application.Web.Service.Services
 			Dictionary<Guid, string> validUsers = await HandleValidUserRequest(chatRequest);
 
 			Chat chat = await _chatQueries.GetChatByListOfMembersAsync(validUsers.Select(x => x.Value));
-			if (chat != null) return chat;
 
+			if (chat != null)
+			{
+				Chat returnOldChat = await HandleOldChat(chatRequest, validUsers, chat);
+
+				return returnOldChat;
+			}
+
+			Chat returnNewChat = await HandleNewChat(chatRequest, validUsers);
+
+			return returnNewChat;
+		}
+
+		private async Task<Chat> HandleNewChat(ChatRequestModel chatRequest, Dictionary<Guid, string> validUsers)
+		{
 			Chat newChat = new()
 			{
 				LastUpdatedAt = DateTime.UtcNow
@@ -60,7 +73,24 @@ namespace Application.Web.Service.Services
 
 			await _unitOfWork.CompleteAsync();
 
-			return await _chatQueries.GetChatByChatId(newChat.Id);
+			var returnNewChat = await _chatQueries.GetChatByChatId(newChat.Id);
+			return returnNewChat;
+		}
+
+		private async Task<Chat> HandleOldChat(ChatRequestModel chatRequest, Dictionary<Guid, string> validUsers, Chat chat)
+		{
+			chat.LastUpdatedAt = DateTime.UtcNow;
+
+			Message message = HandleChatMessage(chatRequest, validUsers, chat);
+
+			_chatRepo.Update(chat);
+
+			_messageRepo.Add(message);
+
+			await _unitOfWork.CompleteAsync();
+
+			var returnChat = await _chatQueries.GetChatByChatId(chat.Id);
+			return returnChat;
 		}
 
 		public async Task<(IEnumerable<Chat>, PaginationMetadata)> GetAllChatsByUserAsync(PaginationRequestModel pagination, Guid userId)
