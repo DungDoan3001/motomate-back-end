@@ -1,19 +1,23 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
+using Application.Web.Database.Queries.Interface;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Primitives;
 
 namespace Applicaton.Web.API.SignalR
 {
 	public class ChatHub : Hub
 	{
 		private readonly IChatService _chatService;
+		private readonly IChatQueries _chatQueries;
 		private readonly IMapper _mapper;
 
-		public ChatHub(IMapper mapper, IChatService chatService)
+		public ChatHub(IMapper mapper, IChatService chatService, IChatQueries chatQueries)
 		{
 			_chatService = chatService;
+			_chatQueries = chatQueries;
 			_mapper = mapper;
 		}
 
@@ -27,6 +31,8 @@ namespace Applicaton.Web.API.SignalR
 			{
 				await Clients.Group(item.UserId.ToString()).SendAsync("ReceiveChat", chatDto);
 			};
+
+			await SendUpdateChatClientsAsync(chat.ChatMembers.Select(x => x.UserId).ToList());
 		}
 
 		public override async Task OnConnectedAsync()
@@ -51,6 +57,26 @@ namespace Applicaton.Web.API.SignalR
 			var chatsToReturn = chatResponse.OrderByDescending(x => x.LatestMessage.Time);
 
 			await Clients.Caller.SendAsync("LoadChats", chatsToReturn, pagination);
+		}
+
+		private async Task SendUpdateChatClientsAsync(List<Guid> chatMembers)
+		{
+			var paginationRequest = new PaginationRequestModel
+			{
+				pageNumber = 1,
+				pageSize = 10
+			};
+
+			foreach (var member in chatMembers)
+			{
+				var (chats, pagination) = await _chatService.GetAllChatsByUserAsync(paginationRequest, member);
+
+				var chatResponse = _mapper.Map<IEnumerable<ChatResponseModel>>(chats);
+
+				var chatsToReturn = chatResponse.OrderByDescending(x => x.LatestMessage.Time);
+
+				await Clients.Group(member.ToString()).SendAsync("LoadChats", chatsToReturn, pagination);
+			}
 		}
 	}
 }
