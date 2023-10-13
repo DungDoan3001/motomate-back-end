@@ -73,6 +73,8 @@ namespace Application.Web.Service.Services
 
 			await _unitOfWork.CompleteAsync();
 
+			_unitOfWork.Detach(newChat);
+
 			var returnNewChat = await _chatQueries.GetChatByChatId(newChat.Id);
 			return returnNewChat;
 		}
@@ -88,6 +90,8 @@ namespace Application.Web.Service.Services
 			_messageRepo.Add(message);
 
 			await _unitOfWork.CompleteAsync();
+
+			_unitOfWork.Detach(chat);
 
 			var returnChat = await _chatQueries.GetChatByChatId(chat.Id);
 			return returnChat;
