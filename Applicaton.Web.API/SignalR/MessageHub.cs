@@ -39,9 +39,12 @@ namespace Applicaton.Web.API.SignalR
 
 			var messageDto = _mapper.Map<MessageResponseModel>(message);
 
-			await Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
+			var result =  Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
 			
-			await SendUpdateChatClientsAsync(chatId);
+			if(result.IsCompleted)
+			{
+				await SendUpdateChatClientsAsync(chatId);
+			}
 		}
 
 		private async Task SendUpdateChatClientsAsync(StringValues chatId)
