@@ -20,6 +20,8 @@ namespace Application.Web.Database.Context
         public DbSet<ResetPassword> ResetPasswords { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<VehicleImage> VehicleImages { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartVehicle> CartVehicles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
