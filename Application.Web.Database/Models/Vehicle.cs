@@ -62,5 +62,7 @@ namespace Application.Web.Database.Models
         public virtual Color Color { get; set; }
 
         public virtual ICollection<VehicleImage> VehicleImages { get; set; }
+
+        public virtual ICollection<CartVehicle> CartVehicles { get; set;}
     }
 }

@@ -30,7 +30,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
                                 .ThenInclude(vi => vi.Image)
 				.Include(v => v.Owner)
-				.Include(c => c.Color)
+				.Include(c => c.Color)  
 				.ToListAsync();
         }
 

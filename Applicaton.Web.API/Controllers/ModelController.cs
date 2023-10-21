@@ -34,7 +34,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet]
-        public async Task<IActionResult> GetModelsAsync([FromQuery] PaginationRequestModel pagination)
+        public async Task<ActionResult<IEnumerable<ModelResponseModel>>> GetModelsAsync([FromQuery] PaginationRequestModel pagination)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllModelsAsync()
+        public async Task<ActionResult<IEnumerable<ModelResponseModel>>> GetAllModelsAsync()
         {
             try
             {
@@ -116,7 +116,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get item information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetModelByIdAsync([FromRoute] Guid id)
+        public async Task<ActionResult<ModelResponseModel>> GetModelByIdAsync([FromRoute] Guid id)
         {
             try
             {
@@ -153,7 +153,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("collection/{collectionId}")]
-		public async Task<IActionResult> GetModelByCollectionIdAsync([FromRoute] Guid collectionId)
+		public async Task<ActionResult<IEnumerable<ModelResponseModel>>> GetModelByCollectionIdAsync([FromRoute] Guid collectionId)
 		{
 			try
 			{
@@ -190,7 +190,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="201">Successfully created item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpPost]
-        public async Task<IActionResult> CreateModelAsync([FromBody] ModelRequestModel requestModel)
+        public async Task<ActionResult<ModelResponseModel>> CreateModelAsync([FromBody] ModelRequestModel requestModel)
         {
             try
             {
@@ -230,7 +230,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully updated items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateModelAsync([FromBody] ModelRequestModel requestModel, [FromRoute] Guid id)
+        public async Task<ActionResult<ModelResponseModel>> UpdateModelAsync([FromBody] ModelRequestModel requestModel, [FromRoute] Guid id)
         {
             try
             {

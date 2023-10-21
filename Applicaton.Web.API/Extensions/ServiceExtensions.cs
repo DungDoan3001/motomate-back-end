@@ -174,6 +174,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<ICartService, CartService>();
         }
 
         public static void RegisterQueryDependencies (this IServiceCollection services)
@@ -185,6 +186,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<IVehicleQueries, VehicleQueries>();
             services.AddScoped<IChatQueries, ChatQueries>();
             services.AddScoped<IMessageQueries, MessageQueries>();
+            services.AddScoped<ICartQueries, CartQueries>();
         }
 
         public static void RegistryDatabaseDependencies (this IServiceCollection services)

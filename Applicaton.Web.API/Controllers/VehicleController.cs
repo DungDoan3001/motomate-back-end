@@ -35,7 +35,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet]
-        public async Task<IActionResult> GetVehiclesByStatusAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery)
+        public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetVehiclesByStatusAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllVehiclesAsync([FromQuery] VehicleQuery vehicleQuery)
+        public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetAllVehiclesAsync([FromQuery] VehicleQuery vehicleQuery)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("owner/{ownerId}")]
-		public async Task<IActionResult> GetAllVehiclesByOwnerIdAsync([FromQuery] VehicleQuery vehicleQuery, [FromRoute] Guid ownerId)
+		public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetAllVehiclesByOwnerIdAsync([FromQuery] VehicleQuery vehicleQuery, [FromRoute] Guid ownerId)
 		{
 			try
 			{
@@ -154,7 +154,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("status/{statusRoute}")]
-		public async Task<IActionResult> GetVehiclesAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery, [FromRoute] string statusRoute)
+		public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetVehiclesAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery, [FromRoute] string statusRoute)
 		{
 			try
 			{
@@ -238,7 +238,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpPost("{vehicleId}/status/{statusNumber}")]
-		public async Task<IActionResult> UpdateVehicleStatusAsync([FromRoute] Guid vehicleId, [FromRoute] int statusNumber)
+		public async Task<ActionResult<VehicleResponseModel>> UpdateVehicleStatusAsync([FromRoute] Guid vehicleId, [FromRoute] int statusNumber)
 		{
 			try
 			{
@@ -282,7 +282,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("{id}")]
-        public async Task<IActionResult> GetVehicleAsync([FromRoute] Guid id)
+        public async Task<ActionResult<VehicleResponseModel>> GetVehicleAsync([FromRoute] Guid id)
         {
             try
             {
@@ -322,7 +322,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpPost]
-		public async Task<IActionResult> CreateVehicleAsync([FromBody] VehicleRequestModel requestModel)
+		public async Task<ActionResult<VehicleResponseModel>> CreateVehicleAsync([FromBody] VehicleRequestModel requestModel)
 		{
 			try
 			{
@@ -361,7 +361,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateVehicleAsync([FromBody] VehicleRequestModel requestModel, [FromRoute] Guid id)
+		public async Task<ActionResult<VehicleResponseModel>> UpdateVehicleAsync([FromBody] VehicleRequestModel requestModel, [FromRoute] Guid id)
 		{
 			try
 			{
