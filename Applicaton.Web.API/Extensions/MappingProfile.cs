@@ -28,7 +28,7 @@ namespace Applicaton.Web.API.Extensions
                 {
                     var brandImage = new ImageOfBrand();
 
-                    if(src.BrandImages.Any())
+                    if (src.BrandImages.Any())
                     {
                         var image = src.BrandImages.FirstOrDefault().Image;
 
@@ -71,7 +71,7 @@ namespace Applicaton.Web.API.Extensions
                 {
                     var colors = new List<ColorOfModel>();
 
-                    foreach(var modelColor in src.ModelColors)
+                    foreach (var modelColor in src.ModelColors)
                     {
                         colors.Add(new ColorOfModel
                         {
@@ -83,7 +83,7 @@ namespace Applicaton.Web.API.Extensions
 
                     dest.Colors = colors;
                 });
-                
+
             CreateMap<Collection, CollectionOfModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())));
 
@@ -114,11 +114,11 @@ namespace Applicaton.Web.API.Extensions
                         BrandName = textInfo.ToTitleCase(src.Model.Collection.Brand.Name.ToLower()),
                         Color = textInfo.ToTitleCase(src.Color.Name.ToLower()),
                         HexCode = src.Color.HexCode,
-				    };
+                    };
 
                     var vehicleImages = new List<ImageOfVehicle>();
 
-                    foreach(var image in src.VehicleImages)
+                    foreach (var image in src.VehicleImages)
                     {
                         vehicleImages.Add(new ImageOfVehicle
                         {
@@ -134,7 +134,7 @@ namespace Applicaton.Web.API.Extensions
                     dest.LicensePlate = textInfo.ToTitleCase(src.LicensePlate.ToLower());
                     dest.InsuranceNumber = textInfo.ToTitleCase(src.InsuranceNumber.ToLower());
                     dest.Status = textInfo.ToTitleCase(Constants.statusValues[src.Status].ToLower());
-                    
+
                     dest.IsAvaiable = src.IsAvailable;
                     dest.IsActive = src.IsActive;
                     dest.IsLocked = src.IsLocked;
@@ -149,13 +149,13 @@ namespace Applicaton.Web.API.Extensions
                     var fullName = src.LastName + " " + src.FirstName;
 
                     dest.OwnerId = src.Id;
-					dest.Name = textInfo.ToTitleCase(fullName.ToLower());
-					dest.Username = textInfo.ToTitleCase(src.UserName.ToLower());
+                    dest.Name = textInfo.ToTitleCase(fullName.ToLower());
+                    dest.Username = textInfo.ToTitleCase(src.UserName.ToLower());
                     dest.Picture = src.Picture;
-					dest.Email = src.Email;
-					dest.PhoneNumber = src.PhoneNumber;
+                    dest.Email = src.Email;
+                    dest.PhoneNumber = src.PhoneNumber;
                     dest.Address = src.Address;
-				});
+                });
 
             // Chats
             CreateMap<Chat, ChatResponseModel>()
@@ -164,7 +164,7 @@ namespace Applicaton.Web.API.Extensions
                     dest.Id = src.Id;
 
                     var members = new List<MemberOfChat>();
-                    foreach(var member in src.ChatMembers)
+                    foreach (var member in src.ChatMembers)
                     {
                         members.Add(new MemberOfChat
                         {
@@ -176,7 +176,7 @@ namespace Applicaton.Web.API.Extensions
 
                     dest.Members = members;
 
-                    if(src.Messages.Count > 0)
+                    if (src.Messages.Count > 0)
                     {
                         var latestMessge = src.Messages.FirstOrDefault();
 
@@ -219,6 +219,39 @@ namespace Applicaton.Web.API.Extensions
                     dest.SenderId = src.SenderId;
                     dest.Content = src.Message;
                     dest.CreatedAt = DateTime.UtcNow;
+                });
+
+            CreateMap<Cart, CartResponseModel>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.UserId = src.User.Id;
+
+                    dest.Shops = new List<ShopOfCart>();
+
+                    var groupsOfShop = src.CartVehicles.GroupBy(x => x.Vehicle.Owner);
+
+                    var shops = new List<ShopOfCart>();
+
+                        foreach (var shop in groupsOfShop)
+                        {
+                            var shopToReturn = new ShopOfCart
+                            {
+                                LessorId = shop.Key.Id,
+                                LessorName = shop.Key.UserName,
+                                Vehicles = new List<VehicleOfLessor>()
+                            };
+
+                            foreach (var item in shop)
+                            {
+                                shopToReturn.Vehicles.Add(new VehicleOfLessor
+                                {
+                                    VehicleId = item.Vehicle.Id,
+                                    VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower())
+                                });
+                            }
+
+                           dest.Shops.Add(shopToReturn);
+                        }
                 });
 		}
     }

@@ -21,7 +21,7 @@ namespace Application.Web.Database.Context.Configurations
 			builder
 				.HasOne(cv => cv.Cart)
 				.WithMany(c => c.CartVehicles)
-				.HasForeignKey(cv => cv.VehicleId)
+				.HasForeignKey(cv => cv.CartId)
 				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}

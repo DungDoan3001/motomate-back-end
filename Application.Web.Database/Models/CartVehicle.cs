@@ -10,9 +10,6 @@ namespace Application.Web.Database.Models
 		[Column("PK_FK_vehicle_id")]
 		public Guid VehicleId { get; set; }
 
-		[Column("quantity")]
-		public int Quantity { get; set; }
-
 		public virtual Cart Cart { get; set; }
 		public virtual Vehicle Vehicle { get; set; }
 	}
