@@ -33,7 +33,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("{userId}")]
-		public async Task<IActionResult> GetCartByUserIdAsync([FromRoute] Guid userId)
+		public async Task<ActionResult<CartResponseModel>> GetCartByUserIdAsync([FromRoute] Guid userId)
 		{
 			try
 			{

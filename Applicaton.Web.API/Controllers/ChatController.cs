@@ -33,7 +33,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("{userId}")]
-		public async Task<IActionResult> GetAllMessageByChatIdAsync([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid userId)
+		public async Task<ActionResult<IEnumerable<ChatResponseModel>>> GetAllMessageByChatIdAsync([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid userId)
 		{
 			try
 			{
@@ -78,7 +78,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("message/{chatId}")]
-		public async Task<IActionResult> GetAllChatsByUserIdAsync([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid chatId)
+		public async Task<ActionResult<MessageResponseModel>> GetAllChatsByUserIdAsync([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid chatId)
 		{
 			try
 			{
@@ -123,7 +123,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpPost("message/{chatId}")]
-		public async Task<IActionResult> CreateMessageAsync([FromBody] MessageRequestModel requestModel, [FromRoute] Guid chatId)
+		public async Task<ActionResult<MessageResponseModel>> CreateMessageAsync([FromBody] MessageRequestModel requestModel, [FromRoute] Guid chatId)
 		{
 			try
 			{
@@ -160,7 +160,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpPost]
-		public async Task<IActionResult> CreateChatAsync([FromBody] ChatRequestModel requestModel)
+		public async Task<ActionResult<ChatResponseModel>> CreateChatAsync([FromBody] ChatRequestModel requestModel)
 		{
 			try
 			{

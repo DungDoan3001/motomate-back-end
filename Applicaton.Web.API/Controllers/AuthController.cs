@@ -72,7 +72,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully create a JWT token.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpPost("login")]
-        public async Task<IActionResult> Authenticate([FromBody] UserLoginRequestModel userLogin)
+        public async Task<ActionResult<TokenResponseModel>> Authenticate([FromBody] UserLoginRequestModel userLogin)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace Applicaton.Web.API.Controllers
                 }
                 else
                 {
-                    var token = new
+                    var token = new TokenResponseModel
                     {
                         Token = await _authService.CreateTokenAsync(userLogin.Email)
                     };
@@ -201,7 +201,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully create a user and return JWT token.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpPost("sso/google")]
-        public async Task<IActionResult> GoogleSSOProvider([FromBody] GoogleTokenRequestModel tokenRequest)
+        public async Task<ActionResult<TokenResponseModel>> GoogleSSOProvider([FromBody] GoogleTokenRequestModel tokenRequest)
         {
             try
             {
@@ -213,7 +213,7 @@ namespace Applicaton.Web.API.Controllers
                 }
                 else
                 {
-                    var token = new
+                    var token = new TokenResponseModel
                     {
                         Token = await _authService.HandleGoogleSSOAsync(tokenRequest.TokenCredential)
                     };

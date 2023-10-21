@@ -34,7 +34,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet]
-        public async Task<IActionResult> GetBrandsAsync([FromQuery] PaginationRequestModel pagination)
+        public async Task<ActionResult<IEnumerable<BrandResponseModel>>> GetBrandsAsync([FromQuery] PaginationRequestModel pagination)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllBrandsAsync()
+        public async Task<ActionResult<IEnumerable<BrandResponseModel>>> GetAllBrandsAsync()
         {
             try
             {
@@ -116,7 +116,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get item information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBrandAsync([FromRoute] Guid id)
+        public async Task<ActionResult<BrandResponseModel>> GetBrandAsync([FromRoute] Guid id)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="201">Successfully created item.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpPost]
-        public async Task<IActionResult> CreateBrandAsync([FromBody] BrandRequestModel requestModel)
+        public async Task<ActionResult<BrandResponseModel>> CreateBrandAsync([FromBody] BrandRequestModel requestModel)
         {
             try
             {
@@ -196,7 +196,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully updated item information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBrandAsync([FromBody] BrandRequestModel requestModel, [FromRoute] Guid id)
+        public async Task<ActionResult<BrandResponseModel>> UpdateBrandAsync([FromBody] BrandRequestModel requestModel, [FromRoute] Guid id)
         {
             try
             {

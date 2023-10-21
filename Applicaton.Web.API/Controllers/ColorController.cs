@@ -33,7 +33,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllColorsAsync()
+        public async Task<ActionResult<IEnumerable<ColorResponseModel>>> GetAllColorsAsync()
         {
             try
             {
@@ -70,7 +70,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get item information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetColorAsync([FromRoute] Guid id)
+        public async Task<ActionResult<ColorResponseModel>> GetColorAsync([FromRoute] Guid id)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="201">Successfully created item information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpPost]
-        public async Task<IActionResult> CreateColorAsync([FromBody] ColorRequestModel requestModel)
+        public async Task<ActionResult<ColorResponseModel>> CreateColorAsync([FromBody] ColorRequestModel requestModel)
         {
             try
             {
@@ -150,7 +150,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully created items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpPost("bulk")]
-        public async Task<IActionResult> CreateBulkColorsAsync([FromBody] List<ColorRequestModel> requestModels)
+        public async Task<ActionResult<IEnumerable<ColorResponseModel>>> CreateBulkColorsAsync([FromBody] List<ColorRequestModel> requestModels)
         {
             try
             {
@@ -197,7 +197,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully udpated item information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateColorAsync([FromBody] ColorRequestModel requestModel, [FromRoute] Guid id)
+        public async Task<ActionResult<ColorResponseModel>> UpdateColorAsync([FromBody] ColorRequestModel requestModel, [FromRoute] Guid id)
         {
             try
             {

@@ -35,7 +35,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllUsersAsync()
+        public async Task<ActionResult<IEnumerable<UserResponseModel>>> GetAllUsersAsync()
         {
             try
             {
@@ -72,7 +72,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get item information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("{username}/details")]
-        public async Task<IActionResult> GetUserByUsernameAsync([FromRoute] string username)
+        public async Task<ActionResult<UserResponseModel>> GetUserByUsernameAsync([FromRoute] string username)
         {
             try
             {
@@ -112,7 +112,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get item information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("details")]
-        public async Task<IActionResult> GetCurrentUserInformationAsync()
+        public async Task<ActionResult<UserResponseModel>> GetCurrentUserInformationAsync()
         {
             try
             {
@@ -151,7 +151,7 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully updated item information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpPut("{username}")]
-        public async Task<IActionResult> UpdateUserInformation([FromRoute] string username, [FromBody] UserRequestModel requestModel)
+        public async Task<ActionResult<UserResponseModel>> UpdateUserInformation([FromRoute] string username, [FromBody] UserRequestModel requestModel)
         {
             try
             {
