@@ -58,6 +58,12 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<bool> CheckIfVehicleExisted(Guid vehicleId)
+        {
+            return await dbSet
+                .AnyAsync(v => v.Id.Equals(vehicleId));
+        }
+
         public async Task<bool> CheckIfLicensePlateExisted(string licensePlate)
         {
             return await dbSet

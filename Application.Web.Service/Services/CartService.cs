@@ -1,8 +1,14 @@
-﻿using Application.Web.Database.Models;
+﻿using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
+using Application.Web.Database.Queries.ServiceQueries;
+using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
+using Application.Web.Service.Exceptions;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Web.Service.Services
 {
@@ -10,18 +16,107 @@ namespace Application.Web.Service.Services
 	{
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly IGenericRepository<Cart> _cartRepo;
+		private readonly IGenericRepository<CartVehicle> _cartVehicleRepo;
 		private readonly ICartQueries _cartQueries;
+		private readonly IUserQueries _userQueries;
+		private readonly IVehicleQueries _vehicleQueries;
 
-		public CartService(IMapper mapper, IUnitOfWork unitOfWork, ICartQueries cartQueries)
+		public CartService(IMapper mapper, IUnitOfWork unitOfWork, ICartQueries cartQueries, IUserQueries userQueries, IVehicleQueries vehicleQueries)
 		{
 			_mapper = mapper;
             _unitOfWork = unitOfWork;
+			_cartRepo = unitOfWork.GetBaseRepo<Cart>();
+			_cartVehicleRepo = unitOfWork.GetBaseRepo<CartVehicle>();
             _cartQueries = cartQueries;
-        }
+			_userQueries = userQueries;
+			_vehicleQueries = vehicleQueries;
+
+		}
 
 		public async Task<Cart> GetCartByUserIdAsync(Guid userId)
 		{
 			return await _cartQueries.GetCartByUserIdAsync(userId);
+		}
+
+		public async Task<Cart> AddToCartByUserIdAsync(CartRequestModel requestModel)
+		{
+			await CheckRequestModel(requestModel);
+
+			var cartId = await _cartQueries.GetCartIdByUserIdAsync(requestModel.UserId);
+
+			if (cartId.Equals(Guid.Empty))
+			{
+				await HandleNewCartAsync(requestModel);
+			}
+			else
+			{
+				var isVehicleInCart = await _cartQueries.CheckIfVehicleExistedInCart(cartId, requestModel.VehicleId);
+
+				if (isVehicleInCart)
+				{
+					throw new StatusCodeException(message: "Vehicle already in cart.", statusCode: StatusCodes.Status409Conflict);
+				}
+
+				await HandleOldCartAsync(requestModel, cartId);
+			}
+
+			return await _cartQueries.GetCartByUserIdAsync(requestModel.UserId);
+		}
+
+		private async Task CheckRequestModel(CartRequestModel requestModel)
+		{
+			var isValidUser = await _userQueries.CheckIfUserExisted(requestModel.UserId);
+
+			if (!isValidUser)
+			{
+				throw new StatusCodeException(message: "Invalid User", statusCode: StatusCodes.Status400BadRequest);
+			}
+
+			var isValidVehicle = await _vehicleQueries.CheckIfVehicleExisted(requestModel.VehicleId);
+
+			if (!isValidVehicle)
+			{
+				throw new StatusCodeException(message: "Invalid Vehicle", statusCode: StatusCodes.Status400BadRequest);
+			}
+		}
+
+		private async Task HandleOldCartAsync(CartRequestModel requestModel, Guid cartId)
+		{
+			var newCartVehicle = new CartVehicle
+			{
+				CartId = cartId,
+				VehicleId = requestModel.VehicleId,
+			};
+
+			_cartVehicleRepo.Add(newCartVehicle);
+
+			await _unitOfWork.CompleteAsync();
+
+			_unitOfWork.Detach(newCartVehicle);
+		}
+
+		private async Task HandleNewCartAsync(CartRequestModel requestModel)
+		{
+			var newCart = new Cart
+			{
+				UserId = requestModel.UserId,
+			};
+
+			var cartVehicle = new CartVehicle
+			{
+				CartId = newCart.Id,
+				VehicleId = requestModel.VehicleId,
+			};
+
+			_cartRepo.Add(newCart);
+
+			_cartVehicleRepo.Add(cartVehicle);
+
+			await _unitOfWork.CompleteAsync();
+
+			_unitOfWork.Detach(newCart);
+			_unitOfWork.Detach(cartVehicle);
 		}
 	}
 }

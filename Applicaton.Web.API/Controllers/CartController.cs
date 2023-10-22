@@ -1,4 +1,5 @@
-﻿using Application.Web.Database.DTOs.ResponseModels;
+﻿using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
@@ -17,7 +18,6 @@ namespace Applicaton.Web.API.Controllers
 		private readonly IMapper _mapper;
 		private readonly ICartService _cartService;
 		private const string controllerPrefix = "Cart";
-
 
 		public CartController(ILogger<CartController> logger, IMapper mapper, ICartService cartService)
         {
@@ -62,5 +62,42 @@ namespace Applicaton.Web.API.Controllers
 				});
 			}
 		}
-    }
+
+		/// <summary>
+		/// Add item into cart
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="201">Successfully created item.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPost]
+		public async Task<ActionResult<CartResponseModel>> CreateCartAsync([FromBody] CartRequestModel requestModel)
+		{
+			try
+			{
+				var cart = await _cartService.AddToCartByUserIdAsync(requestModel);
+
+				var cartToReturn = _mapper.Map<CartResponseModel>(cart);
+
+				return Ok(cartToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+	}
 }

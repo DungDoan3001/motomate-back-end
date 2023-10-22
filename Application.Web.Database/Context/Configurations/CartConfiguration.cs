@@ -12,8 +12,7 @@ namespace Application.Web.Database.Context.Configurations
 
 			builder
 				.HasOne(c => c.User)
-				.WithMany(u => u.Carts)
-				.HasForeignKey(c => c.UserId)
+				.WithOne(u => u.Cart)
 				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}
