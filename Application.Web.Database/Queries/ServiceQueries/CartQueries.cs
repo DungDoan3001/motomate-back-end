@@ -15,8 +15,24 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(c => c.User)
 				.Include(c => c.CartVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection)
 				.Include(c => c.CartVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.Owner)
-				.Where(x => x.UserId.Equals(userId))
+				.Where(c => c.UserId.Equals(userId))
 				.FirstOrDefaultAsync();
+		}
+
+		public async Task<Guid> GetCartIdByUserIdAsync(Guid userId)
+		{
+			return await dbSet
+				.Where(c => c.UserId.Equals(userId))
+				.Select(c => c.Id)
+				.FirstOrDefaultAsync();
+		}
+
+		public async Task<bool> CheckIfVehicleExistedInCart(Guid cartId, Guid vehicleId)
+		{
+			return await dbSet
+				.Include(c => c.CartVehicles)
+				.Where(c => c.Id.Equals(cartId))
+				.AnyAsync(c => c.CartVehicles.Any(cv => cv.VehicleId.Equals(vehicleId)));
 		}
 	}
 }

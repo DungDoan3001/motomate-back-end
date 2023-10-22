@@ -187,6 +187,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<IChatQueries, ChatQueries>();
             services.AddScoped<IMessageQueries, MessageQueries>();
             services.AddScoped<ICartQueries, CartQueries>();
+            services.AddScoped<IUserQueries, UserQueries>();
         }
 
         public static void RegistryDatabaseDependencies (this IServiceCollection services)

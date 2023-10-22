@@ -12,6 +12,7 @@ namespace Application.Web.Database.Queries.Interface
         Task<bool> CheckIfLicensePlateExisted(string licensePlate);
         Task<bool> CheckIfInsuranceNumberExisted(string insuranceNumber);
         Task<List<Vehicle>> GetAllVehiclesByOwnerIdAsync(Guid ownerId);
+        Task<bool> CheckIfVehicleExisted(Guid vehicleId);
 
 	}
 }
