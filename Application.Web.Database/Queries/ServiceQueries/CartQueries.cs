@@ -13,8 +13,10 @@ namespace Application.Web.Database.Queries.ServiceQueries
 		{
 			return await dbSet
 				.Include(c => c.User)
-				.Include(c => c.CartVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection)
+				.Include(c => c.CartVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(c => c.Brand)
 				.Include(c => c.CartVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.Owner)
+				.Include(c => c.CartVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.Color)
+				.Include(c => c.CartVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(vi => vi.Image)
 				.Where(c => c.UserId.Equals(userId))
 				.FirstOrDefaultAsync();
 		}

@@ -17,5 +17,10 @@
 	{
 		public Guid VehicleId { get; set; }
 		public string VehicleName { get; set;}
+		public string Brand { get; set; }
+		public string Color { get; set; }
+		public decimal Price { get; set; }
+		public string LicensePlate { get; set; }
+		public string Image {  get; set; }
 	}
 }
