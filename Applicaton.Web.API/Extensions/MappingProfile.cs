@@ -246,8 +246,13 @@ namespace Applicaton.Web.API.Extensions
                                 shopToReturn.Vehicles.Add(new VehicleOfLessor
                                 {
                                     VehicleId = item.Vehicle.Id,
-                                    VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower())
-                                });
+                                    VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
+                                    Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
+                                    Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
+                                    Price = item.Vehicle.Price,
+                                    LicensePlate = item.Vehicle.LicensePlate,
+                                    Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl
+								});
                             }
 
                            dest.Shops.Add(shopToReturn);
