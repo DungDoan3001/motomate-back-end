@@ -8,8 +8,10 @@ using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
+using Diacritics.Extensions;
 using LazyCache;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Web.Service.Services
 {
@@ -415,9 +417,11 @@ namespace Application.Web.Service.Services
 						.Where(x => x.Model.Collection.Brand.Name
 										.ToUpper()
 										.Trim()
+										.RemoveDiacritics()
 										.Contains(brand
 													.ToUpper()
-													.Trim()))
+													.Trim()
+													.RemoveDiacritics()))
 						.ToList();
 
 					vehicleQueryHolder.AddRange(result);
@@ -434,9 +438,11 @@ namespace Application.Web.Service.Services
 						.Where(x => x.Model.Collection.Name
 										.ToUpper()
 										.Trim()
+										.RemoveDiacritics()
 										.Contains(collection
 													.ToUpper()
-													.Trim()))
+													.Trim()
+													.RemoveDiacritics()))
 						.ToList();
 
 					vehicleQueryHolder.AddRange(result);
@@ -453,9 +459,11 @@ namespace Application.Web.Service.Services
 						.Where(x => x.Model.Name
 										.ToUpper()
 										.Trim()
+										.RemoveDiacritics()
 										.Contains(model
 													.ToUpper()
-													.Trim()))
+													.Trim()
+													.RemoveDiacritics()))
 						.ToList();
 
 					vehicleQueryHolder.AddRange(result);
@@ -472,9 +480,11 @@ namespace Application.Web.Service.Services
 						.Where(x => x.City
 										.ToUpper()
 										.Trim()
+										.RemoveDiacritics()
 										.Contains(city
 													.ToUpper()
-													.Trim()))
+													.Trim()
+													.RemoveDiacritics()))
 						.ToList();
 
 					vehicleQueryHolder.AddRange(result);
@@ -495,6 +505,18 @@ namespace Application.Web.Service.Services
 						.OrderBy(v => v.Price)
 						.ToList();
 				}
+			}
+
+			if (!vehicleQuery.Search.IsNullOrEmpty())
+			{
+				string trimmedSearch = vehicleQuery.Search.Trim().ToUpper().RemoveDiacritics();
+
+				vehicles = vehicles.Where(x => 
+											x.Model.Collection.Brand.Name.ToUpper().Trim().RemoveDiacritics().Contains(trimmedSearch) ||
+											x.Model.Collection.Name.ToUpper().Trim().RemoveDiacritics().Contains(trimmedSearch) ||
+											x.Model.Name.ToUpper().Trim().RemoveDiacritics().Contains(trimmedSearch) ||
+											x.City.ToUpper().Trim().RemoveDiacritics().Contains(trimmedSearch))
+								   .ToList();
 			}
 
 			return vehicles;
