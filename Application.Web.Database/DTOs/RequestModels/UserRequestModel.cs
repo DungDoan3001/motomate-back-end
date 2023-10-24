@@ -14,6 +14,8 @@ namespace Application.Web.Database.DTOs.RequestModels
 
         public string PhoneNumber { get; set; }
 
+        public string Picture { get; set; }
+
         public DateTime? DateOfBirth { get; set; } = null;
     }
 }

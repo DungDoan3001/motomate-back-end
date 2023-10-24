@@ -102,6 +102,8 @@ namespace Application.Web.Service.Services
             user.PhoneNumber = requestModel.PhoneNumber.Trim();
 
             user.DateOfBirth = requestModel.DateOfBirth;
+
+            user.Picture = requestModel.Picture.Trim();
         }
     }
 }
