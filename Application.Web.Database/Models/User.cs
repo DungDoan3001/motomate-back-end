@@ -34,5 +34,7 @@ namespace Application.Web.Database.Models
         public virtual ICollection<ChatMember> ChatMembers { get; set; }
 
         public virtual ICollection<Message> Messages { get; set; }
+
+        public virtual ICollection<Blog> Blogs { get; set; }
     }
 }

@@ -259,6 +259,10 @@ namespace Applicaton.Web.API.Extensions
                            dest.Shops.Add(shopToReturn);
                         }
                 });
+
+            // BlogCategory
+            CreateMap<BlogCategoryRequestModel, BlogCategory>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
 		}
     }
 }

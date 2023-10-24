@@ -175,6 +175,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<IChatService, ChatService>();
             services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IBlogCategoryService, BlogCategoryService>();
         }
 
         public static void RegisterQueryDependencies (this IServiceCollection services)

@@ -106,8 +106,8 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="204">Successfully deleted item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
-		[HttpDelete]
-		public async Task<IActionResult> DeleteCartItemAsync([FromBody] CartRequestModel requestModel)
+		[HttpDelete("{UserId}/{VehicleId}")]
+		public async Task<IActionResult> DeleteCartItemAsync([FromRoute] CartRequestModel requestModel)
 		{
 			try
 			{
