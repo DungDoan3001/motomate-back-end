@@ -10,6 +10,7 @@
 	{
 		public Guid LessorId { get; set; }
 		public string LessorName { get; set; }
+		public string LerrorImage { get; set; }
 		public List<VehicleOfLessor> Vehicles { get; set; }
 	}
 
