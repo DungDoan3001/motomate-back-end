@@ -10,6 +10,8 @@
 
 		public List<string>? Cities { get; set; }
 
+		public string? Search {  get; set; }
+
 		public bool? IsSortPriceDesc { get; set; } = null;
 	}
 }
