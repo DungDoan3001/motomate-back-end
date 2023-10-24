@@ -1,14 +1,12 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
-using Application.Web.Database.Queries.ServiceQueries;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 
 namespace Application.Web.Service.Services
 {
@@ -117,6 +115,36 @@ namespace Application.Web.Service.Services
 
 			_unitOfWork.Detach(newCart);
 			_unitOfWork.Detach(cartVehicle);
+		}
+
+		public async Task<bool> DeleteCartItemAsync(CartRequestModel requestModel)
+		{
+			await CheckRequestModel(requestModel);
+
+			var cartId = await _cartQueries.GetCartIdByUserIdAsync(requestModel.UserId);
+
+			if(cartId.Equals(Guid.Empty))
+			{
+				throw new StatusCodeException(message: "Cart not found.", statusCode: StatusCodes.Status404NotFound);
+			} else
+			{
+				var isVehicleInCart = await _cartQueries.CheckIfVehicleExistedInCart(cartId, requestModel.VehicleId);
+
+				if(!isVehicleInCart)
+				{
+					throw new StatusCodeException(message: "Vehicle not found in cart.", statusCode: StatusCodes.Status404NotFound);
+				}
+
+				var item = await _cartVehicleRepo.FindOne(x => x.VehicleId.Equals(requestModel.VehicleId) && x.CartId.Equals(cartId));
+
+				_cartVehicleRepo.DeleteByEntity(item);
+
+				await _unitOfWork.CompleteAsync();
+
+				_unitOfWork.Detach(item);
+			}
+
+			return true;
 		}
 	}
 }

@@ -99,5 +99,43 @@ namespace Applicaton.Web.API.Controllers
 				});
 			}
 		}
+
+		/// <summary>
+		/// Delete cart item by identification
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="204">Successfully deleted item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpDelete]
+		public async Task<IActionResult> DeleteCartItemAsync([FromBody] CartRequestModel requestModel)
+		{
+			try
+			{
+				var result = await _cartService.DeleteCartItemAsync(requestModel);
+
+				if (!result)
+					throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);
+				else
+					return NoContent();
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
 	}
 }
