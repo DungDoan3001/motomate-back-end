@@ -11,6 +11,7 @@ namespace Application.Web.Service.Helpers
 		public string CollectionCacheKey = "Collection";
 		public string VehicleCacheKey = "Vehicle";
 		public string ModelCacheKey = "Model";
+		public string UserCacheKey = "User";
 
 		public List<string> CacheKeyList = new List<string>();
 

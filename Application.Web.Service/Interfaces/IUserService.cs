@@ -1,4 +1,5 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 
 namespace Application.Web.Service.Interfaces
@@ -11,6 +12,7 @@ namespace Application.Web.Service.Interfaces
         Task<User> UpdateUserAsync(UserRequestModel requestModel, string username);
         Task<bool> DeleteUserAsync(string username);
         Task<User> GetUserInformationByIdAsync(Guid id);
+        Task<(List<User>, PaginationMetadata)> GetAllUserInformationWithPaginationAsync(PaginationRequestModel pagination);
 
 	}
 }
