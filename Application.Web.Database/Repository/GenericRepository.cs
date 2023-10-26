@@ -78,6 +78,11 @@ namespace Application.Web.Database.Repository
             return await dbSet.Where(predicate).FirstOrDefaultAsync();
         }
 
+        public async Task<bool> Check(Expression<Func<T, bool>> predicate)
+        {
+            return await dbSet.AnyAsync(predicate);
+        }
+
         public T Update(T entity)
         {
             dbSet.Update(entity);
