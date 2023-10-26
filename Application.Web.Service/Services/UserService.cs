@@ -1,6 +1,7 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
+using Application.Web.Database.Queries.Interface;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
@@ -8,7 +9,6 @@ using AutoMapper;
 using LazyCache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Service.Services
 {
@@ -18,13 +18,15 @@ namespace Application.Web.Service.Services
 		private readonly IAppCache _cache;
 		private readonly IMapper _mapper;
 		private readonly CacheKeyConstants _cacheKeyConstants;
+		private readonly IUserQueries _userQueries;
 
-		public UserService(IAppCache cache, IMapper mapper, UserManager<User> userManager, CacheKeyConstants cacheKeyConstants)
+		public UserService(IAppCache cache, IMapper mapper, UserManager<User> userManager, CacheKeyConstants cacheKeyConstants, IUserQueries userQueries)
         {
             _userManager = userManager;
             _cache = cache;
             _mapper = mapper;
             _cacheKeyConstants = cacheKeyConstants;
+            _userQueries = userQueries;
 
 		}
 
@@ -34,7 +36,7 @@ namespace Application.Web.Service.Services
 
             var user = await _cache.GetOrAddAsync(
                 key,
-                async () => await _userManager.FindByEmailAsync(email),
+                async () => await _userQueries.GetUserByEmailAsync(email),
                 TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
 
             _cacheKeyConstants.AddKeyToList(key);
@@ -51,7 +53,7 @@ namespace Application.Web.Service.Services
 
             var user = await _cache.GetOrAddAsync(
                 key,
-                async () => await _userManager.FindByIdAsync(id.ToString()),
+                async () => await _userQueries.GetUserByIdAsync(id),
                 TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
 
             _cacheKeyConstants.AddKeyToList(key);
@@ -68,7 +70,7 @@ namespace Application.Web.Service.Services
 
             var user = await _cache.GetOrAddAsync(
                 key,
-                async () => await _userManager.FindByNameAsync(username),
+                async () => await _userQueries.GetUserByUsernameAsync(username),
                 TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
 
             _cacheKeyConstants.AddKeyToList(key);
@@ -85,7 +87,7 @@ namespace Application.Web.Service.Services
 
 			var users = await _cache.GetOrAddAsync(
 				key,
-				async () => await _userManager.Users.ToListAsync(),
+				async () => await _userQueries.GetAllUsersAsync(),
 				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
 
 			_cacheKeyConstants.AddKeyToList(key);
@@ -99,7 +101,7 @@ namespace Application.Web.Service.Services
 
             var users = await _cache.GetOrAddAsync(
                 key,
-                async () => await _userManager.Users.ToListAsync(),
+                async () => await _userQueries.GetAllUsersAsync(),
                 TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
 
             _cacheKeyConstants.AddKeyToList(key);
@@ -118,7 +120,7 @@ namespace Application.Web.Service.Services
 
         public async Task<User> UpdateUserAsync(UserRequestModel requestModel, string username)
         {
-            var currentUser = await _userManager.FindByNameAsync(username);
+            var currentUser = await _userQueries.GetUserByUsernameAsync(username);
 
             if(currentUser == null)
                 throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);

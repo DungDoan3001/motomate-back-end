@@ -1,4 +1,5 @@
-﻿using Application.Web.Database.Constants;
+﻿using System.Runtime.CompilerServices;
+using Application.Web.Database.Constants;
 using Application.Web.Database.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

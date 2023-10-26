@@ -8,28 +8,31 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace Applicaton.Web.API.Controllers
 {
-    [Route("api/user")]
+	[Route("api/user")]
     [ApiController]
     public class UserController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly ILogger<AuthController> _logger;
         private readonly IUserService _userService;
-        private readonly string controllerPrefix = "User";
+		private readonly UserManager<User> _userManager;
+		private readonly string controllerPrefix = "User";
 		private const int maxPageSize = 20;
 
-		public UserController(IMapper mapper, ILogger<AuthController> logger, IUserService userService)
+		public UserController(IMapper mapper, ILogger<AuthController> logger, IUserService userService, UserManager<User> userManager)
         {
             _mapper = mapper;
             _logger = logger;
             _userService = userService;
-        }
+            _userManager = userManager;
+
+		}
 
         /// <summary>
         /// Acquire all users information
@@ -275,5 +278,5 @@ namespace Applicaton.Web.API.Controllers
                 });
             }
         }
-    }
+	}
 }

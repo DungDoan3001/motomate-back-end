@@ -26,7 +26,8 @@ namespace Applicaton.Web.API.Extensions
         {
             services.AddDbContext<ApplicationContext>(option =>
                 option.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly(typeof(ApplicationContext).Assembly.FullName)));
+                b => b.MigrationsAssembly(typeof(ApplicationContext).Assembly.FullName)), 
+                ServiceLifetime.Transient);
 			AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 		}
 
