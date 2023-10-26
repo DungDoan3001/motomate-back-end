@@ -4,10 +4,27 @@ using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Database.DTOs.RequestModels;
 using System.Globalization;
 using Application.Web.Service.Helpers;
+using Microsoft.AspNetCore.Identity;
 
 namespace Applicaton.Web.API.Extensions
 {
-	public class MappingProfile : Profile
+    public class MapUserAction : IMappingAction<User, UserResponseModel>
+    {
+		private readonly UserManager<User> _userManager;
+
+		public MapUserAction(UserManager<User> userManager)
+        {
+            _userManager = userManager;
+        }
+
+        public void Process(User source, UserResponseModel desination, ResolutionContext context)
+        {
+			var roles = _userManager.GetRolesAsync(source);
+            desination.Roles = roles.GetAwaiter().GetResult().ToList();
+		}
+    }
+
+    public sealed class MappingProfile : Profile
     {
         public MappingProfile()
         {
@@ -19,7 +36,9 @@ namespace Applicaton.Web.API.Extensions
 
             // User
             CreateMap<UserRegistrationRequestModel, User>();
-            CreateMap<User, UserResponseModel>();
+			CreateMap<User, UserResponseModel>()
+                .AfterMap<MapUserAction>();
+
             CreateMap<UserRequestModel, User>();
             // Brand
             CreateMap<Brand, BrandResponseModel>()
