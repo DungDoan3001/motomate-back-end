@@ -281,7 +281,10 @@ namespace Applicaton.Web.API.Extensions
 
             // BlogCategory
             CreateMap<BlogCategoryRequestModel, BlogCategory>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper().Trim()));
+
+            CreateMap<BlogCategory, BlogCategoryResponseModel>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())));
 		}
     }
 }

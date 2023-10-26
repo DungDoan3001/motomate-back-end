@@ -80,7 +80,7 @@ namespace Application.Web.Service.Services
 		{
 			var category = await _blogCategoryRepo.GetById(categoryId);
 
-			if (category != null)
+			if (category == null)
 			{
 				throw new StatusCodeException(message: "Category not found.", statusCode: StatusCodes.Status404NotFound);
 			}
@@ -93,7 +93,7 @@ namespace Application.Web.Service.Services
 																					.ToUpper()));
 			if (isNameExisted)
 			{
-				if (!category.Name.Equals(requestModel.Name.Trim().ToUpper()))
+				if (!category.Name.ToUpper().Trim().Equals(requestModel.Name.Trim().ToUpper()))
 				{
 					throw new StatusCodeException(message: "Name already taken.", statusCode: StatusCodes.Status409Conflict);
 				}
