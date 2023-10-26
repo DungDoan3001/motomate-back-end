@@ -14,7 +14,7 @@ namespace Application.Web.Database.Models
 		public string ShortDescription { get; set; }
 
 		[Column("created_at")]
-		public DateTime Created_At { get; set; }
+		public DateTime Created_At { get; set; } = DateTime.UtcNow;
 
 		[Column("FK_author_id")]
 		public Guid AuthorId { get; set; }

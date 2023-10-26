@@ -301,6 +301,7 @@ namespace Applicaton.Web.API.Extensions
                     dest.Title = textInfo.ToTitleCase(src.Title.ToLower());
                     dest.Content = src.Content;
                     dest.ShortDescription = src.ShortDescription;
+                    dest.CreatedAt = src.Created_At;
 
                     dest.Author = new AuthorOfBlog
                     {
@@ -321,6 +322,9 @@ namespace Applicaton.Web.API.Extensions
                         Name = textInfo.ToTitleCase(src.Category.Name.ToLower())
                     };
                 });
+            CreateMap<BlogCategory, CategoryOfBlog>();
+            CreateMap<User, AuthorOfBlog>();
+            CreateMap<Image, ImageOfBlog>();
         }
     }
 }

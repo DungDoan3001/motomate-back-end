@@ -6,6 +6,7 @@
 		public string Title { get; set; }
 		public string Content { get; set; }
 		public string ShortDescription { get; set; }
+		public DateTime CreatedAt { get; set; }
 		public CategoryOfBlog Category { get; set; }
 		public AuthorOfBlog Author { get; set; }
 		public ImageOfBlog Image { get; set; }
