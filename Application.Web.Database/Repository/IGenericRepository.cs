@@ -14,5 +14,7 @@ namespace Application.Web.Database.Repository
         Task<T> FindOne(Expression<Func<T, bool>> predicate);
         Task<T> GetById(Guid id);
         T Update(T entity);
-    }
+        Task<bool> Check(Expression<Func<T, bool>> predicate);
+
+	}
 }

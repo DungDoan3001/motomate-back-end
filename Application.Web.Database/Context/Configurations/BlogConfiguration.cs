@@ -28,7 +28,6 @@ namespace Application.Web.Database.Context.Configurations
 			builder
 				.HasOne(b => b.Image)
 				.WithOne(i => i.Blog)
-				.HasForeignKey<Blog>(b => b.ImageId)
 				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}

@@ -281,7 +281,50 @@ namespace Applicaton.Web.API.Extensions
 
             // BlogCategory
             CreateMap<BlogCategoryRequestModel, BlogCategory>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper()));
-		}
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper().Trim()));
+
+            CreateMap<BlogCategory, BlogCategoryResponseModel>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())));
+
+            // Blog
+            CreateMap<BlogRequestModel, Blog>()
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title.ToUpper().Trim()))
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+                .ForMember(dest => dest.ShortDescription, opt => opt.MapFrom(src => src.ShortDescription))
+                .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.AuthorId))
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
+
+			CreateMap<Blog, BlogResponseModel>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.Id = src.Id;
+                    dest.Title = textInfo.ToTitleCase(src.Title.ToLower());
+                    dest.Content = src.Content;
+                    dest.ShortDescription = src.ShortDescription;
+                    dest.CreatedAt = src.Created_At;
+
+                    dest.Author = new AuthorOfBlog
+                    {
+                        AuthorId = src.Author.Id,
+                        Username = src.Author.UserName,
+                        Picture = src.Author.Picture,
+                    };
+
+                    dest.Image = new ImageOfBlog
+                    {
+                        ImageUrl = src.Image.ImageUrl,
+                        PublicId = src.Image.PublicId
+                    };
+
+                    dest.Category = new CategoryOfBlog
+                    {
+                        CategoryId = src.Category.Id,
+                        Name = textInfo.ToTitleCase(src.Category.Name.ToLower())
+                    };
+                });
+            CreateMap<BlogCategory, CategoryOfBlog>();
+            CreateMap<User, AuthorOfBlog>();
+            CreateMap<Image, ImageOfBlog>();
+        }
     }
 }

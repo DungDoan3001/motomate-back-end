@@ -75,5 +75,73 @@ namespace Application.Web.Service.Services
 
 			return newCategory;
 		}
+
+		public async Task<BlogCategory> UpdateCategoryAsync(BlogCategoryRequestModel requestModel, Guid categoryId)
+		{
+			var category = await _blogCategoryRepo.GetById(categoryId);
+
+			if (category == null)
+			{
+				throw new StatusCodeException(message: "Category not found.", statusCode: StatusCodes.Status404NotFound);
+			}
+
+			var isNameExisted = await _blogCategoryRepo.Check(x => x.Name
+																.Trim()
+																.ToUpper()
+																.Equals(requestModel.Name
+																					.Trim()
+																					.ToUpper()));
+			if (isNameExisted)
+			{
+				if (!category.Name.ToUpper().Trim().Equals(requestModel.Name.Trim().ToUpper()))
+				{
+					throw new StatusCodeException(message: "Name already taken.", statusCode: StatusCodes.Status409Conflict);
+				}
+			}
+
+			var categoryToUpate = _mapper.Map<BlogCategoryRequestModel, BlogCategory>(requestModel, category);
+			
+			_blogCategoryRepo.Update(categoryToUpate);
+
+			await _unitOfWork.CompleteAsync();
+
+			_unitOfWork.Detach(categoryToUpate);
+
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
+			return categoryToUpate;
+		}
+
+		public async Task<bool> DeleteCategoryAsync(Guid categoryId)
+		{
+			var category = await _blogCategoryRepo.GetById(categoryId);
+
+			if (category == null)
+				throw new StatusCodeException(message: "Category not found.", statusCode: StatusCodes.Status404NotFound);
+
+			_blogCategoryRepo.Delete(categoryId);
+
+			await _unitOfWork.CompleteAsync();
+
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
+			return true;
+		}
 	}
 }
