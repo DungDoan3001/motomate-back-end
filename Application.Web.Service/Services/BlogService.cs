@@ -1,4 +1,5 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Repository;
@@ -44,7 +45,7 @@ namespace Application.Web.Service.Services
 			_blogCategoryQueries = blogCategoryQueries;
 		}
 
-		public async Task<List<Blog>> GetAllBlogsAsync()
+		public async Task<(List<Blog>, PaginationMetadata)> GetAllBlogsAsync(PaginationRequestModel pagination)
 		{
 			var key = $"{_cacheKeyConstants.BlogCacheKey}-All";
 
@@ -55,7 +56,16 @@ namespace Application.Web.Service.Services
 
 			_cacheKeyConstants.AddKeyToList(key);
 
-			return blogs;
+			var totalItemCount = blogs.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+			var blogsToReturn = blogs
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+			return (blogsToReturn, paginationMetadata);
 		}
 
 		public async Task<Blog> GetBlogByIdAsync(Guid blogId)

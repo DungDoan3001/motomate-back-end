@@ -1,9 +1,11 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Application.Web.Service.Services;
+using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -34,11 +36,19 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<BlogResponseModel>>> GetBlogsAsync()
+		public async Task<ActionResult<IEnumerable<BlogResponseModel>>> GetBlogsAsync([FromQuery] PaginationRequestModel pagination)
 		{
 			try
 			{
-				var blogs = await _blogService.GetAllBlogsAsync();
+				if (pagination.pageSize > maxPageSize)
+				{
+					pagination.pageSize = maxPageSize;
+				}
+
+				var (blogs, paginationMetadata) = await _blogService.GetAllBlogsAsync(pagination);
+
+				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+				Response.AddPaginationHeader(paginationMetadata);
 
 				var blogToReturn = _mapper.Map<IEnumerable<BlogResponseModel>>(blogs);
 
