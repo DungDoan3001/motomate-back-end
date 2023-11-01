@@ -5,6 +5,8 @@ using Application.Web.Database.DTOs.RequestModels;
 using System.Globalization;
 using Application.Web.Service.Helpers;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Applicaton.Web.API.Extensions
 {
@@ -21,6 +23,25 @@ namespace Applicaton.Web.API.Extensions
         {
 			var roles = _userManager.GetRolesAsync(source);
             desination.Roles = roles.GetAwaiter().GetResult().ToList();
+
+            var picture = new PictureOfUser();
+
+            if (source.Picture.IsNullOrEmpty())
+            {
+                picture.ImageUrl = null;
+                picture.PublicId = null;
+            }
+            else if (source.PublicId.IsNullOrEmpty())
+            {
+                picture.ImageUrl = source.Picture;
+                picture.PublicId = null;
+            } else
+            {
+                picture.ImageUrl = source.Picture;
+                picture.PublicId = source.PublicId;
+            }
+
+            desination.Image = picture;
 		}
     }
 
@@ -37,6 +58,7 @@ namespace Applicaton.Web.API.Extensions
             // User
             CreateMap<UserRegistrationRequestModel, User>();
 			CreateMap<User, UserResponseModel>()
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedAt))
                 .AfterMap<MapUserAction>();
 
             CreateMap<UserRequestModel, User>();
@@ -174,6 +196,7 @@ namespace Applicaton.Web.API.Extensions
                     dest.Email = src.Email;
                     dest.PhoneNumber = src.PhoneNumber;
                     dest.Address = src.Address;
+                    dest.CreatedDate = src.CreatedAt;
                 });
 
             // Chats

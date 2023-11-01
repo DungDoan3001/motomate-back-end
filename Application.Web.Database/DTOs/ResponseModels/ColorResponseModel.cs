@@ -1,9 +1,17 @@
-﻿namespace Application.Web.Database.DTOs.ResponseModels
+﻿using System.Text.Json.Serialization;
+
+namespace Application.Web.Database.DTOs.ResponseModels
 {
     public class ColorResponseModel
     {
-        public Guid Id { get; set; }
-        public string Color { get; set; }
+
+		[JsonPropertyName("id")]
+		public Guid Id { get; set; }
+
+		[JsonPropertyName("color")]
+		public string Color { get; set; }
+
+        [JsonPropertyName("hexCode")]
         public string HexCode { get; set; }
     }
 }
