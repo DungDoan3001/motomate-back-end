@@ -17,6 +17,12 @@ namespace Application.Web.Database.Models
         [Column("picture")]
         public string Picture { get; set; }
 
+        [Column("public_id")]
+        public string PublicId { get; set; }
+
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; }
+
         [Column("address")]
         public string Address { get; set; }
 

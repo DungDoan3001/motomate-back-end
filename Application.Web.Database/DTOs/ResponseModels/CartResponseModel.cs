@@ -1,27 +1,55 @@
-﻿namespace Application.Web.Database.DTOs.ResponseModels
+﻿using System.Text.Json.Serialization;
+
+namespace Application.Web.Database.DTOs.ResponseModels
 {
     public class CartResponseModel
     {
+        [JsonPropertyName("userId")]
         public Guid UserId { get; set; }
+
+        [JsonPropertyName("username")]
+        public string UserName { get; set; }
+
+        [JsonPropertyName("shops")]
         public List<ShopOfCart> Shops { get; set; }
     }
 
     public class ShopOfCart
     {
+        [JsonPropertyName("lessorId")]
         public Guid LessorId { get; set; }
+
+        [JsonPropertyName("lessorName")]
         public string LessorName { get; set; }
+
+        [JsonPropertyName("lessorImage")]
         public string LessorImage { get; set; }
+
+        [JsonPropertyName("vehicles")]
         public List<VehicleOfLessor> Vehicles { get; set; }
     }
 
     public class VehicleOfLessor
     {
+        [JsonPropertyName("vehicleId")]
         public Guid VehicleId { get; set; }
+
+        [JsonPropertyName("vehicleName")]
         public string VehicleName { get; set; }
+
+        [JsonPropertyName("brand")]
         public string Brand { get; set; }
+
+        [JsonPropertyName("brand")]
         public string Color { get; set; }
-        public decimal Price { get; set; }
+
+		[JsonPropertyName("price")]
+		public decimal Price { get; set; }
+
+        [JsonPropertyName("licensePlate")]
         public string LicensePlate { get; set; }
+
+        [JsonPropertyName("image")]
         public string Image { get; set; }
     }
 }

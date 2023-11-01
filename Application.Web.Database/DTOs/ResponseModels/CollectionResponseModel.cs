@@ -1,22 +1,37 @@
-﻿namespace Application.Web.Database.DTOs.ResponseModels
+﻿using System.Text.Json.Serialization;
+
+namespace Application.Web.Database.DTOs.ResponseModels
 {
     public class CollectionResponseModel
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
+		[JsonPropertyName("id")]
+		public Guid Id { get; set; }
+
+		[JsonPropertyName("name")]
+		public string Name { get; set; }
+
+        [JsonPropertyName("models")]
         public IEnumerable<ModelsOfCollection> Models { get; set; }
+
+        [JsonPropertyName("brand")]
         public BrandOfCollection Brand { get; set; }
     }
 
     public class ModelsOfCollection
-    { 
-        public Guid Id { get; set; }
-        public string Name { get; set; }
+    {
+		[JsonPropertyName("id")]
+		public Guid Id { get; set; }
+
+		[JsonPropertyName("name")]
+		public string Name { get; set; }
     }
 
     public class BrandOfCollection
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
+		[JsonPropertyName("id")]
+		public Guid Id { get; set; }
+
+		[JsonPropertyName("name")]
+		public string Name { get; set; }
     }
 }
