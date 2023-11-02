@@ -2,6 +2,8 @@
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
+using Application.Web.Database.Repository;
+using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
@@ -9,20 +11,25 @@ using AutoMapper;
 using LazyCache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Web.Service.Services
 {
 	public class UserService: IUserService
     {
-        private readonly UserManager<User> _userManager;
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly IGenericRepository<User> _userRepo;
+		private readonly UserManager<User> _userManager;
 		private readonly IAppCache _cache;
 		private readonly IMapper _mapper;
 		private readonly CacheKeyConstants _cacheKeyConstants;
 		private readonly IUserQueries _userQueries;
 
-		public UserService(IAppCache cache, IMapper mapper, UserManager<User> userManager, CacheKeyConstants cacheKeyConstants, IUserQueries userQueries)
+		public UserService(IUnitOfWork unitOfWork, IAppCache cache, IMapper mapper, UserManager<User> userManager, CacheKeyConstants cacheKeyConstants, IUserQueries userQueries)
         {
-            _userManager = userManager;
+            _unitOfWork = unitOfWork;
+            _userRepo = unitOfWork.GetBaseRepo<User>();
+			_userManager = userManager;
             _cache = cache;
             _mapper = mapper;
             _cacheKeyConstants = cacheKeyConstants;
@@ -120,24 +127,15 @@ namespace Application.Web.Service.Services
 
         public async Task<User> UpdateUserAsync(UserRequestModel requestModel, string username)
         {
-            var currentUser = await _userQueries.GetUserByUsernameAsync(username);
+            var user = await _userQueries.GetUserByUsernameAsync(username) ?? throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
+			
+            PopulateUserRequestModel(requestModel, user);
 
-            if(currentUser == null)
-                throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
+            _userRepo.Update(user);
 
-            var userToUpdate = currentUser;
+            await _unitOfWork.CompleteAsync();
 
-            PopulateUserRequestModel(requestModel, userToUpdate);
-
-            var result = await _userManager.UpdateAsync(userToUpdate);
-
-            if(!result.Succeeded)
-            {
-                foreach(var error in result.Errors)
-                {
-                    throw new StatusCodeException(message: error.Description, statusCode: StatusCodes.Status500InternalServerError);
-                }
-            }
+            _unitOfWork.Detach(user);
 
 			await Task.Run(() =>
 			{
@@ -149,7 +147,7 @@ namespace Application.Web.Service.Services
 				_cacheKeyConstants.CacheKeyList = new List<string>();
 			});
 
-			return userToUpdate;
+			return user;
         }
 
         public async Task<bool> DeleteUserAsync(string username)
@@ -174,7 +172,7 @@ namespace Application.Web.Service.Services
 			return result.Succeeded;
         }
 
-        private void PopulateUserRequestModel(UserRequestModel requestModel, User user)
+        private static void PopulateUserRequestModel(UserRequestModel requestModel, User user)
         {
             if(!Helpers.Helpers.IsValidPhoneNumber(requestModel.PhoneNumber.Trim()))
                 throw new StatusCodeException(message: "Phone number is not valid.", statusCode: StatusCodes.Status400BadRequest);
@@ -189,7 +187,9 @@ namespace Application.Web.Service.Services
 
             user.DateOfBirth = requestModel.DateOfBirth;
 
-            user.Picture = requestModel.Picture.Trim();
-        }
+            user.Picture = requestModel.Image.ImageUrl.Trim();
+
+			user.PublicId = requestModel.Image.PublicId;
+		}
     }
 }

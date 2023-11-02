@@ -14,8 +14,14 @@ namespace Application.Web.Database.DTOs.RequestModels
 
         public string PhoneNumber { get; set; }
 
-        public string Picture { get; set; }
+        public UserRequestPicture Image { get; set; }
 
         public DateTime? DateOfBirth { get; set; } = null;
+    }
+
+    public class UserRequestPicture
+    {
+        public string ImageUrl { get; set; }
+        public string? PublicId { get; set; } = null;
     }
 }
