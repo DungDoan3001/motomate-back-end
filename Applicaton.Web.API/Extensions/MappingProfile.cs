@@ -61,7 +61,12 @@ namespace Applicaton.Web.API.Extensions
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedAt))
                 .AfterMap<MapUserAction>();
 
-            CreateMap<UserRequestModel, User>();
+            CreateMap<UserRequestModel, User>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.Picture = src.Image.ImageUrl;
+                    dest.PublicId = src.Image.PublicId;
+                });
             // Brand
             CreateMap<Brand, BrandResponseModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())))

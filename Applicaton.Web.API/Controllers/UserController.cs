@@ -212,7 +212,7 @@ namespace Applicaton.Web.API.Controllers
                 var claimValues = IdentityHelpers.GetCurrentLoginUserClaims(HttpContext.User.Identity as ClaimsIdentity);
 
                 if (!claimValues.IdentityUsername.Equals(username) || 
-                    claimValues.IdentityRoles.Any(x => x.Equals(SeedDatabaseConstant.ADMIN.Name)))
+                    !claimValues.IdentityRoles.Any(x => x.Equals(SeedDatabaseConstant.ADMIN.Name)))
                     return Unauthorized();
 
                 var user = await _userService.UpdateUserAsync(requestModel, username);
