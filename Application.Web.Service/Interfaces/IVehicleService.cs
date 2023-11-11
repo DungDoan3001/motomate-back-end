@@ -16,5 +16,6 @@ namespace Application.Web.Service.Interfaces
         Task<(bool, bool)> HandleLockVehicleAsync(Guid vehicleId);
         Task<Vehicle> UpdateVehicleStatusAsync(Guid vehicleId, int statusNumber);
         Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesByStatusAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery, string statusRoute);
+        Task<List<Vehicle>> GetRelatedVehicleAsync(Guid vehicleId);
 	}
 }

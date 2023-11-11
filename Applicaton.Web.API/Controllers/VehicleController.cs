@@ -111,6 +111,43 @@ namespace Applicaton.Web.API.Controllers
         }
 
 		/// <summary>
+		/// Acquire all related information
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("related/{vehicleId}")]
+		public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetRelatedVehicleAsync(Guid vehicleId)
+		{
+			try
+			{
+				var vehicles = await _vehicleService.GetRelatedVehicleAsync(vehicleId);
+
+				var vehiclesToReturn = _mapper.Map<IEnumerable<VehicleResponseModel>>(vehicles);
+
+				return Ok(vehiclesToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
 		/// Acquire all vehicles by owner indentification.
 		/// </summary>
 		/// <returns>Status code of the action.</returns>
