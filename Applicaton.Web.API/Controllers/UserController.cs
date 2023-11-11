@@ -211,15 +211,19 @@ namespace Applicaton.Web.API.Controllers
 
                 var claimValues = IdentityHelpers.GetCurrentLoginUserClaims(HttpContext.User.Identity as ClaimsIdentity);
 
-                if (!claimValues.IdentityUsername.Equals(username) || 
-                    !claimValues.IdentityRoles.Any(x => x.Equals(SeedDatabaseConstant.ADMIN.Name)))
+                // Only allow admin or correct user to update
+                if(claimValues.IdentityUsername.Equals(username) ||  
+                    claimValues.IdentityRoles.Any(x => x.Equals(SeedDatabaseConstant.ADMIN.Name))) {
+					
+                    var user = await _userService.UpdateUserAsync(requestModel, username);
+
+					var userToReturn = _mapper.Map<UserResponseModel>(user);
+
+					return Ok(userToReturn);
+				} else
+                {
                     return Unauthorized();
-
-                var user = await _userService.UpdateUserAsync(requestModel, username);
-
-                var userToReturn = _mapper.Map<UserResponseModel>(user);
-
-                return Ok(userToReturn);
+                }    
             }
             catch (StatusCodeException ex)
             {
