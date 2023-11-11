@@ -7,7 +7,7 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		[JsonPropertyName("id")]
 		public Guid Id { get; set; }
 
-		[JsonPropertyName("name")]
+		[JsonPropertyName("title")]
 		public string Title { get; set; }
 
 		[JsonPropertyName("content")]
