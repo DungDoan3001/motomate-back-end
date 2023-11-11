@@ -90,7 +90,35 @@ namespace Application.Web.Service.Services
             return vehiclesToReturn;
         }
 
-        public async Task<List<Vehicle>> GetAllVehiclesByOwnerIdAsync(VehicleQuery vehicleQuery, Guid ownerId)
+		public async Task<List<Vehicle>> GetRelatedVehicleAsync(Guid vehicleId)
+		{
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
+
+			var vehicles = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetAllVehiclesAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+            var vehicleToCheck = vehicles.FirstOrDefault(x => x.Id.Equals(vehicleId)) ?? throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+			
+            vehicles.Remove(vehicleToCheck);
+
+            var vehicleQuery = new VehicleQuery
+            {
+                Models = new List<string> { vehicleToCheck.Model.Name },
+                Cities = new List<string> { vehicleToCheck.City }
+            };
+
+			var vehiclesToReturn = HandleVehicleQuery(vehicleQuery, vehicles)
+                                    .Take(20)
+                                    .ToList();
+
+			return vehiclesToReturn;
+		}
+
+		public async Task<List<Vehicle>> GetAllVehiclesByOwnerIdAsync(VehicleQuery vehicleQuery, Guid ownerId)
         {
             var key = $"{_cacheKeyConstants.VehicleCacheKey}-Owner-{ownerId}";
 
