@@ -11,6 +11,7 @@ using AutoMapper;
 using Diacritics.Extensions;
 using LazyCache;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Web.Service.Services
@@ -102,8 +103,6 @@ namespace Application.Web.Service.Services
 			_cacheKeyConstants.AddKeyToList(key);
 
             var vehicleToCheck = vehicles.FirstOrDefault(x => x.Id.Equals(vehicleId)) ?? throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
-			
-            vehicles.Remove(vehicleToCheck);
 
             var vehicleQuery = new VehicleQuery
             {
@@ -111,9 +110,13 @@ namespace Application.Web.Service.Services
                 Cities = new List<string> { vehicleToCheck.City }
             };
 
-			var vehiclesToReturn = HandleVehicleQuery(vehicleQuery, vehicles)
+            var vehiclesToReturn = HandleVehicleQuery(vehicleQuery, vehicles)
                                     .Take(20)
+                                    .AsQueryable()
+                                    .AsNoTracking()
                                     .ToList();
+
+            vehiclesToReturn.Remove(vehicleToCheck);
 
 			return vehiclesToReturn;
 		}
