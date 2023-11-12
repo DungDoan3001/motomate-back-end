@@ -178,6 +178,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IBlogCategoryService, BlogCategoryService>();
             services.AddScoped<IBlogService, BlogService>();
+            services.AddScoped<IPaymentService, PaymentService>();
         }
 
         public static void RegisterQueryDependencies (this IServiceCollection services)
