@@ -268,16 +268,14 @@ namespace Applicaton.Web.API.Extensions
                     dest.CreatedAt = DateTime.UtcNow;
                 });
 
+
+            // Cart
             CreateMap<Cart, CartResponseModel>()
                 .AfterMap((src, dest) =>
                 {
                     dest.UserId = src.User.Id;
 
                     dest.UserName = src.User.UserName;
-
-                    dest.PaymentIntentId = src.PaymentIntentId ?? null;
-
-                    dest.ClientSecret = src.ClientSecret ?? null;
 
                     dest.Shops = new List<ShopOfCart>();
 

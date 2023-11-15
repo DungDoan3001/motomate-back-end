@@ -29,27 +29,27 @@ namespace Applicaton.Web.API.Controllers
 			_cartService = cartService;
 		}
 
-		[HttpPost]
-		public async Task<ActionResult<CartResponseModel>> CreateOrUpdatePaymentIntent(Guid userId)
-		{
-			var cart = await _cartService.GetCartByUserIdAsync(userId);
+		//[HttpPost]
+		//public async Task<ActionResult<CartResponseModel>> CreateOrUpdatePaymentIntent(Guid userId)
+		//{
+		//	var cart = await _cartService.GetCartByUserIdAsync(userId);
 
-			if (cart == null) return NotFound();
+		//	if (cart == null) return NotFound();
 
-			var intent = await _paymentService.CreateOrUpdatePaymentIntent(cart);
+		//	var intent = await _paymentService.CreateOrUpdatePaymentIntent(cart);
 
-			if(intent == null) return BadRequest();
+		//	if(intent == null) return BadRequest();
 
-			cart.PaymentIntentId = cart.PaymentIntentId ?? intent.Id;
-			cart.ClientSecret = cart.ClientSecret ?? intent.ClientSecret;
+		//	cart.PaymentIntentId = cart.PaymentIntentId ?? intent.Id;
+		//	cart.ClientSecret = cart.ClientSecret ?? intent.ClientSecret;
 
-			_cartRepo.Update(cart);
+		//	_cartRepo.Update(cart);
 
-			await _unitOfWork.CompleteAsync();
+		//	await _unitOfWork.CompleteAsync();
 
-			_unitOfWork.Detach(cart);
+		//	_unitOfWork.Detach(cart);
 
-			return _mapper.Map<CartResponseModel>(cart);
-		}
+		//	return _mapper.Map<CartResponseModel>(cart);
+		//}
 	}
 }

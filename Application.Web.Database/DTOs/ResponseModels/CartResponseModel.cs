@@ -12,12 +12,6 @@ namespace Application.Web.Database.DTOs.ResponseModels
 
         [JsonPropertyName("shops")]
         public List<ShopOfCart> Shops { get; set; }
-
-        [JsonPropertyName("paymentIntentId")]
-        public string PaymentIntentId { get; set; }
-
-        [JsonPropertyName("clientSecret")]
-        public string ClientSecret { get; set; }
     }
 
     public class ShopOfCart

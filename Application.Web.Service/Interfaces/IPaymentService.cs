@@ -5,6 +5,6 @@ namespace Application.Web.Service.Interfaces
 {
 	public interface IPaymentService
 	{
-		Task<PaymentIntent> CreateOrUpdatePaymentIntent(Cart cart);
+		Task<PaymentIntent> CreateOrUpdatePaymentIntent(CheckOutOrder order);
 	}
 }

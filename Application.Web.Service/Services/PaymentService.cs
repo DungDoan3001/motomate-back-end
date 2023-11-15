@@ -16,7 +16,7 @@ namespace Application.Web.Service.Services
 			_publishableKey = configuration["StripeSettings:PublishableKey"];
 		}
 
-		public async Task<PaymentIntent> CreateOrUpdatePaymentIntent(Cart cart)
+		public async Task<PaymentIntent> CreateOrUpdatePaymentIntent(CheckOutOrder order)
 		{
 			StripeConfiguration.ApiKey = _secretKey;
 
@@ -24,9 +24,9 @@ namespace Application.Web.Service.Services
 
 			var intent = new PaymentIntent();
 
-			var subTotal = cart.CartVehicles.Sum(vehicle => vehicle.Vehicle.Price);
+			var subTotal = order.CheckOutOrderVehicles.Sum(vehicle => vehicle.Vehicle.Price);
 
-			if(string.IsNullOrEmpty(cart.PaymentIntentId))
+			if(string.IsNullOrEmpty(order.PaymentIntentId))
 			{
 				var options = new PaymentIntentCreateOptions
 				{
@@ -43,7 +43,7 @@ namespace Application.Web.Service.Services
 					Amount = (long?)subTotal,
 					Currency = "vnd"
 				};
-				await service.UpdateAsync(cart.PaymentIntentId, options);
+				await service.UpdateAsync(order.PaymentIntentId, options);
 			}
 
 			return intent;
