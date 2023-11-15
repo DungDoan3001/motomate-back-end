@@ -31,19 +31,17 @@ namespace Application.Web.Service.Services
 				var options = new PaymentIntentCreateOptions
 				{
 					Amount = (long?)subTotal,
-					Currency = "usd",
+					Currency = "vnd",
 					PaymentMethodTypes = new List<string> { "card" }
 				};
 				
 				intent = await service.CreateAsync(options);
-
-				cart.PaymentIntentId = intent.Id;
-				cart.ClientSecret = intent.ClientSecret;
 			} else
 			{
 				var options = new PaymentIntentUpdateOptions
 				{
 					Amount = (long?)subTotal,
+					Currency = "vnd"
 				};
 				await service.UpdateAsync(cart.PaymentIntentId, options);
 			}
