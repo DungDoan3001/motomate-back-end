@@ -3,6 +3,7 @@ using System;
 using Application.Web.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231112143812_update db")]
+    partial class updatedb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,6 +131,14 @@ namespace Application.Web.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("ClientSecret")
+                        .HasColumnType("text")
+                        .HasColumnName("client_secret");
+
+                    b.Property<string>("PaymentIntentId")
+                        .HasColumnType("text")
+                        .HasColumnName("payment_intent_id");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("FK_user_id");
@@ -189,50 +199,6 @@ namespace Application.Web.Database.Migrations
                     b.HasIndex("ChatId");
 
                     b.ToTable("table_chat_member", (string)null);
-                });
-
-            modelBuilder.Entity("Application.Web.Database.Models.CheckOutOrder", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("ClientSecret")
-                        .HasColumnType("text")
-                        .HasColumnName("client_secret");
-
-                    b.Property<string>("PaymentIntentId")
-                        .HasColumnType("text")
-                        .HasColumnName("payment_intent_id");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("FK_user_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("table_checkout_order", (string)null);
-                });
-
-            modelBuilder.Entity("Application.Web.Database.Models.CheckOutOrderVehicle", b =>
-                {
-                    b.Property<Guid>("CheckoutId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("PK_FK_checkout_id");
-
-                    b.Property<Guid>("VehicleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("PK_FK_vehicle_id");
-
-                    b.HasKey("CheckoutId", "VehicleId");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("table_checkout_order_vehicle", (string)null);
                 });
 
             modelBuilder.Entity("Application.Web.Database.Models.Collection", b =>
@@ -437,14 +403,14 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("60929087-1227-4efd-af43-e9ae2524eb0e"),
-                            ConcurrencyStamp = "8a10fd6f-f874-45e4-b4a9-03d7827a8482",
+                            ConcurrencyStamp = "8d17f495-316b-4e8c-93c5-a127fff5100b",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "cf86d794-a5ac-4e73-8b7c-8dbcd7484ab3",
+                            ConcurrencyStamp = "96909c82-4deb-43a1-be5b-f3f6c0ad4b96",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -919,36 +885,6 @@ namespace Application.Web.Database.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Application.Web.Database.Models.CheckOutOrder", b =>
-                {
-                    b.HasOne("Application.Web.Database.Models.User", "User")
-                        .WithOne("CheckOutOrder")
-                        .HasForeignKey("Application.Web.Database.Models.CheckOutOrder", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Application.Web.Database.Models.CheckOutOrderVehicle", b =>
-                {
-                    b.HasOne("Application.Web.Database.Models.CheckOutOrder", "CheckOutOrder")
-                        .WithMany("CheckOutOrderVehicles")
-                        .HasForeignKey("CheckoutId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Application.Web.Database.Models.Vehicle", "Vehicle")
-                        .WithMany("CheckOutOrderVehicles")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CheckOutOrder");
-
-                    b.Navigation("Vehicle");
-                });
-
             modelBuilder.Entity("Application.Web.Database.Models.Collection", b =>
                 {
                     b.HasOne("Application.Web.Database.Models.Brand", "Brand")
@@ -1183,11 +1119,6 @@ namespace Application.Web.Database.Migrations
                     b.Navigation("Messages");
                 });
 
-            modelBuilder.Entity("Application.Web.Database.Models.CheckOutOrder", b =>
-                {
-                    b.Navigation("CheckOutOrderVehicles");
-                });
-
             modelBuilder.Entity("Application.Web.Database.Models.Collection", b =>
                 {
                     b.Navigation("Models");
@@ -1229,8 +1160,6 @@ namespace Application.Web.Database.Migrations
 
                     b.Navigation("ChatMembers");
 
-                    b.Navigation("CheckOutOrder");
-
                     b.Navigation("LesseeTripRequests");
 
                     b.Navigation("LessorTripRequests");
@@ -1247,8 +1176,6 @@ namespace Application.Web.Database.Migrations
             modelBuilder.Entity("Application.Web.Database.Models.Vehicle", b =>
                 {
                     b.Navigation("CartVehicles");
-
-                    b.Navigation("CheckOutOrderVehicles");
 
                     b.Navigation("TripRequests");
 

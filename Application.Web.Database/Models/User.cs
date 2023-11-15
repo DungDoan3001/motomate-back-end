@@ -33,6 +33,8 @@ namespace Application.Web.Database.Models
 
 		public virtual Cart Cart { get; set; }
 
+        public virtual CheckOutOrder? CheckOutOrder { get; set; }
+
 		public virtual ICollection<UserRole> UserRoles { get; set; }
 
         public virtual ICollection<Vehicle> Vehicles { get; set; }
@@ -42,5 +44,9 @@ namespace Application.Web.Database.Models
         public virtual ICollection<Message> Messages { get; set; }
 
         public virtual ICollection<Blog> Blogs { get; set; }
+
+        public virtual ICollection<TripRequest> LessorTripRequests { get; set; }
+        public virtual ICollection<TripRequest> LesseeTripRequests { get; set; }
+
     }
 }

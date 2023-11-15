@@ -7,6 +7,7 @@ using Application.Web.Service.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
+using static Application.Web.Database.DTOs.ResponseModels.CheckoutOrderResponseModel;
 
 namespace Applicaton.Web.API.Extensions
 {
@@ -268,10 +269,14 @@ namespace Applicaton.Web.API.Extensions
                     dest.CreatedAt = DateTime.UtcNow;
                 });
 
+
+            // Cart
             CreateMap<Cart, CartResponseModel>()
                 .AfterMap((src, dest) =>
                 {
                     dest.UserId = src.User.Id;
+
+                    dest.UserName = src.User.UserName;
 
                     dest.Shops = new List<ShopOfCart>();
 
@@ -307,8 +312,53 @@ namespace Applicaton.Web.API.Extensions
                         }
                 });
 
-            // BlogCategory
-            CreateMap<BlogCategoryRequestModel, BlogCategory>()
+			// Checkout
+			CreateMap<CheckOutOrder, CheckoutOrderResponseModel>()
+				.AfterMap((src, dest) =>
+				{
+					dest.UserId = src.User.Id;
+
+					dest.UserName = src.User.UserName;
+
+                    dest.PaymentIntentId = src.PaymentIntentId ?? null;
+                    dest.ClientSecret = src.ClientSecret ?? null;
+
+					dest.Shops = new List<ShopOfCheckout>();
+
+					var groupsOfShop = src.CheckOutOrderVehicles.GroupBy(x => x.Vehicle.Owner);
+
+					var shops = new List<ShopOfCheckout>();
+
+					foreach (var shop in groupsOfShop)
+					{
+						var shopToReturn = new ShopOfCheckout
+						{
+							LessorId = shop.Key.Id,
+							LessorName = shop.Key.UserName,
+							LessorImage = shop.Key.Picture,
+							Vehicles = new List<VehicleOfLessorOfCheckout>()
+						};
+
+						foreach (var item in shop)
+						{
+							shopToReturn.Vehicles.Add(new VehicleOfLessorOfCheckout
+							{
+								VehicleId = item.Vehicle.Id,
+								VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
+								Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
+								Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
+								Price = item.Vehicle.Price,
+								LicensePlate = item.Vehicle.LicensePlate,
+								Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl
+							});
+						}
+
+						dest.Shops.Add(shopToReturn);
+					}
+				});
+
+			// BlogCategory
+			CreateMap<BlogCategoryRequestModel, BlogCategory>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToUpper().Trim()));
 
             CreateMap<BlogCategory, BlogCategoryResponseModel>()

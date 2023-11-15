@@ -15,6 +15,7 @@ namespace Application.Web.Database.Context
 		DbSet<ResetPassword> ResetPasswords { get; set; }
 		DbSet<Vehicle> Vehicles { get; set; }
 		DbSet<VehicleImage> VehicleImages { get; set; }
+		DbSet<TripRequest> TripRequests { get; set; }
 
 		DbSet<T> GetSet<T>() where T : class;
     }

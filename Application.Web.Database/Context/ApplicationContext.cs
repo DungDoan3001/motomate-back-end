@@ -23,6 +23,7 @@ namespace Application.Web.Database.Context
         public DbSet<VehicleImage> VehicleImages { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartVehicle> CartVehicles { get; set; }
+        public DbSet<TripRequest> TripRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
