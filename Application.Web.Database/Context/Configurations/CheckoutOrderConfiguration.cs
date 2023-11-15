@@ -12,8 +12,8 @@ namespace Application.Web.Database.Context.Configurations
 
 			builder
 				.HasOne(x => x.User)
-				.WithMany(x => x.CheckOutOrders)
-				.HasForeignKey(x => x.UserId)
+				.WithOne(x => x.CheckOutOrder)
+				.HasForeignKey<CheckOutOrder>(x => x.UserId)
 				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}
