@@ -4,8 +4,10 @@ using Application.Web.Database.Models;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Application.Web.Service.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace Applicaton.Web.API.Controllers
 {
@@ -13,19 +15,25 @@ namespace Applicaton.Web.API.Controllers
 	[ApiController]
 	public class CheckoutController : ControllerBase
 	{
+		private readonly IConfiguration _configuration;
 		private readonly IMapper _mapper;
 		private readonly ILogger<CheckoutController> _logger;
 		private readonly ICheckoutService _checkoutService;
+		private readonly IOrderService _orderService;
 		private static string controllerPrefix = "Checkout";
 
 		public CheckoutController(
+			IConfiguration configuration,
 			IMapper mapper, 
 			ILogger<CheckoutController> logger, 
-			ICheckoutService checkoutService)
+			ICheckoutService checkoutService,
+			IOrderService orderService)
 		{
-            _mapper = mapper;
+			_configuration = configuration;
+			_mapper = mapper;
 			_logger = logger;
 			_checkoutService = checkoutService;
+			_orderService = orderService;
 		}
 
 		[HttpPost]
@@ -57,6 +65,18 @@ namespace Applicaton.Web.API.Controllers
 					Errors = { ex.Message }
 				});
 			}
+		}
+
+		[HttpPost("webhook")]
+		public async Task<ActionResult> StripeWebhook()
+		{
+			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+
+			var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _configuration["StripeSettings:WhSecret"]);
+
+			var tripRequests = await _orderService.CreateTripRequestsFromStripeEventAsync(stripeEvent);
+
+			return new EmptyResult();
 		}
     }
 }

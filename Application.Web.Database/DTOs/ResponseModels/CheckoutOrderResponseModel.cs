@@ -13,6 +13,12 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		[JsonPropertyName("shops")]
 		public List<ShopOfCheckout> Shops { get; set; }
 
+		[JsonPropertyName("pickUpLocation")]
+		public string PickUpLocation { get; set; }
+
+		[JsonPropertyName("dropOffLocation")]
+		public string DropOffLocation { get; set; }
+
 		[JsonPropertyName("paymentIntentId")]
 		public string PaymentIntentId { get; set; }
 

@@ -25,5 +25,16 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
 				.FirstOrDefaultAsync(x => x.UserId.Equals(userId));
 		}
+
+		public async Task<CheckOutOrder> GetCheckOutOrderByPaymentIntentIdAsync(string paymentIntentId)
+		{
+			return await dbSet
+				.Include(x => x.User)
+				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Owner)
+				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Color)
+				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
+				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
+				.FirstOrDefaultAsync(x => x.PaymentIntentId.Equals(paymentIntentId));
+		}
 	}
 }

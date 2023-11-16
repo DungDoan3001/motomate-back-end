@@ -26,7 +26,7 @@ namespace Application.Web.Database.Models
 		public string PaymentIntentId { get; set; }
 
 		[Column("created_at")]
-		public string Created_At { get; set; }
+		public DateTime Created_At { get; set; } = DateTime.UtcNow;
 
 		public virtual User Lessee { get; set; }
 		public virtual User Lessor { get; set; }

@@ -6,5 +6,6 @@ namespace Application.Web.Database.Queries.Interface
 	{
 		Task<bool> IsOrderExistByUserId(Guid userId);
 		Task<CheckOutOrder> GetCheckOutOrderByUserIdAsync(Guid userId);
+		Task<CheckOutOrder> GetCheckOutOrderByPaymentIntentIdAsync(string paymentIntentId);
 	}
 }
