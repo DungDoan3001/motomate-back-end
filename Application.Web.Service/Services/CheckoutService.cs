@@ -1,13 +1,11 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
-using Application.Web.Database.Queries.ServiceQueries;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Stripe;
 
 namespace Application.Web.Service.Services
 {
@@ -47,12 +45,14 @@ namespace Application.Web.Service.Services
 
 			if(order == null)
 			{
-				await HandleCreateNewCheckoutOrder(checkoutOrder, order);
+				order = await HandleCreateNewCheckoutOrder(checkoutOrder, order);
 			}
 			else
 			{
 				await HandleUpdateCheckoutOrder(checkoutOrder, order);
 			}
+
+			_unitOfWork.Detach(order);
 
 			var latestOrder = await _checkoutOrderQueries.GetCheckOutOrderByUserIdAsync(order.UserId);
 
@@ -71,6 +71,9 @@ namespace Application.Web.Service.Services
 		private async Task HandleUpdateCheckoutOrder(CheckoutOrderRequestModel checkoutOrder, CheckOutOrder order)
 		{
 			_checkoutOrderVehicleRepo.DeleteRange(order.CheckOutOrderVehicles);
+
+			order.PickUpLocation = order.PickUpLocation;
+			order.DropOffLocation = order.DropOffLocation;
 
 			order.CheckOutOrderVehicles = new List<CheckOutOrderVehicle>();
 
@@ -92,7 +95,7 @@ namespace Application.Web.Service.Services
 			await _unitOfWork.CompleteAsync();
 		}
 
-		private async Task HandleCreateNewCheckoutOrder(CheckoutOrderRequestModel checkoutOrder, CheckOutOrder order)
+		private async Task<CheckOutOrder> HandleCreateNewCheckoutOrder(CheckoutOrderRequestModel checkoutOrder, CheckOutOrder order)
 		{
 			var isUserExist = await _userQueries.CheckIfUserExisted(checkoutOrder.UserId);
 			if (!isUserExist)
@@ -101,6 +104,8 @@ namespace Application.Web.Service.Services
 			order = new CheckOutOrder
 			{
 				UserId = checkoutOrder.UserId,
+				PickUpLocation = checkoutOrder.PickUpLocation,
+				DropOffLocation = checkoutOrder.DropOffLocation,
 				CheckOutOrderVehicles = new List<CheckOutOrderVehicle>()
 			};
 
@@ -121,6 +126,8 @@ namespace Application.Web.Service.Services
 			_checkoutOrderVehicleRepo.AddRange(order.CheckOutOrderVehicles);
 
 			await _unitOfWork.CompleteAsync();
+
+			return order;
 		}
 	}
 }

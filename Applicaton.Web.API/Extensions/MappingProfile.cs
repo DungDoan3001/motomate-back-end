@@ -320,6 +320,10 @@ namespace Applicaton.Web.API.Extensions
 
 					dest.UserName = src.User.UserName;
 
+                    dest.PickUpLocation = src.PickUpLocation;
+
+                    dest.DropOffLocation = src.DropOffLocation;
+
                     dest.PaymentIntentId = src.PaymentIntentId ?? null;
                     dest.ClientSecret = src.ClientSecret ?? null;
 
