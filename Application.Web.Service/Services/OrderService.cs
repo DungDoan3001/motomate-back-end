@@ -36,6 +36,13 @@ namespace Application.Web.Service.Services
 		}
 
 
+		public async Task<List<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, string? lessorUsername = "")
+		{
+			var result = await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(parentOrderId);
+
+			return result;
+		}
+
 		public async Task<List<TripRequest>> CreateTripRequestsFromStripeEventAsync(Event stripeEvent)
 		{
 			var charge = (Charge)stripeEvent.Data.Object;
@@ -127,10 +134,11 @@ namespace Application.Web.Service.Services
 					LessorId = vehicleToCheckout.Vehicle.OwnerId,
 					VehicleId = vehicleToCheckout.Vehicle.Id,
 					Status = false,
+					Ammount = vehicleToCheckout.Vehicle.Price,
 					PickUpDateTime = vehicleToCheckout.PickUpDateTime,
 					DropOffDateTime = vehicleToCheckout.DropOffDateTime,
-					PickUpLocation = checkoutOrder.PickUpLocation,
-					DropOffLocation = checkoutOrder.DropOffLocation,
+					PickUpLocation = vehicleToCheckout.PickUpLocation,
+					DropOffLocation = vehicleToCheckout.DropOffLocation,
 					Created_At = currentTimeStamp,
 					PaymentIntentId = charge.PaymentIntentId,
 					ParentOrderId = parentOrderId,

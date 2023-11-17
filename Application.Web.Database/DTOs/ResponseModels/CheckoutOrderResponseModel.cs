@@ -48,6 +48,18 @@ namespace Application.Web.Database.DTOs.ResponseModels
 			[JsonPropertyName("vehicleName")]
 			public string VehicleName { get; set; }
 
+			[JsonPropertyName("pickUpLocation")]
+			public string PickUpLocation { get; set; }
+
+			[JsonPropertyName("dropOffLocation")]
+			public string DropOffLocation { get; set; }
+
+			[JsonPropertyName("pickUpDateTime")]
+			public DateTime PickUpDateTime { get; set; }
+
+			[JsonPropertyName("dropOffDateTime")]
+			public DateTime DropOffDateTime { get; set; }
+
 			[JsonPropertyName("brand")]
 			public string Brand { get; set; }
 

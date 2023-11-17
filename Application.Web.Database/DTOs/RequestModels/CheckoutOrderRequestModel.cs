@@ -10,16 +10,8 @@ namespace Application.Web.Database.DTOs.RequestModels
 		public Guid UserId { get; set; }
 
 		[Required]
-		[JsonPropertyName("pickUpLocation")]
-		public string PickUpLocation { get; set; }
-
-		[Required]
-		[JsonPropertyName("dropOffLocation")]
-		public string DropOffLocation { get; set; }
-
-		[Required]
-		[JsonPropertyName("vehicleIds")]
-		public List<VehicleToCheckOut> VehicleIds { get; set; }
+		[JsonPropertyName("vehicles")]
+		public List<VehicleToCheckOut> Vehicles { get; set; }
 	}
 
 	public class VehicleToCheckOut
@@ -35,5 +27,13 @@ namespace Application.Web.Database.DTOs.RequestModels
 		[Required]
 		[JsonPropertyName("dropOffDateTime")]
 		public DateTime DropOffDateTime { get; set; }
+
+		[Required]
+		[JsonPropertyName("pickUpLocation")]
+		public string PickUpLocation { get; set; }
+
+		[Required]
+		[JsonPropertyName("dropOffLocation")]
+		public string DropOffLocation { get; set; }
 	}
 }

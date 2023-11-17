@@ -13,6 +13,9 @@ namespace Application.Web.Database.Models
 		[Column("FK_vehicle_id")]
 		public Guid VehicleId { get; set; }
 
+		[Column("ammount")]
+		public decimal Ammount { get; set; }
+
 		[Column("status")]
 		public bool Status { get; set; } // true = complete, false = incomplete
 

@@ -7,12 +7,6 @@ namespace Application.Web.Database.Models
 		[Column("FK_user_id")]
 		public Guid UserId { get; set; }
 
-		[Column("pick_up_location")]
-		public string PickUpLocation { get; set; }
-
-		[Column("drop_off_location")]
-		public string DropOffLocation { get; set; }
-
 		[Column("payment_intent_id")]
 		public string PaymentIntentId { get; set; }
 

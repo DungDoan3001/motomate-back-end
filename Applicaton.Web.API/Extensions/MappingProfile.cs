@@ -282,8 +282,6 @@ namespace Applicaton.Web.API.Extensions
 
                     var groupsOfShop = src.CartVehicles.GroupBy(x => x.Vehicle.Owner);
 
-                    var shops = new List<ShopOfCart>();
-
                         foreach (var shop in groupsOfShop)
                         {
                             var shopToReturn = new ShopOfCart
@@ -320,18 +318,12 @@ namespace Applicaton.Web.API.Extensions
 
 					dest.UserName = src.User.UserName;
 
-                    dest.PickUpLocation = src.PickUpLocation;
-
-                    dest.DropOffLocation = src.DropOffLocation;
-
                     dest.PaymentIntentId = src.PaymentIntentId ?? null;
                     dest.ClientSecret = src.ClientSecret ?? null;
 
 					dest.Shops = new List<ShopOfCheckout>();
 
 					var groupsOfShop = src.CheckOutOrderVehicles.GroupBy(x => x.Vehicle.Owner);
-
-					var shops = new List<ShopOfCheckout>();
 
 					foreach (var shop in groupsOfShop)
 					{
@@ -353,9 +345,61 @@ namespace Applicaton.Web.API.Extensions
 								Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
 								Price = item.Vehicle.Price,
 								LicensePlate = item.Vehicle.LicensePlate,
-								Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl
+								Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
+                                PickUpLocation = item.PickUpLocation,
+                                DropOffLocation = item.DropOffLocation,
+                                PickUpDateTime = item.PickUpDateTime,
+                                DropOffDateTime = item.DropOffDateTime,
 							});
 						}
+
+						dest.Shops.Add(shopToReturn);
+					}
+				});
+
+			// Trip request
+			CreateMap<List<TripRequest>, TripRequestReponseModel>()
+				.AfterMap((src, dest) =>
+				{
+                    dest.ParentOrderId = src.FirstOrDefault().ParentOrderId;
+
+					dest.UserId = src.FirstOrDefault().Lessee.Id;
+
+					dest.UserName = src.FirstOrDefault().Lessee.UserName;
+
+					dest.Shops = new List<ShopOfTripRequest>();
+
+					var groupsOfShop = src.GroupBy(x => x.Lessor);
+
+					var shops = new List<ShopOfTripRequest>();
+
+					foreach ( var shop in groupsOfShop )
+                    {
+                        var shopToReturn = new ShopOfTripRequest
+                        {
+                            LessorId = shop.Key.Id,
+                            LessorName = shop.Key.UserName,
+                            LessorImage = shop.Key.Picture,
+                            Vehicles = new List<VehicleOfLessorOfTripRequest>()
+                        };
+
+                        foreach (var item in shop)
+                        {
+                            shopToReturn.Vehicles.Add(new VehicleOfLessorOfTripRequest
+                            {
+                                VehicleId = item.Vehicle.Id,
+                                VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
+                                Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
+                                Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
+                                Price = item.Ammount,
+                                LicensePlate = item.Vehicle.LicensePlate,
+                                Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
+								PickUpLocation = item.PickUpLocation,
+								DropOffLocation = item.DropOffLocation,
+								PickUpDateTime = item.PickUpDateTime,
+								DropOffDateTime = item.DropOffDateTime,
+							});
+                        }
 
 						dest.Shops.Add(shopToReturn);
 					}

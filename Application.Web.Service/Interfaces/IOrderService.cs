@@ -6,5 +6,6 @@ namespace Application.Web.Service.Interfaces
 	public interface IOrderService
 	{
 		Task<List<TripRequest>> CreateTripRequestsFromStripeEventAsync(Event stripeEvent);
+		Task<List<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, string? lessorUsername = "");
 	}
 }

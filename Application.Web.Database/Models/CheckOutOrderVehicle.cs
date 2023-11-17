@@ -16,6 +16,12 @@ namespace Application.Web.Database.Models
 		[Column("drop_off_date_time")]
 		public DateTime DropOffDateTime { get; set; }
 
+		[Column("pick_up_location")]
+		public string PickUpLocation { get; set; }
+
+		[Column("drop_off_location")]
+		public string DropOffLocation { get; set; }
+
 		public virtual CheckOutOrder CheckOutOrder { get; set; }
 		public virtual Vehicle Vehicle { get; set; }
 	}

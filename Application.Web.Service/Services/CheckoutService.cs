@@ -72,12 +72,9 @@ namespace Application.Web.Service.Services
 		{
 			_checkoutOrderVehicleRepo.DeleteRange(order.CheckOutOrderVehicles);
 
-			order.PickUpLocation = order.PickUpLocation;
-			order.DropOffLocation = order.DropOffLocation;
-
 			order.CheckOutOrderVehicles = new List<CheckOutOrderVehicle>();
 
-			foreach (var vehicleData in checkoutOrder.VehicleIds)
+			foreach (var vehicleData in checkoutOrder.Vehicles)
 			{
 				await validateInputCheckoutVehicle(vehicleData);
 
@@ -86,6 +83,8 @@ namespace Application.Web.Service.Services
 					VehicleId = vehicleData.VehicleId,
 					PickUpDateTime = vehicleData.PickUpDateTime,
 					DropOffDateTime = vehicleData.DropOffDateTime,
+					PickUpLocation = vehicleData.PickUpLocation,
+					DropOffLocation = vehicleData.DropOffLocation,
 					CheckoutId = order.Id,
 				});
 			}
@@ -104,12 +103,10 @@ namespace Application.Web.Service.Services
 			order = new CheckOutOrder
 			{
 				UserId = checkoutOrder.UserId,
-				PickUpLocation = checkoutOrder.PickUpLocation,
-				DropOffLocation = checkoutOrder.DropOffLocation,
 				CheckOutOrderVehicles = new List<CheckOutOrderVehicle>()
 			};
 
-			foreach (var vehicleData in checkoutOrder.VehicleIds)
+			foreach (var vehicleData in checkoutOrder.Vehicles)
 			{
 				await validateInputCheckoutVehicle(vehicleData);
 
@@ -118,6 +115,8 @@ namespace Application.Web.Service.Services
 					VehicleId = vehicleData.VehicleId,
 					PickUpDateTime = vehicleData.PickUpDateTime,
 					DropOffDateTime = vehicleData.DropOffDateTime,
+					PickUpLocation = vehicleData.PickUpLocation,
+					DropOffLocation = vehicleData.DropOffLocation,
 					CheckoutId = order.Id,
 				});
 			};
