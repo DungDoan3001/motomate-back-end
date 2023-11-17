@@ -72,20 +72,19 @@ namespace Application.Web.Service.Services
 		{
 			_checkoutOrderVehicleRepo.DeleteRange(order.CheckOutOrderVehicles);
 
-			order.PickUpLocation = order.PickUpLocation;
-			order.DropOffLocation = order.DropOffLocation;
-
 			order.CheckOutOrderVehicles = new List<CheckOutOrderVehicle>();
 
-			foreach (var vehicleId in checkoutOrder.VehicleIds)
+			foreach (var vehicleData in checkoutOrder.Vehicles)
 			{
-				var isVehicleExist = await _vehicleQueries.CheckIfVehicleExisted(vehicleId);
-				if (!isVehicleExist)
-					throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+				await validateInputCheckoutVehicle(vehicleData);
 
 				order.CheckOutOrderVehicles.Add(new CheckOutOrderVehicle
 				{
-					VehicleId = vehicleId,
+					VehicleId = vehicleData.VehicleId,
+					PickUpDateTime = vehicleData.PickUpDateTime,
+					DropOffDateTime = vehicleData.DropOffDateTime,
+					PickUpLocation = vehicleData.PickUpLocation,
+					DropOffLocation = vehicleData.DropOffLocation,
 					CheckoutId = order.Id,
 				});
 			}
@@ -104,20 +103,20 @@ namespace Application.Web.Service.Services
 			order = new CheckOutOrder
 			{
 				UserId = checkoutOrder.UserId,
-				PickUpLocation = checkoutOrder.PickUpLocation,
-				DropOffLocation = checkoutOrder.DropOffLocation,
 				CheckOutOrderVehicles = new List<CheckOutOrderVehicle>()
 			};
 
-			foreach (var vehicleId in checkoutOrder.VehicleIds)
+			foreach (var vehicleData in checkoutOrder.Vehicles)
 			{
-				var isVehicleExist = await _vehicleQueries.CheckIfVehicleExisted(vehicleId);
-				if (!isVehicleExist)
-					throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+				await validateInputCheckoutVehicle(vehicleData);
 
 				order.CheckOutOrderVehicles.Add(new CheckOutOrderVehicle
 				{
-					VehicleId = vehicleId,
+					VehicleId = vehicleData.VehicleId,
+					PickUpDateTime = vehicleData.PickUpDateTime,
+					DropOffDateTime = vehicleData.DropOffDateTime,
+					PickUpLocation = vehicleData.PickUpLocation,
+					DropOffLocation = vehicleData.DropOffLocation,
 					CheckoutId = order.Id,
 				});
 			};
@@ -128,6 +127,17 @@ namespace Application.Web.Service.Services
 			await _unitOfWork.CompleteAsync();
 
 			return order;
+		}
+
+		private async Task validateInputCheckoutVehicle(VehicleToCheckOut vehicleData)
+		{
+			var isVehicleExist = await _vehicleQueries.CheckIfVehicleExisted(vehicleData.VehicleId);
+			if (!isVehicleExist)
+				throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+
+			var totalDays = vehicleData.DropOffDateTime.Subtract(vehicleData.PickUpDateTime).Days;
+			if (totalDays <= 0)
+				throw new StatusCodeException(message: "Drop off day can not be equals or less than pick up date.", statusCode: StatusCodes.Status409Conflict);
 		}
 	}
 }

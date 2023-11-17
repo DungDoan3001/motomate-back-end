@@ -2,7 +2,7 @@
 
 namespace Application.Web.Database.Models
 {
-	public class TripRequest : BaseModel
+	public class TripRequest : BaseModel             
 	{
 		[Column("FK_lessee_id")]
 		public Guid LesseeId { get; set; }
@@ -13,8 +13,17 @@ namespace Application.Web.Database.Models
 		[Column("FK_vehicle_id")]
 		public Guid VehicleId { get; set; }
 
+		[Column("ammount")]
+		public decimal Ammount { get; set; }
+
 		[Column("status")]
 		public bool Status { get; set; } // true = complete, false = incomplete
+
+		[Column("pick_up_date_time")]
+		public DateTime PickUpDateTime { get; set; }
+
+		[Column("drop_off_date_time")]
+		public DateTime DropOffDateTime { get; set; }
 
 		[Column("pick_up_location")]
 		public string PickUpLocation { get; set; }
@@ -24,6 +33,9 @@ namespace Application.Web.Database.Models
 
 		[Column("payment_intent_id")]
 		public string PaymentIntentId { get; set; }
+
+		[Column("parent_order_id")]
+		public string ParentOrderId { get; set; }
 
 		[Column("created_at")]
 		public DateTime Created_At { get; set; } = DateTime.UtcNow;

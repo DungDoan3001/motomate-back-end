@@ -3,6 +3,7 @@ using System;
 using Application.Web.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231117165021_update more fields")]
+    partial class updatemorefields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,9 +204,17 @@ namespace Application.Web.Database.Migrations
                         .HasColumnType("text")
                         .HasColumnName("client_secret");
 
+                    b.Property<string>("DropOffLocation")
+                        .HasColumnType("text")
+                        .HasColumnName("drop_off_location");
+
                     b.Property<string>("PaymentIntentId")
                         .HasColumnType("text")
                         .HasColumnName("payment_intent_id");
+
+                    b.Property<string>("PickUpLocation")
+                        .HasColumnType("text")
+                        .HasColumnName("pick_up_location");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -232,17 +242,9 @@ namespace Application.Web.Database.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("drop_off_date_time");
 
-                    b.Property<string>("DropOffLocation")
-                        .HasColumnType("text")
-                        .HasColumnName("drop_off_location");
-
                     b.Property<DateTime>("PickUpDateTime")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("pick_up_date_time");
-
-                    b.Property<string>("PickUpLocation")
-                        .HasColumnType("text")
-                        .HasColumnName("pick_up_location");
 
                     b.HasKey("CheckoutId", "VehicleId");
 
@@ -453,14 +455,14 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("60929087-1227-4efd-af43-e9ae2524eb0e"),
-                            ConcurrencyStamp = "bae0319d-a288-40de-9ec0-42c8c1d400eb",
+                            ConcurrencyStamp = "f2a749bd-623b-4edd-8dd0-29b4f4c3f55a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "ee747352-e178-4b5f-916a-61e6fa652eb3",
+                            ConcurrencyStamp = "9982bf93-95a8-4204-bca6-f3839a109b49",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -472,10 +474,6 @@ namespace Application.Web.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<decimal>("Ammount")
-                        .HasColumnType("numeric")
-                        .HasColumnName("ammount");
 
                     b.Property<DateTime>("Created_At")
                         .HasColumnType("timestamp without time zone")
