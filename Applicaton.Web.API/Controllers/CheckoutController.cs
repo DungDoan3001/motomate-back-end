@@ -36,6 +36,13 @@ namespace Applicaton.Web.API.Controllers
 			_orderService = orderService;
 		}
 
+
+		/// <summary>
+		/// Checkout order to create payment intent for client to pay
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
 		[HttpPost]
 		public async Task<ActionResult<CheckoutOrderResponseModel>> CreateOrUpdateCheckoutOrder([FromBody] CheckoutOrderRequestModel checkoutOrderRequest)
 		{
@@ -67,16 +74,44 @@ namespace Applicaton.Web.API.Controllers
 			}
 		}
 
+
+		/// <summary>
+		/// Endpoint for stripe api to call webhook to invoke create orders
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
 		[HttpPost("webhook")]
 		public async Task<ActionResult> StripeWebhook()
 		{
-			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+			try
+			{
+				var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 
-			var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _configuration["StripeSettings:WhSecret"]);
+				var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _configuration["StripeSettings:WhSecret"]);
 
-			var tripRequests = await _orderService.CreateTripRequestsFromStripeEventAsync(stripeEvent);
+				var tripRequests = await _orderService.CreateTripRequestsFromStripeEventAsync(stripeEvent);
 
-			return new EmptyResult();
+				return new EmptyResult();
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
 		}
     }
 }
