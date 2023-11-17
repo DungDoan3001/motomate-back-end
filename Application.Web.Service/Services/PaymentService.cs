@@ -24,7 +24,7 @@ namespace Application.Web.Service.Services
 
 			var intent = new PaymentIntent();
 
-			var subTotal = order.CheckOutOrderVehicles.Sum(vehicle => vehicle.Vehicle.Price);
+			var subTotal = order.CheckOutOrderVehicles.Sum(vehicle => vehicle.Vehicle.Price * CalculateTotalRentDays(vehicle.PickUpDateTime, vehicle.DropOffDateTime));
 
 			if(string.IsNullOrEmpty(order.PaymentIntentId))
 			{
@@ -47,6 +47,15 @@ namespace Application.Web.Service.Services
 			}
 
 			return intent;
+		}
+
+		private int CalculateTotalRentDays(DateTime PickUpDateTime, DateTime DropOffDateTime)
+		{
+			var totalHours = DropOffDateTime.Subtract(PickUpDateTime).TotalHours;
+
+			var totalDays = totalHours / 24;
+
+			return (int)Math.Round((decimal)totalDays, 2);
 		}
     }
 }

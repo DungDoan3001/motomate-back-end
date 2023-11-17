@@ -19,6 +19,21 @@ namespace Application.Web.Database.DTOs.RequestModels
 
 		[Required]
 		[JsonPropertyName("vehicleIds")]
-		public List<Guid> VehicleIds { get; set; }
+		public List<VehicleToCheckOut> VehicleIds { get; set; }
+	}
+
+	public class VehicleToCheckOut
+	{
+		[Required]
+		[JsonPropertyName("vehicleId")]
+		public Guid VehicleId { get; set; }
+
+		[Required]
+		[JsonPropertyName("pickUpDateTime")]
+		public DateTime PickUpDateTime { get; set; }
+
+		[Required]
+		[JsonPropertyName("dropOffDateTime")]
+		public DateTime DropOffDateTime { get; set; }
 	}
 }

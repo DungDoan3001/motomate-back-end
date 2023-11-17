@@ -77,15 +77,15 @@ namespace Application.Web.Service.Services
 
 			order.CheckOutOrderVehicles = new List<CheckOutOrderVehicle>();
 
-			foreach (var vehicleId in checkoutOrder.VehicleIds)
+			foreach (var vehicleData in checkoutOrder.VehicleIds)
 			{
-				var isVehicleExist = await _vehicleQueries.CheckIfVehicleExisted(vehicleId);
-				if (!isVehicleExist)
-					throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+				await validateInputCheckoutVehicle(vehicleData);
 
 				order.CheckOutOrderVehicles.Add(new CheckOutOrderVehicle
 				{
-					VehicleId = vehicleId,
+					VehicleId = vehicleData.VehicleId,
+					PickUpDateTime = vehicleData.PickUpDateTime,
+					DropOffDateTime = vehicleData.DropOffDateTime,
 					CheckoutId = order.Id,
 				});
 			}
@@ -109,15 +109,15 @@ namespace Application.Web.Service.Services
 				CheckOutOrderVehicles = new List<CheckOutOrderVehicle>()
 			};
 
-			foreach (var vehicleId in checkoutOrder.VehicleIds)
+			foreach (var vehicleData in checkoutOrder.VehicleIds)
 			{
-				var isVehicleExist = await _vehicleQueries.CheckIfVehicleExisted(vehicleId);
-				if (!isVehicleExist)
-					throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+				await validateInputCheckoutVehicle(vehicleData);
 
 				order.CheckOutOrderVehicles.Add(new CheckOutOrderVehicle
 				{
-					VehicleId = vehicleId,
+					VehicleId = vehicleData.VehicleId,
+					PickUpDateTime = vehicleData.PickUpDateTime,
+					DropOffDateTime = vehicleData.DropOffDateTime,
 					CheckoutId = order.Id,
 				});
 			};
@@ -128,6 +128,17 @@ namespace Application.Web.Service.Services
 			await _unitOfWork.CompleteAsync();
 
 			return order;
+		}
+
+		private async Task validateInputCheckoutVehicle(VehicleToCheckOut vehicleData)
+		{
+			var isVehicleExist = await _vehicleQueries.CheckIfVehicleExisted(vehicleData.VehicleId);
+			if (!isVehicleExist)
+				throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+
+			var totalDays = vehicleData.DropOffDateTime.Subtract(vehicleData.PickUpDateTime).Days;
+			if (totalDays <= 0)
+				throw new StatusCodeException(message: "Drop off day can not be equals or less than pick up date.", statusCode: StatusCodes.Status409Conflict);
 		}
 	}
 }
