@@ -92,12 +92,14 @@ namespace Applicaton.Web.API.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
-				return StatusCode(StatusCodes.Status409Conflict, new ErrorResponseModel
-				{
-					Message = "Error while performing action.",
-					StatusCode = StatusCodes.Status500InternalServerError,
-					Errors = { ex.Message, ex.InnerException.Message }
-				});
+				//return StatusCode(StatusCodes.Status409Conflict, new ErrorResponseModel
+				//{
+				//	Message = "Error while performing action.",
+				//	StatusCode = StatusCodes.Status500InternalServerError,
+				//	Errors = { ex.Message, ex.InnerException.Message }
+				//});
+
+				return Ok(ex.Message);
 			}
 		}
 	}

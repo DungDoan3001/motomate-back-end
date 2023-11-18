@@ -77,7 +77,7 @@ namespace Application.Web.Service.Services
 		{
 			foreach (var lessor in lessors)
 			{
-				string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "newOrderFromCustomer.html");
+				string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "newOrderFromCustomer.html");
 				using (StreamReader reader = new StreamReader(filePath))
 				{
 					string content = await reader.ReadToEndAsync();
@@ -99,7 +99,7 @@ namespace Application.Web.Service.Services
 
 		private async Task SendEmailToLesseeAsync(int ordersCount, User lessee, string parentOrderId)
 		{
-			string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "orderSuccess.html");
+			string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "orderSuccess.html");
 			using (StreamReader reader = new StreamReader(Path.GetFullPath(filePath)))
 			{
 				string content = await reader.ReadToEndAsync();
