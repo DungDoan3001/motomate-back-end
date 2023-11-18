@@ -76,7 +76,7 @@ namespace Application.Web.Service.Services
 		{
 			foreach (var lessor in lessors)
 			{
-				string filePath = Path.GetFullPath(@"../Application.Web.Service/Statics/newOrderFromCustomer.html");
+				string filePath = @"../Application.Web.Service/Statics/newOrderFromCustomer.html";
 				using (StreamReader reader = new StreamReader(filePath))
 				{
 					string content = await reader.ReadToEndAsync();
@@ -98,7 +98,7 @@ namespace Application.Web.Service.Services
 
 		private async Task SendEmailToLesseeAsync(int ordersCount, User lessee, string parentOrderId)
 		{
-			string filePath = Path.GetFullPath(@"../Application.Web.Service/Statics/orderSuccess.html");
+			string filePath = @"../Application.Web.Service/Statics/orderSuccess.html";
 			using (StreamReader reader = new StreamReader(Path.GetFullPath(filePath)))
 			{
 				string content = await reader.ReadToEndAsync();
