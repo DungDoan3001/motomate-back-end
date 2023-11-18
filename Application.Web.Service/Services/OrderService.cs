@@ -61,7 +61,7 @@ namespace Application.Web.Service.Services
 			return null;
 		}
 
-		private async Task SendEmailsForTripRequest(List<TripRequest> tripRequests)
+		public async Task SendEmailsForTripRequest(List<TripRequest> tripRequests)
 		{
 			var lessors = tripRequests.GroupBy(x => x.Lessor).Select(x => x.Key).ToList();
 			var lessee = tripRequests.FirstOrDefault().Lessee;

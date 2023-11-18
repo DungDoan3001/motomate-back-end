@@ -9,6 +9,7 @@ using Application.Web.Service.Services;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Applicaton.Web.API.Controllers
 {
@@ -46,6 +47,39 @@ namespace Applicaton.Web.API.Controllers
 			try
 			{
 				var tripRequests = await _orderService.GetAllTripRequestsByParentOrderId(parentOrderId, query.LessorUsername);
+
+				var tripRequestsToReturn = _mapper.Map<List<TripRequest>, TripRequestReponseModel>(tripRequests);
+
+				return Ok(tripRequestsToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		[HttpPost("test/{parentOrderId}")]
+		public async Task<IActionResult> TestEndpoint([FromRoute] string parentOrderId)
+		{
+			try
+			{
+				var tripRequests = await _orderService.GetAllTripRequestsByParentOrderId(parentOrderId);
+
+				await _orderService.SendEmailsForTripRequest(tripRequests);
 
 				var tripRequestsToReturn = _mapper.Map<List<TripRequest>, TripRequestReponseModel>(tripRequests);
 
