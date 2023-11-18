@@ -31,6 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
+	<Content Include="Resources\**">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Application.Web.Database\Application.Web.Database.csproj" />
     <ProjectReference Include="..\Application.Web.Service\Application.Web.Service.csproj" />
   </ItemGroup>
