@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Net;
+using System.Text.RegularExpressions;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
@@ -76,7 +77,7 @@ namespace Application.Web.Service.Services
 		{
 			foreach (var lessor in lessors)
 			{
-				string filePath = @"../Application.Web.Service/Statics/newOrderFromCustomer.html";
+				string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "newOrderFromCustomer.html");
 				using (StreamReader reader = new StreamReader(filePath))
 				{
 					string content = await reader.ReadToEndAsync();
@@ -98,7 +99,7 @@ namespace Application.Web.Service.Services
 
 		private async Task SendEmailToLesseeAsync(int ordersCount, User lessee, string parentOrderId)
 		{
-			string filePath = @"../Application.Web.Service/Statics/orderSuccess.html";
+			string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "orderSuccess.html");
 			using (StreamReader reader = new StreamReader(Path.GetFullPath(filePath)))
 			{
 				string content = await reader.ReadToEndAsync();
