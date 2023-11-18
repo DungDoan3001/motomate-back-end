@@ -7,5 +7,6 @@ namespace Application.Web.Service.Interfaces
 	{
 		Task<List<TripRequest>> CreateTripRequestsFromStripeEventAsync(Event stripeEvent);
 		Task<List<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, string? lessorUsername = "");
+		Task SendEmailsForTripRequest(List<TripRequest> tripRequests);
 	}
 }
