@@ -181,6 +181,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<ICheckoutService, CheckoutService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IMockDataService, MockDataService>();
         }
 
         public static void RegisterQueryDependencies (this IServiceCollection services)
