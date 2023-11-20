@@ -23,6 +23,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Color)
 				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
 				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
+				.Include(c => c.CheckOutOrderVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.TripRequests.Where(x => x.PickUpDateTime > DateTime.UtcNow))
 				.FirstOrDefaultAsync(x => x.UserId.Equals(userId));
 		}
 
@@ -34,6 +35,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Color)
 				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
 				.Include(x => x.CheckOutOrderVehicles).ThenInclude(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
+				.Include(c => c.CheckOutOrderVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.TripRequests.Where(x => x.PickUpDateTime > DateTime.UtcNow))
 				.FirstOrDefaultAsync(x => x.PaymentIntentId.Equals(paymentIntentId));
 		}
 	}

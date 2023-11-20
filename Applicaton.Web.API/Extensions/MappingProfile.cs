@@ -174,6 +174,20 @@ namespace Applicaton.Web.API.Extensions
                         });
                     }
 
+                    var unavailableDates = new List<VehicleUnavailableDate>();
+
+                    if(src.TripRequests.Count > 0)
+                    {
+                        foreach (var tripRequest in src.TripRequests)
+                        {
+                            unavailableDates.Add(new VehicleUnavailableDate
+                            {
+                                From = tripRequest.PickUpDateTime,
+                                To = tripRequest.DropOffDateTime
+                            });
+                        }
+                    }
+
                     dest.Address = textInfo.ToTitleCase(src.Address.ToLower());
                     dest.Ward = textInfo.ToTitleCase(src.Ward.ToLower());
                     dest.District = textInfo.ToTitleCase(src.District.ToLower());
@@ -188,6 +202,7 @@ namespace Applicaton.Web.API.Extensions
 
                     dest.Specifications = specifications;
                     dest.Images = vehicleImages;
+                    dest.UnavailableDates = unavailableDates;
                 });
 
             CreateMap<User, VehicleOwner>()
@@ -294,7 +309,7 @@ namespace Applicaton.Web.API.Extensions
 
                             foreach (var item in shop)
                             {
-                                shopToReturn.Vehicles.Add(new VehicleOfLessor
+                                var vehilcleOfLessor = new VehicleOfLessor
                                 {
                                     VehicleId = item.Vehicle.Id,
                                     VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
@@ -302,8 +317,25 @@ namespace Applicaton.Web.API.Extensions
                                     Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
                                     Price = item.Vehicle.Price,
                                     LicensePlate = item.Vehicle.LicensePlate,
-                                    Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl
-								});
+                                    Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
+                                    PickUpDateTime = item.PickUpDateTime ?? null,
+                                    DropOffDateTime = item.DropOffDateTime ?? null,
+                                    RentDates = new List<VehicleUnavailableDateOfCart>()
+                                };
+
+                                if(item.Vehicle.TripRequests.Count > 0)
+                                {
+                                    foreach (var tripRequest in item.Vehicle.TripRequests)
+                                    {
+                                        vehilcleOfLessor.RentDates.Add(new VehicleUnavailableDateOfCart
+                                        {
+                                            From = tripRequest.PickUpDateTime,
+                                            To = tripRequest.DropOffDateTime
+                                        });
+                                    }
+                                }
+
+								shopToReturn.Vehicles.Add(vehilcleOfLessor);
                             }
 
                            dest.Shops.Add(shopToReturn);
@@ -337,20 +369,35 @@ namespace Applicaton.Web.API.Extensions
 
 						foreach (var item in shop)
 						{
-							shopToReturn.Vehicles.Add(new VehicleOfLessorOfCheckout
-							{
-								VehicleId = item.Vehicle.Id,
-								VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
-								Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
-								Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
-								Price = item.Vehicle.Price,
-								LicensePlate = item.Vehicle.LicensePlate,
-								Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
+                            var vehicleOfLessorCheckout = new VehicleOfLessorOfCheckout
+                            {
+                                VehicleId = item.Vehicle.Id,
+                                VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
+                                Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
+                                Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
+                                Price = item.Vehicle.Price,
+                                LicensePlate = item.Vehicle.LicensePlate,
+                                Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
                                 PickUpLocation = item.PickUpLocation,
                                 DropOffLocation = item.DropOffLocation,
                                 PickUpDateTime = item.PickUpDateTime,
                                 DropOffDateTime = item.DropOffDateTime,
-							});
+                                RentDates = new List<VehicleUnavailableDateOfCheckout>()
+                            };
+
+                            if(item.Vehicle.TripRequests.Count > 0)
+                            {
+                                foreach (var tripRequest in item.Vehicle.TripRequests)
+                                {
+                                    vehicleOfLessorCheckout.RentDates.Add(new VehicleUnavailableDateOfCheckout
+                                    {
+                                        From = tripRequest.PickUpDateTime,
+                                        To = tripRequest.DropOffDateTime,
+                                    });
+                                }
+                            }
+
+							shopToReturn.Vehicles.Add(vehicleOfLessorCheckout);
 						}
 
 						dest.Shops.Add(shopToReturn);

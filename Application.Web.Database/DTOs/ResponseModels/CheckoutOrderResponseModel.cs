@@ -13,12 +13,6 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		[JsonPropertyName("shops")]
 		public List<ShopOfCheckout> Shops { get; set; }
 
-		[JsonPropertyName("pickUpLocation")]
-		public string PickUpLocation { get; set; }
-
-		[JsonPropertyName("dropOffLocation")]
-		public string DropOffLocation { get; set; }
-
 		[JsonPropertyName("paymentIntentId")]
 		public string PaymentIntentId { get; set; }
 
@@ -74,6 +68,15 @@ namespace Application.Web.Database.DTOs.ResponseModels
 
 			[JsonPropertyName("image")]
 			public string Image { get; set; }
+
+			[JsonPropertyName("rentDates")]
+			public List<VehicleUnavailableDateOfCheckout> RentDates { get; set; }
 		}
-	}
+
+        public class VehicleUnavailableDateOfCheckout
+        {
+            public DateTime From { get; set; }
+            public DateTime To { get; set; }
+        }
+    }
 }

@@ -8,5 +8,6 @@ namespace Application.Web.Service.Interfaces
 		Task<Cart> GetCartByUserIdAsync(Guid userId);
 		Task<Cart> AddToCartByUserIdAsync(CartRequestModel requestModel);
 		Task<bool> DeleteCartItemAsync(CartRequestModel requestModel);
+		Task<Cart> UpdateCartAsync(CartRequestModel requestModel);
 	}
 }
