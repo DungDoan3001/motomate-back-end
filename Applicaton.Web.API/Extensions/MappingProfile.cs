@@ -367,20 +367,35 @@ namespace Applicaton.Web.API.Extensions
 
 						foreach (var item in shop)
 						{
-							shopToReturn.Vehicles.Add(new VehicleOfLessorOfCheckout
-							{
-								VehicleId = item.Vehicle.Id,
-								VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
-								Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
-								Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
-								Price = item.Vehicle.Price,
-								LicensePlate = item.Vehicle.LicensePlate,
-								Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
+                            var vehicleOfLessorCheckout = new VehicleOfLessorOfCheckout
+                            {
+                                VehicleId = item.Vehicle.Id,
+                                VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
+                                Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
+                                Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
+                                Price = item.Vehicle.Price,
+                                LicensePlate = item.Vehicle.LicensePlate,
+                                Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
                                 PickUpLocation = item.PickUpLocation,
                                 DropOffLocation = item.DropOffLocation,
                                 PickUpDateTime = item.PickUpDateTime,
                                 DropOffDateTime = item.DropOffDateTime,
-							});
+                                RentDates = new List<VehicleUnavailableDateOfCheckout>()
+                            };
+
+                            if(item.Vehicle.TripRequests.Count > 0)
+                            {
+                                foreach (var tripRequest in item.Vehicle.TripRequests)
+                                {
+                                    vehicleOfLessorCheckout.RentDates.Add(new VehicleUnavailableDateOfCheckout
+                                    {
+                                        From = tripRequest.PickUpDateTime,
+                                        To = tripRequest.DropOffDateTime,
+                                    });
+                                }
+                            }
+
+							shopToReturn.Vehicles.Add(vehicleOfLessorCheckout);
 						}
 
 						dest.Shops.Add(shopToReturn);
