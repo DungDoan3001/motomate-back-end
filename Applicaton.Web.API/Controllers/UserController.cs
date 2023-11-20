@@ -2,6 +2,7 @@
 using Application.Web.Database.Constants;
 using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
@@ -41,11 +42,11 @@ namespace Applicaton.Web.API.Controllers
         /// <response code="200">Successfully get items information.</response>
         /// <response code="500">There is something wrong while execute.</response>
         [HttpGet("all")]
-        public async Task<ActionResult<IEnumerable<UserResponseModel>>> GetAllUsersAsync()
+        public async Task<ActionResult<IEnumerable<UserResponseModel>>> GetAllUsersAsync([FromQuery] UserQuery userQuery)
         {
             try
             {
-                var users = await _userService.GetAllUsersInformationAsync();
+                var users = await _userService.GetAllUsersInformationAsync(userQuery);
 
                 var usersToReturn = _mapper.Map<List<User>, List<UserResponseModel>>(users);
 
@@ -78,7 +79,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<UserResponseModel>>> GetAllUsersWithPaginationAsync([FromQuery] PaginationRequestModel pagination)
+		public async Task<ActionResult<IEnumerable<UserResponseModel>>> GetAllUsersWithPaginationAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] UserQuery userQuery)
 		{
 			try
 			{
@@ -87,7 +88,7 @@ namespace Applicaton.Web.API.Controllers
 					pagination.pageSize = maxPageSize;
 				}
 
-				var (users, paginationMetadata) = await _userService.GetAllUserInformationWithPaginationAsync(pagination);
+				var (users, paginationMetadata) = await _userService.GetAllUserInformationWithPaginationAsync(pagination, userQuery);
 
 				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 				Response.AddPaginationHeader(paginationMetadata);

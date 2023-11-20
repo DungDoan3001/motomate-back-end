@@ -442,7 +442,7 @@ namespace Application.Web.Service.Services
 
         private static List<Vehicle> HandleVehicleQuery(VehicleQuery vehicleQuery, List<Vehicle> vehicles)
         {
-            if (vehicleQuery.Brands != null && vehicleQuery.Brands.Count != 0)
+            if (vehicleQuery.Brands != null && vehicleQuery.Brands.Count > 0)
             {
                 var vehicleQueryHolder = new List<Vehicle>();
                 foreach (var brand in vehicleQuery.Brands)
@@ -463,7 +463,7 @@ namespace Application.Web.Service.Services
                 vehicles = vehicleQueryHolder;
             }
 
-            if (vehicleQuery.Collections != null && vehicleQuery.Collections.Count != 0)
+            if (vehicleQuery.Collections != null && vehicleQuery.Collections.Count > 0)
             {
                 var vehicleQueryHolder = new List<Vehicle>();
                 foreach (var collection in vehicleQuery.Collections)
@@ -484,7 +484,7 @@ namespace Application.Web.Service.Services
                 vehicles = vehicleQueryHolder;
             }
 
-            if (vehicleQuery.Models != null && vehicleQuery.Models.Count != 0)
+            if (vehicleQuery.Models != null && vehicleQuery.Models.Count > 0)
             {
                 var vehicleQueryHolder = new List<Vehicle>();
                 foreach (var model in vehicleQuery.Models)
@@ -505,7 +505,7 @@ namespace Application.Web.Service.Services
                 vehicles = vehicleQueryHolder;
             }
 
-            if (vehicleQuery.Cities != null && vehicleQuery.Cities.Count != 0)
+            if (vehicleQuery.Cities != null && vehicleQuery.Cities.Count > 0)
             {
                 var vehicleQueryHolder = new List<Vehicle>();
                 foreach (var city in vehicleQuery.Cities)

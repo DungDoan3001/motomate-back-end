@@ -8,8 +8,11 @@ namespace Application.Web.Database.Queries.ServiceQueries
 {
 	public class UserQueries : BaseQuery<User>, IUserQueries
 	{
+		private readonly ApplicationContext _dbContext;
+
 		public UserQueries(ApplicationContext dbContext) : base(dbContext)
 		{
+			_dbContext = dbContext;
 		}
 		
 		public async Task<bool> CheckIfUserExisted(Guid userId)
@@ -23,6 +26,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 			var users = await dbSet
 				.Include(x => x.UserRoles).ThenInclude(x => x.Role)
 				.ToListAsync();
+
 			return users;
 		}
 
@@ -48,6 +52,13 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.UserRoles).ThenInclude(x => x.Role)
 				.Where(x => x.NormalizedUserName.Equals(username.ToUpper().Trim()))
 				.FirstOrDefaultAsync();
+		}
+
+		private class UserQueryResponse
+		{
+			public User User { get; set; }
+			public UserRole UserRole { get; set; }
+			public Role Role { get; set; }
 		}
 	}
 }
