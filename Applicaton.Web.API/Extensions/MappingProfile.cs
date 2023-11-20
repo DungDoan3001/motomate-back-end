@@ -318,6 +318,8 @@ namespace Applicaton.Web.API.Extensions
                                     Price = item.Vehicle.Price,
                                     LicensePlate = item.Vehicle.LicensePlate,
                                     Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
+                                    PickUpDateTime = item.PickUpDateTime ?? null,
+                                    DropOffDateTime = item.DropOffDateTime ?? null,
                                     RentDates = new List<VehicleUnavailableDateOfCart>()
                                 };
 

@@ -101,6 +101,43 @@ namespace Applicaton.Web.API.Controllers
 		}
 
 		/// <summary>
+		/// Update cart vehicle information async
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="201">Successfully created item.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPut]
+		public async Task<ActionResult<CartResponseModel>> UpdateCartVehicleAsync([FromBody] CartRequestModel requestModel)
+		{
+			try
+			{
+				var cart = await _cartService.UpdateCartAsync(requestModel);
+
+				var cartToReturn = _mapper.Map<CartResponseModel>(cart);
+
+				return Ok(cartToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
 		/// Delete cart item by identification
 		/// </summary>
 		/// <returns>Status code of the action.</returns>

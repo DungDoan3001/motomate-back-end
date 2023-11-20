@@ -62,6 +62,40 @@ namespace Application.Web.Service.Services
 			return await _cartQueries.GetCartByUserIdAsync(requestModel.UserId);
 		}
 
+		public async Task<Cart> UpdateCartAsync(CartRequestModel requestModel)
+		{
+			await CheckRequestModel(requestModel);
+
+			var cartId = await _cartQueries.GetCartIdByUserIdAsync(requestModel.UserId);
+
+			if (cartId.Equals(Guid.Empty))
+			{
+				throw new StatusCodeException(message: "Cart not found.", statusCode: StatusCodes.Status404NotFound);
+			}
+			else
+			{
+				var isVehicleInCart = await _cartQueries.CheckIfVehicleExistedInCart(cartId, requestModel.VehicleId);
+
+				if (!isVehicleInCart)
+				{
+					throw new StatusCodeException(message: "Vehicle not found in cart.", statusCode: StatusCodes.Status404NotFound);
+				}
+
+				var cartVehicle = await _cartVehicleRepo.FindOne(x => x.CartId.Equals(cartId) && x.VehicleId.Equals(requestModel.VehicleId));
+
+				cartVehicle.PickUpDateTime = requestModel.PickUpDateTime;
+				cartVehicle.DropOffDateTime = requestModel.DropOffDatetime;
+
+				_cartVehicleRepo.Update(cartVehicle);
+
+				await _unitOfWork.CompleteAsync();
+
+				_unitOfWork.Detach(cartVehicle);
+			}
+
+			return await _cartQueries.GetCartByUserIdAsync(requestModel.UserId);
+		}
+
 		private async Task CheckRequestModel(CartRequestModel requestModel)
 		{
 			var isValidUser = await _userQueries.CheckIfUserExisted(requestModel.UserId);
@@ -77,6 +111,20 @@ namespace Application.Web.Service.Services
 			{
 				throw new StatusCodeException(message: "Invalid Vehicle", statusCode: StatusCodes.Status400BadRequest);
 			}
+
+			if(requestModel.PickUpDateTime != null && requestModel.PickUpDateTime < DateTime.UtcNow)
+			{
+				throw new StatusCodeException(message: "Invalid Datetime input", statusCode: StatusCodes.Status400BadRequest);
+			}
+
+			if (requestModel.DropOffDatetime != null && requestModel.DropOffDatetime < DateTime.UtcNow)
+			{
+				throw new StatusCodeException(message: "Invalid Datetime input", statusCode: StatusCodes.Status400BadRequest);
+			} 
+			else if (requestModel.PickUpDateTime != null && requestModel.PickUpDateTime > DateTime.UtcNow && requestModel.PickUpDateTime > requestModel.DropOffDatetime)
+			{
+				throw new StatusCodeException(message: "Pickup datetime can not larger than drop off datetime.", statusCode: StatusCodes.Status400BadRequest);
+			}
 		}
 
 		private async Task HandleOldCartAsync(CartRequestModel requestModel, Guid cartId)
@@ -85,6 +133,8 @@ namespace Application.Web.Service.Services
 			{
 				CartId = cartId,
 				VehicleId = requestModel.VehicleId,
+				PickUpDateTime = null,
+				DropOffDateTime = null,
 			};
 
 			_cartVehicleRepo.Add(newCartVehicle);
@@ -105,6 +155,8 @@ namespace Application.Web.Service.Services
 			{
 				CartId = newCart.Id,
 				VehicleId = requestModel.VehicleId,
+				PickUpDateTime = null,
+				DropOffDateTime = null,
 			};
 
 			_cartRepo.Add(newCart);
