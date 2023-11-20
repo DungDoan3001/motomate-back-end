@@ -18,7 +18,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
                                 .ThenInclude(vi => vi.Image)
                 .Include(v => v.Owner)
                 .Include(c => c.Color)
-                .Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Include(ov => ov.TripRequests.Where(tr => tr.PickUpDateTime > DateTime.UtcNow))
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
                 .Take(pagination.pageSize)
                 .ToListAsync();
         }
@@ -30,7 +31,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
                                 .ThenInclude(vi => vi.Image)
 				.Include(v => v.Owner)
-				.Include(c => c.Color)  
+				.Include(c => c.Color)
+                .Include(ov => ov.TripRequests.Where(tr => tr.PickUpDateTime > DateTime.UtcNow))
 				.ToListAsync();
         }
 
@@ -42,7 +44,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
                                 .ThenInclude(vi => vi.Image)
 				.Include(v => v.Owner)
 				.Include(c => c.Color)
-                .Where(v => v.OwnerId.Equals(ownerId))
+				.Include(ov => ov.TripRequests.Where(tr => tr.PickUpDateTime > DateTime.UtcNow))
+				.Where(v => v.OwnerId.Equals(ownerId))
 				.ToListAsync();
 		}
 
@@ -54,6 +57,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                                 .ThenInclude(vi => vi.Image)
                 .Include(v => v.Owner)
                 .Include(c => c.Color)
+                .Include(ov => ov.TripRequests.Where(tr => tr.PickUpDateTime > DateTime.UtcNow))
                 .Where(v => v.Id.Equals(vehicleId))
                 .FirstOrDefaultAsync();
         }

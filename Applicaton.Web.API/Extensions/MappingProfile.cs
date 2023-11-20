@@ -174,6 +174,20 @@ namespace Applicaton.Web.API.Extensions
                         });
                     }
 
+                    var unavailableDates = new List<VehicleUnavailableDate>();
+
+                    if(src.TripRequests.Count > 0)
+                    {
+                        foreach (var tripRequest in src.TripRequests)
+                        {
+                            unavailableDates.Add(new VehicleUnavailableDate
+                            {
+                                From = tripRequest.PickUpDateTime,
+                                To = tripRequest.DropOffDateTime
+                            });
+                        }
+                    }
+
                     dest.Address = textInfo.ToTitleCase(src.Address.ToLower());
                     dest.Ward = textInfo.ToTitleCase(src.Ward.ToLower());
                     dest.District = textInfo.ToTitleCase(src.District.ToLower());
@@ -188,6 +202,7 @@ namespace Applicaton.Web.API.Extensions
 
                     dest.Specifications = specifications;
                     dest.Images = vehicleImages;
+                    dest.UnavailableDates = unavailableDates;
                 });
 
             CreateMap<User, VehicleOwner>()

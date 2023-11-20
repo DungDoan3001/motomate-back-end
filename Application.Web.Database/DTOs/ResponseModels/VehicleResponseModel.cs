@@ -20,6 +20,7 @@ namespace Application.Web.Database.DTOs.ResponseModels
         public string LicensePlate { get; set; }
         public string InsuranceNumber { get; set; }
         public DateTime InsuranceExpiry { get; set; }
+        public List<VehicleUnavailableDate> UnavailableDates { get; set; }
         public string Status { get; set; }
         public List<ImageOfVehicle> Images { get; set; }
     }
@@ -62,4 +63,10 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		public string Image { get; set; }
 		public string PublicId { get; set; }
 	}
+
+    public class VehicleUnavailableDate
+    {
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
+    }
 }
