@@ -51,7 +51,7 @@ namespace Application.Web.Service.Services
 
             var result = await _userManager.CreateAsync(newUser, userRegistration.Password);
 
-            await _userManager.AddToRoleAsync(newUser, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
+            await _userManager.AddToRoleAsync(newUser, SeedDatabaseConstant.USER.Name);
 
             return result;
         }
@@ -162,7 +162,7 @@ namespace Application.Web.Service.Services
                 
                 var result = await _userManager.CreateAsync(newUser);
                 
-                await _userManager.AddToRoleAsync(newUser, SeedDatabaseConstant.DEFAULT_ROLES.First().Name);
+                await _userManager.AddToRoleAsync(newUser, SeedDatabaseConstant.USER.Name);
                 
                 if (result.Succeeded) jwtToken = await CreateTokenAsync(newUser.Email);
             } 

@@ -22,8 +22,8 @@ namespace Applicaton.Web.API.Extensions
 
         public void Process(User source, UserResponseModel desination, ResolutionContext context)
         {
-			var roles = _userManager.GetRolesAsync(source);
-            desination.Roles = roles.GetAwaiter().GetResult().ToList();
+			var roles = _userManager.GetRolesAsync(source).Result;
+            desination.Roles = roles.ToList();
 
             var picture = new PictureOfUser();
 

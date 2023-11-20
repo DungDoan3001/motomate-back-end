@@ -305,6 +305,9 @@ namespace Application.Web.Service.Services
 
             var colorId = await _colorQueries.GetColorIdByColorNameAsync(requestModel.ColorName);
 
+            vehicleToUpdate.ColorId = colorId;
+            vehicleToUpdate.Status = Constants.statusValues.FirstOrDefault(x => x.Value.Equals(Constants.PENDING)).Key;
+
             _vehicleRepo.Update(vehicleToUpdate);
 
             _imageRepo.AddRange(newImages);
@@ -377,7 +380,7 @@ namespace Application.Web.Service.Services
 
         private static void HandleVehicleStaticValue(Vehicle newVehicle)
         {
-            newVehicle.Status = 0;
+            newVehicle.Status = Constants.statusValues.FirstOrDefault(x => x.Value.Equals(Constants.PENDING)).Key;
             newVehicle.IsActive = true;
             newVehicle.IsAvailable = true;
             newVehicle.IsLocked = false;
@@ -439,7 +442,7 @@ namespace Application.Web.Service.Services
 
         private static List<Vehicle> HandleVehicleQuery(VehicleQuery vehicleQuery, List<Vehicle> vehicles)
         {
-            if (vehicleQuery.Brands != null && vehicleQuery.Brands.Count != 0)
+            if (vehicleQuery.Brands != null && vehicleQuery.Brands.Count > 0)
             {
                 var vehicleQueryHolder = new List<Vehicle>();
                 foreach (var brand in vehicleQuery.Brands)
@@ -460,7 +463,7 @@ namespace Application.Web.Service.Services
                 vehicles = vehicleQueryHolder;
             }
 
-            if (vehicleQuery.Collections != null && vehicleQuery.Collections.Count != 0)
+            if (vehicleQuery.Collections != null && vehicleQuery.Collections.Count > 0)
             {
                 var vehicleQueryHolder = new List<Vehicle>();
                 foreach (var collection in vehicleQuery.Collections)
@@ -481,7 +484,7 @@ namespace Application.Web.Service.Services
                 vehicles = vehicleQueryHolder;
             }
 
-            if (vehicleQuery.Models != null && vehicleQuery.Models.Count != 0)
+            if (vehicleQuery.Models != null && vehicleQuery.Models.Count > 0)
             {
                 var vehicleQueryHolder = new List<Vehicle>();
                 foreach (var model in vehicleQuery.Models)
@@ -502,7 +505,7 @@ namespace Application.Web.Service.Services
                 vehicles = vehicleQueryHolder;
             }
 
-            if (vehicleQuery.Cities != null && vehicleQuery.Cities.Count != 0)
+            if (vehicleQuery.Cities != null && vehicleQuery.Cities.Count > 0)
             {
                 var vehicleQueryHolder = new List<Vehicle>();
                 foreach (var city in vehicleQuery.Cities)

@@ -8,11 +8,11 @@ namespace Application.Web.Service.Interfaces
     {
         Task<User> GetUserInformationByEmailAsync(string email);
         Task<User> GetUserInformationByUsernameAsync(string username);
-        Task<List<User>> GetAllUsersInformationAsync();
+        Task<List<User>> GetAllUsersInformationAsync(UserQuery userQuery);
         Task<User> UpdateUserAsync(UserRequestModel requestModel, string username);
         Task<bool> DeleteUserAsync(string username);
         Task<User> GetUserInformationByIdAsync(Guid id);
-        Task<(List<User>, PaginationMetadata)> GetAllUserInformationWithPaginationAsync(PaginationRequestModel pagination);
-
+        Task<(List<User>, PaginationMetadata)> GetAllUserInformationWithPaginationAsync(PaginationRequestModel pagination, UserQuery userQuery);
+        Task<bool> UpdateUserRoleAsync(UserRoleRequestModel roleRequestModel);
 	}
 }
