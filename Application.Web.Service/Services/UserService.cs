@@ -1,4 +1,5 @@
-﻿using Application.Web.Database.DTOs.RequestModels;
+﻿using Application.Web.Database.Constants;
+using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
@@ -11,7 +12,6 @@ using AutoMapper;
 using LazyCache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Web.Service.Services
 {
@@ -148,6 +148,23 @@ namespace Application.Web.Service.Services
 			});
 
 			return user;
+        }
+
+        public async Task<bool> UpdateUserRoleAsync(UserRoleRequestModel roleRequestModel)
+        {
+            var user = await _userManager.FindByIdAsync(roleRequestModel.UserId.ToString()) ?? throw new StatusCodeException(message: "User not found!", statusCode: StatusCodes.Status404NotFound);
+
+            var newRole = SeedDatabaseConstant.DEFAULT_ROLES.FirstOrDefault(x => x.Id.Equals(roleRequestModel.RoleId)) ?? throw new StatusCodeException(message: "Role not found", statusCode: StatusCodes.Status404NotFound);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            if (userRoles.Contains(newRole.Name)) throw new StatusCodeException(message: "Role already existed.", statusCode: StatusCodes.Status409Conflict);
+
+            await _userManager.RemoveFromRolesAsync(user, userRoles);
+
+            var result = await _userManager.AddToRoleAsync(user, newRole.Name);
+
+            return result.Succeeded;
         }
 
         public async Task<bool> DeleteUserAsync(string username)

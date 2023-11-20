@@ -245,13 +245,51 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Delete user information.
-        /// </summary>
-        /// <returns>Status code of the action.</returns>
-        /// <response code="200">Successfully updated item information.</response>
-        /// <response code="500">There is something wrong while execute.</response>
-        [HttpDelete("{username}")]
+		/// <summary>
+		/// Update user role information.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully updated item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPut("role")]
+		public async Task<ActionResult<UserResponseModel>> UpdateUserRoleInformation([FromBody] UserRoleRequestModel requestModel)
+		{
+			try
+			{
+				var result = await _userService.UpdateUserRoleAsync(requestModel);
+
+				if (!result)
+					throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);
+
+				return Ok();
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Delete user information.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully updated item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpDelete("{username}")]
         public async Task<IActionResult> DeleteUserInformation([FromRoute] string username)
         {
             try

@@ -13,6 +13,6 @@ namespace Application.Web.Service.Interfaces
         Task<bool> DeleteUserAsync(string username);
         Task<User> GetUserInformationByIdAsync(Guid id);
         Task<(List<User>, PaginationMetadata)> GetAllUserInformationWithPaginationAsync(PaginationRequestModel pagination);
-
+        Task<bool> UpdateUserRoleAsync(UserRoleRequestModel roleRequestModel);
 	}
 }
