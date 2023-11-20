@@ -305,6 +305,9 @@ namespace Application.Web.Service.Services
 
             var colorId = await _colorQueries.GetColorIdByColorNameAsync(requestModel.ColorName);
 
+            vehicleToUpdate.ColorId = colorId;
+            vehicleToUpdate.Status = Constants.statusValues.FirstOrDefault(x => x.Value.Equals(Constants.PENDING)).Key;
+
             _vehicleRepo.Update(vehicleToUpdate);
 
             _imageRepo.AddRange(newImages);
@@ -377,7 +380,7 @@ namespace Application.Web.Service.Services
 
         private static void HandleVehicleStaticValue(Vehicle newVehicle)
         {
-            newVehicle.Status = 0;
+            newVehicle.Status = Constants.statusValues.FirstOrDefault(x => x.Value.Equals(Constants.PENDING)).Key;
             newVehicle.IsActive = true;
             newVehicle.IsAvailable = true;
             newVehicle.IsLocked = false;
