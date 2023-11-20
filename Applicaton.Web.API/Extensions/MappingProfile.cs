@@ -309,7 +309,7 @@ namespace Applicaton.Web.API.Extensions
 
                             foreach (var item in shop)
                             {
-                                shopToReturn.Vehicles.Add(new VehicleOfLessor
+                                var vehilcleOfLessor = new VehicleOfLessor
                                 {
                                     VehicleId = item.Vehicle.Id,
                                     VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
@@ -317,8 +317,23 @@ namespace Applicaton.Web.API.Extensions
                                     Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
                                     Price = item.Vehicle.Price,
                                     LicensePlate = item.Vehicle.LicensePlate,
-                                    Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl
-								});
+                                    Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
+                                    RentDates = new List<VehicleUnavailableDateOfCart>()
+                                };
+
+                                if(item.Vehicle.TripRequests.Count > 0)
+                                {
+                                    foreach (var tripRequest in item.Vehicle.TripRequests)
+                                    {
+                                        vehilcleOfLessor.RentDates.Add(new VehicleUnavailableDateOfCart
+                                        {
+                                            From = tripRequest.PickUpDateTime,
+                                            To = tripRequest.DropOffDateTime
+                                        });
+                                    }
+                                }
+
+								shopToReturn.Vehicles.Add(vehilcleOfLessor);
                             }
 
                            dest.Shops.Add(shopToReturn);

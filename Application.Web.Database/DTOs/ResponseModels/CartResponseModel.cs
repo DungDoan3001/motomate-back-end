@@ -51,5 +51,14 @@ namespace Application.Web.Database.DTOs.ResponseModels
 
         [JsonPropertyName("image")]
         public string Image { get; set; }
+
+        [JsonPropertyName("rentDates")]
+        public List<VehicleUnavailableDateOfCart> RentDates { get; set; }
+    }
+
+    public class VehicleUnavailableDateOfCart
+    {
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
     }
 }
