@@ -3,6 +3,7 @@ using System;
 using Application.Web.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231121055113_incomplete and completed trips")]
+    partial class incompleteandcompletedtrips
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -367,10 +369,6 @@ namespace Application.Web.Database.Migrations
                         .HasColumnType("text")
                         .HasColumnName("reason");
 
-                    b.Property<string>("RefundId")
-                        .HasColumnType("text")
-                        .HasColumnName("refund_id");
-
                     b.Property<Guid>("TripId")
                         .HasColumnType("uuid")
                         .HasColumnName("FK_trip_id");
@@ -519,28 +517,28 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("60929087-1227-4efd-af43-e9ae2524eb0e"),
-                            ConcurrencyStamp = "d8570d82-8c0f-4dd4-a3de-e1615f0b0bff",
+                            ConcurrencyStamp = "594c88b2-e17c-43bb-8b0f-641aefc3bed3",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "1db4271a-8bb9-4810-ac89-5b3893159710",
+                            ConcurrencyStamp = "fd2213e4-28cc-473c-ad29-870bd7c924fb",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("20308981-486a-456e-833c-1a8821121b3e"),
-                            ConcurrencyStamp = "b095434f-279c-457c-b18b-f7a60424baec",
+                            ConcurrencyStamp = "32c4523c-2745-47c5-9312-5e25000b637c",
                             Name = "Lessor",
                             NormalizedName = "LESSOR"
                         },
                         new
                         {
                             Id = new Guid("19021360-14c6-49ab-a91b-79c388115f4e"),
-                            ConcurrencyStamp = "694a090e-7ee6-4086-9a4f-9a6b4df53a6b",
+                            ConcurrencyStamp = "966d4cb8-e207-447a-8b43-914e12bf3b09",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         });

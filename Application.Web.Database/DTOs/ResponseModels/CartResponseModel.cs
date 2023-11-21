@@ -58,8 +58,8 @@ namespace Application.Web.Database.DTOs.ResponseModels
         [JsonPropertyName("dropOffDateTime")]
         public DateTime? DropOffDateTime { get; set; }
 
-        [JsonPropertyName("rentDates")]
-        public List<VehicleUnavailableDateOfCart> RentDates { get; set; }
+        [JsonPropertyName("unavailableDates")]
+        public List<VehicleUnavailableDateOfCart> UnavailableDates { get; set; }
     }
 
     public class VehicleUnavailableDateOfCart

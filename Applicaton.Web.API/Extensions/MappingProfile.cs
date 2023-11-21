@@ -320,14 +320,14 @@ namespace Applicaton.Web.API.Extensions
                                     Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
                                     PickUpDateTime = item.PickUpDateTime ?? null,
                                     DropOffDateTime = item.DropOffDateTime ?? null,
-                                    RentDates = new List<VehicleUnavailableDateOfCart>()
+                                    UnavailableDates = new List<VehicleUnavailableDateOfCart>()
                                 };
 
                                 if(item.Vehicle.TripRequests.Count > 0)
                                 {
                                     foreach (var tripRequest in item.Vehicle.TripRequests)
                                     {
-                                        vehilcleOfLessor.RentDates.Add(new VehicleUnavailableDateOfCart
+                                        vehilcleOfLessor.UnavailableDates.Add(new VehicleUnavailableDateOfCart
                                         {
                                             From = tripRequest.PickUpDateTime,
                                             To = tripRequest.DropOffDateTime
@@ -432,8 +432,9 @@ namespace Applicaton.Web.API.Extensions
 
                         foreach (var item in shop)
                         {
-                            shopToReturn.Vehicles.Add(new VehicleOfLessorOfTripRequest
+                            var tripRequestVehicleOfLessor = new VehicleOfLessorOfTripRequest
                             {
+                                RequestId = item.Id,
                                 VehicleId = item.Vehicle.Id,
                                 VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
                                 Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
@@ -441,11 +442,30 @@ namespace Applicaton.Web.API.Extensions
                                 Price = item.Ammount,
                                 LicensePlate = item.Vehicle.LicensePlate,
                                 Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
-								PickUpLocation = item.PickUpLocation,
-								DropOffLocation = item.DropOffLocation,
-								PickUpDateTime = item.PickUpDateTime,
-								DropOffDateTime = item.DropOffDateTime,
-							});
+                                PickUpLocation = item.PickUpLocation,
+                                DropOffLocation = item.DropOffLocation,
+                                PickUpDateTime = item.PickUpDateTime,
+                                DropOffDateTime = item.DropOffDateTime,
+                            };
+
+                            if(!item.Status && item.InCompleteTrip == null && item.CompletedTrip == null)
+                            {
+                                tripRequestVehicleOfLessor.Status = Constants.PENDING;
+                            } 
+                            else if(item.Status && item.InCompleteTrip == null && item.CompletedTrip == null)
+                            {
+                                tripRequestVehicleOfLessor.Status = Constants.ONGOING;
+                            }
+                            else if (!item.Status && item.InCompleteTrip != null && item.CompletedTrip == null)
+                            {
+                                tripRequestVehicleOfLessor.Status = Constants.CANCELED;
+                            }
+                            else if(item.Status && item.InCompleteTrip == null && item.CompletedTrip != null)
+                            {
+                                tripRequestVehicleOfLessor.Status = Constants.COMPLETED;
+                            }
+
+                            shopToReturn.Vehicles.Add(tripRequestVehicleOfLessor);
                         }
 
 						dest.Shops.Add(shopToReturn);

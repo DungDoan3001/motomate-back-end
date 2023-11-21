@@ -6,5 +6,6 @@ namespace Application.Web.Database.Queries.Interface
 	{
 		Task<List<TripRequest>> GetTripRequestsBasedOnPaymentIntentId(string paymentIntentId);
 		Task<List<TripRequest>> GetTripRequestsBasedOnParentOrderId(string parentOrderId);
+		Task<TripRequest> GetTripRequestByIdAsync(Guid tripId);
 	}
 }

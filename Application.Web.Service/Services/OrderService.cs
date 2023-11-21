@@ -1,11 +1,15 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
+using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
+using Application.Web.Service.Exceptions;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Stripe;
 
 namespace Application.Web.Service.Services
@@ -15,25 +19,32 @@ namespace Application.Web.Service.Services
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IGenericRepository<TripRequest> _tripRequestRepo;
 		private readonly IGenericRepository<CheckOutOrder> _checkoutOrderRepo;
+		private readonly IGenericRepository<CompletedTrip> _completedTripRepo;
+		private readonly IGenericRepository<InCompleteTrip> _inCompleteTripRepo;
 		private readonly ICheckoutOrderQueries _checkoutOrderQueries;
 		private readonly ITripRequestQueries _tripRequestQueries;
 		private readonly IEmailService _emailService;
+		private readonly IPaymentService _paymentService;
 
 		public OrderService(
 			IUnitOfWork unitOfWork,
 			ICheckoutOrderQueries checkoutOrderQueries,
 			ITripRequestQueries tripRequestQueries,
-			IEmailService emailService
+			IEmailService emailService,
+			IPaymentService paymentService
 			)
 		{
 			_unitOfWork = unitOfWork;
 			_tripRequestRepo = unitOfWork.GetBaseRepo<TripRequest>();
 			_checkoutOrderRepo = unitOfWork.GetBaseRepo<CheckOutOrder>();
+			_completedTripRepo = unitOfWork.GetBaseRepo<CompletedTrip>();
+			_inCompleteTripRepo = unitOfWork.GetBaseRepo<InCompleteTrip>();
 
 			_checkoutOrderQueries = checkoutOrderQueries;
 			_tripRequestQueries = tripRequestQueries;
 
 			_emailService = emailService;
+			_paymentService = paymentService;
 		}
 
 
@@ -62,6 +73,114 @@ namespace Application.Web.Service.Services
 			return null;
 		}
 
+		public async Task<List<TripRequest>> UpdateTripRequestStatusAsync(TripRequestStatusRequestModel requestModel)
+		{
+			var isValidStatus = Constants.AVAILABLE_UPDATE_TRIP_STATUS.Contains(requestModel.Status);
+
+			if (!isValidStatus)
+				throw new StatusCodeException(message: $"Only allow these valid status fields: {String.Join(", ", Constants.AVAILABLE_UPDATE_TRIP_STATUS)}", statusCode: StatusCodes.Status400BadRequest);
+
+			var tripRequests = new List<TripRequest>();
+
+			if(requestModel.Status.Equals(Constants.APPROVED))
+			{
+				tripRequests = await ApproveTripRequestAsync(requestModel.RequestId);
+			} 
+			else if (requestModel.Status.Equals(Constants.COMPLETED))
+			{
+				tripRequests = await CompleteTripRequestAsync(requestModel.RequestId);
+			}
+			else if (requestModel.Status.Equals(Constants.CANCELED))
+			{
+				tripRequests = await CancelTripRequestAsync(requestModel.RequestId, requestModel.Reason);
+			}
+
+			return tripRequests;
+		}
+
+		private async Task<List<TripRequest>> ApproveTripRequestAsync(Guid tripRequestId)
+		{
+			var tripRequest = await _tripRequestQueries.GetTripRequestByIdAsync(tripRequestId) ?? throw new StatusCodeException(message: "Trip not found.", statusCode: StatusCodes.Status404NotFound);
+		
+			var tripStatus = GetTripRequestStatus(tripRequest);
+
+			if (!tripStatus.Equals(Constants.PENDING))
+				throw new StatusCodeException(message: $"Can not {Constants.APPROVED} due to the current status is {tripStatus}");
+
+			tripRequest.Status = true;
+
+			_tripRequestRepo.Update(tripRequest);
+
+			await _unitOfWork.CompleteAsync();
+
+			_unitOfWork.Detach(tripRequest);
+
+			return await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(tripRequest.ParentOrderId);
+		}
+
+		private async Task<List<TripRequest>> CompleteTripRequestAsync(Guid tripRequestId)
+		{
+			var tripRequest = await _tripRequestQueries.GetTripRequestByIdAsync(tripRequestId) ?? throw new StatusCodeException(message: "Trip not found.", statusCode: StatusCodes.Status404NotFound);
+
+			var tripStatus = GetTripRequestStatus(tripRequest);
+
+			if (!tripStatus.Equals(Constants.ONGOING))
+				throw new StatusCodeException(message: $"Can not {Constants.COMPLETED} due to the current status is {tripStatus}");
+
+			tripRequest.Status = true;
+
+			var tripComplete = new CompletedTrip
+			{
+				TripId = tripRequest.Id,
+				Duration = tripRequest.DropOffDateTime - tripRequest.PickUpDateTime,
+				Ammount = tripRequest.Ammount * _paymentService.CalculateTotalRentDays(tripRequest.PickUpDateTime, tripRequest.DropOffDateTime)
+			};
+
+			_tripRequestRepo.Update(tripRequest);
+			_completedTripRepo.Add(tripComplete);
+
+			await _unitOfWork.CompleteAsync();
+
+			_unitOfWork.Detach(tripRequest);
+			_unitOfWork.Detach(tripComplete);
+
+			return await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(tripRequest.ParentOrderId);
+		}
+
+		private async Task<List<TripRequest>> CancelTripRequestAsync(Guid tripRequestId, string reason)
+		{
+			var tripRequest = await _tripRequestQueries.GetTripRequestByIdAsync(tripRequestId) ?? throw new StatusCodeException(message: "Trip not found.", statusCode: StatusCodes.Status404NotFound);
+
+			var tripStatus = GetTripRequestStatus(tripRequest);
+
+			if (!tripStatus.Equals(Constants.PENDING) && !tripStatus.Equals(Constants.ONGOING))
+				throw new StatusCodeException(message: $"Can not {Constants.CANCELED} due to the current status is {tripStatus}");
+
+			decimal refundAmmounts = tripRequest.Ammount * _paymentService.CalculateTotalRentDays(tripRequest.PickUpDateTime, tripRequest.DropOffDateTime);
+
+			var refund = await _paymentService.RefundPayment(tripRequest.PaymentIntentId, refundAmmounts, reason);
+
+			tripRequest.Status = false;
+
+			var inCompleteTrip = new InCompleteTrip
+			{
+				TripId = tripRequest.Id,
+				Reason = reason,
+				RefundId = refund.Id,
+				CancelTime = DateTime.UtcNow
+			};
+
+			_tripRequestRepo.Update(tripRequest);
+			_inCompleteTripRepo.Add(inCompleteTrip);
+
+			await _unitOfWork.CompleteAsync();
+
+			_unitOfWork.Detach(tripRequest);
+			_unitOfWork.Detach(inCompleteTrip);
+
+			return await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(tripRequest.ParentOrderId);
+		}
+
 		public async Task SendEmailsForTripRequest(List<TripRequest> tripRequests)
 		{
 			var lessors = tripRequests.GroupBy(x => x.Lessor).Select(x => x.Key).ToList();
@@ -71,6 +190,28 @@ namespace Application.Web.Service.Services
 			await SendEmailToLesseeAsync(tripRequests.Count, lessee, parentOrderId);
 
 			await SendEmailToLessorsAsync(tripRequests, lessors, lessee, parentOrderId);
+		}
+
+		private string GetTripRequestStatus(TripRequest tripRequest)
+		{
+			if (!tripRequest.Status && tripRequest.InCompleteTrip == null && tripRequest.CompletedTrip == null)
+			{
+				return Constants.PENDING;
+			}
+			else if (tripRequest.Status && tripRequest.InCompleteTrip == null && tripRequest.CompletedTrip == null)
+			{
+				return Constants.ONGOING;
+			}
+			else if (!tripRequest.Status && tripRequest.InCompleteTrip != null && tripRequest.CompletedTrip == null)
+			{
+				return Constants.CANCELED;
+			}
+			else if (tripRequest.Status && tripRequest.InCompleteTrip == null && tripRequest.CompletedTrip != null)
+			{
+				return Constants.COMPLETED;
+			}
+
+			return null;
 		}
 
 		private async Task SendEmailToLessorsAsync(List<TripRequest> tripRequests, List<User> lessors, User lessee, string parentOrderId)
