@@ -70,7 +70,7 @@ namespace Applicaton.Web.API.Controllers
 		}
 
 		/// <summary>
-		/// Update per request status of Trip requests. Only allow status field to: "Approved", "Canceled", "COMPLETED"
+		/// Update per request status of Trip requests. Only allow status field to: "Approved", "Canceled", "Complete"
 		/// </summary>
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
@@ -111,11 +111,9 @@ namespace Applicaton.Web.API.Controllers
 		{
 			try
 			{
-				var tripRequests = await _orderService.GetAllTripRequestsByParentOrderId(parentOrderId);
+				var request = await _orderService.GetTripRequestsByLessorIdAsync(Guid.Parse(parentOrderId));
 
-				await _orderService.SendEmailsForTripRequest(tripRequests);
-
-				var tripRequestsToReturn = _mapper.Map<List<TripRequest>, TripRequestReponseModel>(tripRequests);
+				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, List<TripRequestReponseModel>>(request);
 
 				return Ok(tripRequestsToReturn);
 			}

@@ -10,5 +10,6 @@ namespace Application.Web.Service.Interfaces
 		Task<List<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, string? lessorUsername = "");
 		Task SendEmailsForTripRequest(List<TripRequest> tripRequests);
 		Task<List<TripRequest>> UpdateTripRequestStatusAsync(TripRequestStatusRequestModel requestModel);
+		Task<List<List<TripRequest>>> GetTripRequestsByLessorIdAsync(Guid lessorId);
 	}
 }
