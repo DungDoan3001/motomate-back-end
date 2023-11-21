@@ -103,6 +103,205 @@ namespace Application.Web.Service.Services
 			}
 		};
 
+		private static Dictionary<string, Dictionary<Model, List<Color>>> listModels = new Dictionary<string, Dictionary<Model, List<Color>>>
+		{
+			{
+				"WAVE", new Dictionary<Model, List<Color>>
+				{
+					{
+						new Model {Name = "ALPHA", Year = "2020", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "WHITE", HexCode = "#FFFFFF"},
+						}
+					},
+					{
+						new Model {Name = "ALPHA", Year = "2021", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "WHITE", HexCode = "#FFFFFF"},
+						}
+					},
+					{
+						new Model {Name = "RXS", Year = "2019", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color> 
+						{
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "WHITE", HexCode = "#FFFFFF"},
+						}
+					},
+					{
+						new Model {Name = "RXS", Year = "2021", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "WHITE", HexCode = "#FFFFFF"},
+						}
+					}
+				}
+			},
+			{
+				"WINNER", new Dictionary<Model, List<Color>>
+				{
+					{
+						new Model {Name = "X", Year = "2019", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "SILVER", HexCode = "#C0C0C0"},
+							new Color {Name = "WHITE", HexCode = "#FFFFFF"},
+						}
+					},
+					{
+						new Model {Name = "X", Year = "2020", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "SILVER", HexCode = "#C0C0C0"},
+							new Color {Name = "WHITE", HexCode = "#FFFFFF"},
+						}
+					}
+				}
+			},
+			{
+				"BLADE", new Dictionary<Model, List<Color>>
+				{
+					{
+						new Model {Name = "BLADE", Year = "2019", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "WHITE", HexCode = "#FFFFFF"},
+						}
+					},
+					{
+						new Model {Name = "BLADE", Year = "2018", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "WHITE", HexCode = "#FFFFFF"},
+						}
+					}
+				}
+			},
+			{
+				"EXCITER", new Dictionary<Model, List<Color>>
+				{
+					{
+						new Model {Name = "150", Year = "2020", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "GREY", HexCode = "#808080"},
+							new Color {Name = "GREEN", HexCode = "#008000"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "SILVER", HexCode = "#C0C0C0"},
+						}
+					},
+					{
+						new Model {Name = "155 VVA", Year = "2021", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "GREY", HexCode = "#808080"},
+							new Color {Name = "GREEN", HexCode = "#008000"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "SILVER", HexCode = "#C0C0C0"},
+						}
+					}
+				}
+			},
+			{
+				"FZ SERIES", new Dictionary<Model, List<Color>>
+				{
+					{
+						new Model {Name = "FZ16", Year = "2020", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+						}
+					}
+				}
+			},
+			{
+				"RAIDER", new Dictionary<Model, List<Color>>
+				{
+					{
+						new Model {Name = "150CC", Year = "2020", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "GREY", HexCode = "#808080"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+						}
+					}
+				}
+			},
+			{
+				"VESPA", new Dictionary<Model, List<Color>>
+				{
+					{
+						new Model {Name = "SPRINT S", Year = "2019", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "YELLOW", HexCode = "#FFFF00"},
+							new Color {Name = "SILVER", HexCode = "#C0C0C0"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+						}
+					},
+					{
+						new Model {Name = "SPRINT JUSTIN BIEBER", Year = "2020", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "YELLOW", HexCode = "#FFFF00"},
+							new Color {Name = "SILVER", HexCode = "#C0C0C0"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+						}
+					},
+					{
+						new Model {Name = "GTS", Year = "2020", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "YELLOW", HexCode = "#FFFF00"},
+							new Color {Name = "SILVER", HexCode = "#C0C0C0"},
+							new Color {Name = "BLUE", HexCode = "#0000FF"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+						}
+					}
+				}
+			},
+			{
+				"ATTILA", new Dictionary<Model, List<Color>>
+				{
+					{
+						new Model {Name = "50", Year = "2022", Capacity = "2", CollectionId = Guid.Empty },
+						new List<Color>
+						{
+							new Color {Name = "BLACK", HexCode = "#000000"},
+							new Color {Name = "RED", HexCode = "#FF0000"},
+							new Color {Name = "WHITE", HexCode = "#FFFFFF"},
+						}
+					}
+				}
+			}
+		};
+
 		private class BrandComparer : IEqualityComparer<Brand>
 		{
 			public bool Equals(Brand x, Brand y)
@@ -128,7 +327,104 @@ namespace Application.Web.Service.Services
 
 			var collections = await HandleMockCollectionsAsync(brands);
 
+			var models = await HandleMockModelsAsync(collections);
+
 			return true;
+		}
+
+		private async Task<List<Model>> HandleMockModelsAsync(List<Collection> collections)
+		{
+			foreach (var collection in collections)
+			{
+				var modelDictionary = listModels.Where(x => x.Key.ToUpper().Trim().Equals(collection.Name.ToUpper().Trim())).FirstOrDefault().Value;
+
+				if(modelDictionary != null)
+				{
+					foreach (var model in modelDictionary)
+					{
+						var dbModel = await _context.Models.FirstOrDefaultAsync(x => x.Name.ToUpper().Trim().Equals(model.Key.Name.ToUpper().Trim()));
+
+						if (dbModel == null)
+						{
+							var dbCollection = await _context.Collections.FirstOrDefaultAsync(x => x.Name.ToUpper().Trim().Equals(collection.Name.ToUpper().Trim())); 
+							
+							model.Key.CollectionId = dbCollection.Id;
+							
+							_context.Models.Add(model.Key);
+
+							var modelColors = model.Value;
+
+							foreach (var modelColor in modelColors)
+							{
+								var color = await _context.Colors.FirstOrDefaultAsync(x => x.Name.ToUpper().Trim().Equals(modelColor.Name.ToUpper().Trim()));
+
+								if (color != null)
+								{
+									var newModelColor = new ModelColor
+									{
+										ModelId = model.Key.Id,
+										ColorId = color.Id,
+									};
+
+									_context.ModelColors.Add(newModelColor);
+								}
+								else
+								{
+									_context.Colors.Add(modelColor);
+
+									var newModelColor = new ModelColor
+									{
+										ModelId = model.Key.Id,
+										ColorId = modelColor.Id,
+									};
+
+									_context.ModelColors.Add(newModelColor);
+								}
+							}
+						}
+						else
+						{
+							var modelColors = model.Value;
+
+							foreach (var modelColor in modelColors)
+							{
+								var color = await _context.Colors.FirstOrDefaultAsync(x => x.Name.ToUpper().Trim().Equals(modelColor.Name.ToUpper().Trim()));
+
+								if (color != null)
+								{
+									var isModelColorCreated = await _context.ModelColors.AnyAsync(x => x.ColorId.Equals(color.Id) && x.ModelId.Equals(dbModel.Id));
+
+									if (!isModelColorCreated)
+									{
+										var newModelColor = new ModelColor
+										{
+											ModelId = dbModel.Id,
+											ColorId = color.Id,
+										};
+
+										_context.ModelColors.Add(newModelColor);
+									}
+								}
+								else
+								{
+									var newModelColor = new ModelColor
+									{
+										ModelId = dbModel.Id,
+										ColorId = modelColor.Id,
+									};
+
+									_context.Colors.Add(modelColor);
+									_context.ModelColors.Add(newModelColor);
+								}
+							}
+						}
+					}
+
+					await _context.SaveChangesAsync();
+				}
+			}
+
+			return await _context.Models.ToListAsync();
 		}
 
 		private async Task<List<Collection>> HandleMockCollectionsAsync(List<Brand> brands)

@@ -17,21 +17,31 @@ namespace Applicaton.Web.API.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Get()
 		{
-			try
-			{
-				var result = await _mockDataService.MockDataAsync();
+			//try
+			//{
+			//	var result = await _mockDataService.MockDataAsync();
 
-				if(result)
-				{
-					return Ok(result);
-				} else 
-				{ 
-					return BadRequest(); 
-				}
-			}
-			catch (Exception ex)
+			//	if(result)
+			//	{
+			//		return Ok(result);
+			//	} else 
+			//	{ 
+			//		return BadRequest(); 
+			//	}
+			//}
+			//catch (Exception ex)
+			//{
+			//	return Ok(ex);
+
+			var result = await _mockDataService.MockDataAsync();
+
+			if (result)
 			{
-				return Ok(ex);
+				return Ok(result);
+			}
+			else
+			{
+				return BadRequest();
 			}
 		}
 	}
