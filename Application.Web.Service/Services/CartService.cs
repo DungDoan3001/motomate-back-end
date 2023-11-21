@@ -86,7 +86,7 @@ namespace Application.Web.Service.Services
 				if(requestModel.PickUpDateTime.HasValue && requestModel.DropOffDatetime.HasValue)
 				{
 					cartVehicle.PickUpDateTime = DateTime.SpecifyKind(requestModel.PickUpDateTime.Value, DateTimeKind.Utc);
-					cartVehicle.DropOffDateTime = DateTime.SpecifyKind(requestModel.PickUpDateTime.Value, DateTimeKind.Utc);
+					cartVehicle.DropOffDateTime = DateTime.SpecifyKind(requestModel.DropOffDatetime.Value, DateTimeKind.Utc);
 				} else
 				{
 					cartVehicle.PickUpDateTime = null;
