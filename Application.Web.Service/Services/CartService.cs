@@ -83,8 +83,16 @@ namespace Application.Web.Service.Services
 
 				var cartVehicle = await _cartVehicleRepo.FindOne(x => x.CartId.Equals(cartId) && x.VehicleId.Equals(requestModel.VehicleId));
 
-				cartVehicle.PickUpDateTime = requestModel.PickUpDateTime;
-				cartVehicle.DropOffDateTime = requestModel.DropOffDatetime;
+				if(requestModel.PickUpDateTime.HasValue && requestModel.DropOffDatetime.HasValue)
+				{
+					cartVehicle.PickUpDateTime = DateTime.SpecifyKind(requestModel.PickUpDateTime.Value, DateTimeKind.Utc);
+					cartVehicle.DropOffDateTime = DateTime.SpecifyKind(requestModel.PickUpDateTime.Value, DateTimeKind.Utc);
+				} else
+				{
+					cartVehicle.PickUpDateTime = null;
+					cartVehicle.DropOffDateTime = null;
+				}
+				
 
 				_cartVehicleRepo.Update(cartVehicle);
 
