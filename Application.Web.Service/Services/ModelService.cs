@@ -168,6 +168,8 @@ namespace Application.Web.Service.Services
 
                     await _unitOfWork.CompleteAsync();
 
+                    _unitOfWork.Detach(modelToUpdate);
+
 					await Task.Run(() =>
 					{
 						foreach (var key in _cacheKeyConstants.CacheKeyList)
@@ -228,6 +230,8 @@ namespace Application.Web.Service.Services
                     ColorId = colorId,
                     ModelId = modelId
                 });
+
+                _unitOfWork.Detach(color);
             }
 
             return (collection, modelColors);
