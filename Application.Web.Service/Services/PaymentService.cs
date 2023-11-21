@@ -49,7 +49,28 @@ namespace Application.Web.Service.Services
 			return intent;
 		}
 
-		private int CalculateTotalRentDays(DateTime PickUpDateTime, DateTime DropOffDateTime)
+		public async Task<Refund> RefundPayment(string paymentIntentId, decimal ammounts, string reason)
+		{
+			StripeConfiguration.ApiKey = _secretKey;
+
+			var paymentInentService = new PaymentIntentService();
+
+			var paymentIntent = await paymentInentService.GetAsync(paymentIntentId);
+
+			var options = new RefundCreateOptions
+			{
+				Charge = paymentIntent.LatestChargeId,
+				Amount = (long?)ammounts,
+				//Currency = "vnd",
+				Reason = "requested_by_customer"
+			};
+
+			var refundService = new RefundService();
+			
+			return await refundService.CreateAsync(options);
+		}
+
+		public int CalculateTotalRentDays(DateTime PickUpDateTime, DateTime DropOffDateTime)
 		{
 			var totalHours = DropOffDateTime.Subtract(PickUpDateTime).TotalHours;
 

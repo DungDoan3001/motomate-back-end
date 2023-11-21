@@ -10,6 +10,9 @@ namespace Application.Web.Database.Models
 		[Column("reason")]
 		public string Reason { get; set; }
 
+		[Column("refund_id")]
+		public string RefundId { get; set; }
+
 		[Column("cancel_time")]
 		public DateTime CancelTime { get; set; } = DateTime.UtcNow;
 

@@ -14,6 +14,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
 			return await dbSet
 				.Include(X => X.Lessee)
 				.Include(X => X.Lessor)
+				.Include(x => x.InCompleteTrip)
+				.Include(x => x.CompletedTrip)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Color)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
@@ -22,11 +24,28 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.ToListAsync();
 		}
 
+		public async Task<TripRequest> GetTripRequestByIdAsync(Guid tripId)
+		{
+			return await dbSet
+				.Include(X => X.Lessee)
+				.Include(X => X.Lessor)
+				.Include(x => x.InCompleteTrip)
+				.Include(x => x.CompletedTrip)
+				.Include(x => x.Vehicle).ThenInclude(x => x.Color)
+				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
+				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
+				.Include(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
+				.Where(x => x.Id.Equals(tripId))
+				.FirstOrDefaultAsync();
+		}
+
 		public async Task<List<TripRequest>> GetTripRequestsBasedOnParentOrderId(string parentOrderId)
 		{
 			return await dbSet
 				.Include(X => X.Lessee)
 				.Include(X => X.Lessor)
+				.Include(x => x.InCompleteTrip)
+				.Include(x => x.CompletedTrip)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Color)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)

@@ -320,14 +320,14 @@ namespace Applicaton.Web.API.Extensions
                                     Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
                                     PickUpDateTime = item.PickUpDateTime ?? null,
                                     DropOffDateTime = item.DropOffDateTime ?? null,
-                                    RentDates = new List<VehicleUnavailableDateOfCart>()
+                                    UnavailableDates = new List<VehicleUnavailableDateOfCart>()
                                 };
 
                                 if(item.Vehicle.TripRequests.Count > 0)
                                 {
                                     foreach (var tripRequest in item.Vehicle.TripRequests)
                                     {
-                                        vehilcleOfLessor.RentDates.Add(new VehicleUnavailableDateOfCart
+                                        vehilcleOfLessor.UnavailableDates.Add(new VehicleUnavailableDateOfCart
                                         {
                                             From = tripRequest.PickUpDateTime,
                                             To = tripRequest.DropOffDateTime
@@ -448,15 +448,24 @@ namespace Applicaton.Web.API.Extensions
                                 DropOffDateTime = item.DropOffDateTime,
                             };
 
-                            //if(!item.Status)
-                            //{
-                            //    tripRequestVehicleOfLessor.Status = "Pending";
-                            //} else
-                            //{
+                            if(!item.Status && item.InCompleteTrip == null && item.CompletedTrip == null)
+                            {
+                                tripRequestVehicleOfLessor.Status = Constants.PENDING;
+                            } 
+                            else if(item.Status && item.InCompleteTrip == null && item.CompletedTrip == null)
+                            {
+                                tripRequestVehicleOfLessor.Status = Constants.ONGOING;
+                            }
+                            else if (!item.Status && item.InCompleteTrip != null && item.CompletedTrip == null)
+                            {
+                                tripRequestVehicleOfLessor.Status = Constants.CANCELED;
+                            }
+                            else if(item.Status && item.InCompleteTrip == null && item.CompletedTrip != null)
+                            {
+                                tripRequestVehicleOfLessor.Status = Constants.COMPLETED;
+                            }
 
-                            //}
-
-							shopToReturn.Vehicles.Add(tripRequestVehicleOfLessor);
+                            shopToReturn.Vehicles.Add(tripRequestVehicleOfLessor);
                         }
 
 						dest.Shops.Add(shopToReturn);
