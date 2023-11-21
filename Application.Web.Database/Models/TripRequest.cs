@@ -43,5 +43,7 @@ namespace Application.Web.Database.Models
 		public virtual User Lessee { get; set; }
 		public virtual User Lessor { get; set; }
 		public virtual Vehicle Vehicle { get; set; }
+		public virtual InCompleteTrip InCompleteTrip { get; set; }
+		public virtual CompletedTrip CompletedTrip { get; set; }
 	}
 }

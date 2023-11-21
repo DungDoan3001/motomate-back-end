@@ -34,8 +34,14 @@ namespace Application.Web.Database.DTOs.ResponseModels
 
 	public class VehicleOfLessorOfTripRequest
 	{
+		[JsonPropertyName("requestId")]
+		public Guid RequestId { get; set; }
+
 		[JsonPropertyName("vehicleId")]
 		public Guid VehicleId { get; set; }
+
+		[JsonPropertyName("status")]
+		public string Status { get; set; }
 
 		[JsonPropertyName("vehicleName")]
 		public string VehicleName { get; set; }
