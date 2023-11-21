@@ -318,10 +318,18 @@ namespace Applicaton.Web.API.Extensions
                                     Price = item.Vehicle.Price,
                                     LicensePlate = item.Vehicle.LicensePlate,
                                     Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
-                                    PickUpDateTime = item.PickUpDateTime ?? null,
-                                    DropOffDateTime = item.DropOffDateTime ?? null,
                                     UnavailableDates = new List<VehicleUnavailableDateOfCart>()
                                 };
+
+                                if(item.PickUpDateTime.HasValue && item.DropOffDateTime.HasValue)
+                                {
+                                    vehilcleOfLessor.PickUpDateTime = DateTime.SpecifyKind(item.PickUpDateTime.Value, DateTimeKind.Utc);
+                                    vehilcleOfLessor.DropOffDateTime = DateTime.SpecifyKind(item.DropOffDateTime.Value, DateTimeKind.Utc);
+                                } else
+                                {
+                                    vehilcleOfLessor.PickUpDateTime = null;
+                                    vehilcleOfLessor.DropOffDateTime = null;
+                                }
 
                                 if(item.Vehicle.TripRequests.Count > 0)
                                 {
@@ -329,8 +337,8 @@ namespace Applicaton.Web.API.Extensions
                                     {
                                         vehilcleOfLessor.UnavailableDates.Add(new VehicleUnavailableDateOfCart
                                         {
-                                            From = tripRequest.PickUpDateTime,
-                                            To = tripRequest.DropOffDateTime
+                                            From = DateTime.SpecifyKind(tripRequest.PickUpDateTime, DateTimeKind.Utc),
+                                            To = DateTime.SpecifyKind(tripRequest.DropOffDateTime, DateTimeKind.Utc)
                                         });
                                     }
                                 }
