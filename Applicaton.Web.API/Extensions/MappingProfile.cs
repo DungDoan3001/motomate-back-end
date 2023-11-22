@@ -304,6 +304,7 @@ namespace Applicaton.Web.API.Extensions
                                 LessorId = shop.Key.Id,
                                 LessorName = shop.Key.UserName,
                                 LessorImage = shop.Key.Picture,
+                                Address = shop.Key.Address ?? "",
                                 Vehicles = new List<VehicleOfLessor>()
                             };
 
