@@ -96,25 +96,34 @@ namespace Application.Web.Service.Services
 			if (!isValidStatus)
 				throw new StatusCodeException(message: $"Only allow these valid status fields: {String.Join(", ", Constants.AVAILABLE_UPDATE_TRIP_STATUS)}", statusCode: StatusCodes.Status400BadRequest);
 
-			var tripRequests = new List<TripRequest>();
+			var listParentIds = await _tripRequestQueries.GetParentIdsFromTripRequests(requestModel.RequestIds);
 
-			if(requestModel.Status.Equals(Constants.APPROVED))
+			if(listParentIds.Count == 0)
+				throw new StatusCodeException(message: "Must have a request to update.", statusCode: StatusCodes.Status400BadRequest);
+
+			if(listParentIds.Count > 1)
+				throw new StatusCodeException(message: "Can only update status from one parent Order", statusCode: StatusCodes.Status400BadRequest);
+
+			foreach (var request in requestModel.RequestIds)
 			{
-				tripRequests = await ApproveTripRequestAsync(requestModel.RequestId);
-			} 
-			else if (requestModel.Status.Equals(Constants.COMPLETED))
-			{
-				tripRequests = await CompleteTripRequestAsync(requestModel.RequestId);
-			}
-			else if (requestModel.Status.Equals(Constants.CANCELED))
-			{
-				tripRequests = await CancelTripRequestAsync(requestModel.RequestId, requestModel.Reason);
+				if (requestModel.Status.Equals(Constants.APPROVED))
+				{
+					_ = await ApproveTripRequestAsync(request);
+				}
+				else if (requestModel.Status.Equals(Constants.COMPLETED))
+				{
+					_ = await CompleteTripRequestAsync(request);
+				}
+				else if (requestModel.Status.Equals(Constants.CANCELED))
+				{
+					_ = await CancelTripRequestAsync(request, requestModel.Reason);
+				}
 			}
 
-			return tripRequests;
+			return await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(listParentIds.FirstOrDefault());
 		}
 
-		private async Task<List<TripRequest>> ApproveTripRequestAsync(Guid tripRequestId)
+		private async Task<bool> ApproveTripRequestAsync(Guid tripRequestId)
 		{
 			var tripRequest = await _tripRequestQueries.GetTripRequestByIdAsync(tripRequestId) ?? throw new StatusCodeException(message: "Trip not found.", statusCode: StatusCodes.Status404NotFound);
 		
@@ -131,10 +140,10 @@ namespace Application.Web.Service.Services
 
 			_unitOfWork.Detach(tripRequest);
 
-			return await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(tripRequest.ParentOrderId);
+			return true;
 		}
 
-		private async Task<List<TripRequest>> CompleteTripRequestAsync(Guid tripRequestId)
+		private async Task<bool> CompleteTripRequestAsync(Guid tripRequestId)
 		{
 			var tripRequest = await _tripRequestQueries.GetTripRequestByIdAsync(tripRequestId) ?? throw new StatusCodeException(message: "Trip not found.", statusCode: StatusCodes.Status404NotFound);
 
@@ -160,10 +169,10 @@ namespace Application.Web.Service.Services
 			_unitOfWork.Detach(tripRequest);
 			_unitOfWork.Detach(tripComplete);
 
-			return await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(tripRequest.ParentOrderId);
+			return true;
 		}
 
-		private async Task<List<TripRequest>> CancelTripRequestAsync(Guid tripRequestId, string reason)
+		private async Task<bool> CancelTripRequestAsync(Guid tripRequestId, string reason)
 		{
 			var tripRequest = await _tripRequestQueries.GetTripRequestByIdAsync(tripRequestId) ?? throw new StatusCodeException(message: "Trip not found.", statusCode: StatusCodes.Status404NotFound);
 
@@ -194,7 +203,7 @@ namespace Application.Web.Service.Services
 			_unitOfWork.Detach(tripRequest);
 			_unitOfWork.Detach(inCompleteTrip);
 
-			return await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(tripRequest.ParentOrderId);
+			return true;
 		}
 
 		public async Task SendEmailsForTripRequest(List<TripRequest> tripRequests)

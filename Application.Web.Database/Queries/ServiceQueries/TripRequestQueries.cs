@@ -83,5 +83,13 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Where(x => x.ParentOrderId.Equals(parentOrderId))
 				.ToListAsync();
 		}
+
+		public async Task<List<string>> GetParentIdsFromTripRequests(List<Guid> tripRequestIds)
+		{
+			return await dbSet
+				.Where(x => tripRequestIds.Contains(x.Id))
+				.Select(x => x.ParentOrderId)
+				.ToListAsync();
+		}
 	}
 }

@@ -7,8 +7,8 @@ namespace Application.Web.Database.DTOs.RequestModels
 		[JsonPropertyName("status")]
 		public string Status { get; set; }
 
-		[JsonPropertyName("requestId")]
-		public Guid RequestId { get; set; }
+		[JsonPropertyName("requestIds")]
+		public List<Guid> RequestIds { get; set; }
 
 		[JsonPropertyName("reason")]
 		public string Reason { get; set; }
