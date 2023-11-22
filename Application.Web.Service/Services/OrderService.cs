@@ -71,6 +71,22 @@ namespace Application.Web.Service.Services
             return tripRequestsByParentId;
         }
 
+		public async Task<List<List<TripRequest>>> GetTripRequestsByLesseeIdAsync(Guid lesseeId)
+		{
+			var tripRequests = await _tripRequestQueries.GetAllTripRequestsBasedOnLesseeId(lesseeId);
+
+			var groupTripRequestsByParentIds = tripRequests.GroupBy(x => x.ParentOrderId).ToList();
+
+			var tripRequestsByParentId = new List<List<TripRequest>>();
+
+			foreach (var tripRequestsByParentOrderId in groupTripRequestsByParentIds)
+			{
+				tripRequestsByParentId.Add(tripRequestsByParentOrderId.ToList());
+			}
+
+			return tripRequestsByParentId;
+		}
+
 		public async Task<List<TripRequest>> CreateTripRequestsFromStripeEventAsync(Event stripeEvent)
 		{
 			var charge = (Charge)stripeEvent.Data.Object;
