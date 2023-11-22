@@ -21,6 +21,8 @@ namespace Application.Web.Service.Services
 		private readonly IGenericRepository<CheckOutOrder> _checkoutOrderRepo;
 		private readonly IGenericRepository<CompletedTrip> _completedTripRepo;
 		private readonly IGenericRepository<InCompleteTrip> _inCompleteTripRepo;
+		private readonly IGenericRepository<Cart> _cartRepo;
+		private readonly IGenericRepository<CartVehicle> _cartVehicleRepo;
 		private readonly ICheckoutOrderQueries _checkoutOrderQueries;
 		private readonly ITripRequestQueries _tripRequestQueries;
 		private readonly IEmailService _emailService;
@@ -39,6 +41,8 @@ namespace Application.Web.Service.Services
 			_checkoutOrderRepo = unitOfWork.GetBaseRepo<CheckOutOrder>();
 			_completedTripRepo = unitOfWork.GetBaseRepo<CompletedTrip>();
 			_inCompleteTripRepo = unitOfWork.GetBaseRepo<InCompleteTrip>();
+			_cartVehicleRepo = unitOfWork.GetBaseRepo<CartVehicle>();
+			_cartRepo = unitOfWork.GetBaseRepo<Cart>();
 
 			_checkoutOrderQueries = checkoutOrderQueries;
 			_tripRequestQueries = tripRequestQueries;
@@ -304,6 +308,7 @@ namespace Application.Web.Service.Services
 			var checkoutOrder = await _checkoutOrderQueries.GetCheckOutOrderByPaymentIntentIdAsync(charge.PaymentIntentId);
 
 			var tripRequests = new List<TripRequest>();
+			var cartVehicleToDelete = new List<CartVehicle>();
 
 			var currentTimeStamp = DateTime.UtcNow;
 
@@ -311,6 +316,9 @@ namespace Application.Web.Service.Services
 
 			foreach (var vehicleToCheckout in checkoutOrder.CheckOutOrderVehicles)
 			{
+				var cart = await _cartRepo.FindOne(x => x.UserId.Equals(checkoutOrder.UserId)) ?? throw new StatusCodeException(message: "Cart not found with user.", statusCode: StatusCodes.Status409Conflict);
+				var cartVehicle = await _cartVehicleRepo.FindOne(x => x.VehicleId.Equals(vehicleToCheckout.Vehicle.Id) && x.CartId.Equals(cart.Id)) ?? throw new StatusCodeException(message: "Vehicle in cart.", statusCode: StatusCodes.Status409Conflict);
+
 				var tripRequest = new TripRequest
 				{
 					LesseeId = checkoutOrder.UserId,
@@ -328,9 +336,11 @@ namespace Application.Web.Service.Services
 				};
 
 				tripRequests.Add(tripRequest);
+				cartVehicleToDelete.Add(cartVehicle);
 			}
 
 			_tripRequestRepo.AddRange(tripRequests);
+			_cartVehicleRepo.DeleteRange(cartVehicleToDelete);
 			_checkoutOrderRepo.Delete(checkoutOrder.Id);
 
 			await _unitOfWork.CompleteAsync();
