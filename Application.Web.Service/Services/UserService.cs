@@ -13,11 +13,11 @@ using Diacritics.Extensions;
 using LazyCache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Service.Services
 {
-    public class UserService : IUserService
+	public class UserService : IUserService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<User> _userRepo;
@@ -56,6 +56,14 @@ namespace Application.Web.Service.Services
                 throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
 
             return user;
+        }
+
+
+        public async Task<List<Role>> GetAllAvailableRolesAsync()
+        {
+            var roles = await _roleManager.Roles.ToListAsync();
+
+            return roles;
         }
 
         public async Task<User> GetUserInformationByIdAsync(Guid id)

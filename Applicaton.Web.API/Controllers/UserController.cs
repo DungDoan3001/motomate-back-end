@@ -157,13 +157,50 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Acquire current request user information.
-        /// </summary>
-        /// <returns>Status code of the action.</returns>
-        /// <response code="200">Successfully get item information.</response>
-        /// <response code="500">There is something wrong while execute.</response>
-        [HttpGet("details")]
+		/// <summary>
+		/// Acquire all available roles information
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("role/all")]
+		public async Task<ActionResult<IEnumerable<RoleReponseModel>>> GetAllAvailableRoles()
+		{
+			try
+			{
+				var roles = await _userService.GetAllAvailableRolesAsync();
+
+				var rolesToReturn = _mapper.Map<List<Role>, List<RoleReponseModel>>(roles);
+
+				return Ok(rolesToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Acquire current request user information.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("details")]
         public async Task<ActionResult<UserResponseModel>> GetCurrentUserInformationAsync()
         {
             try

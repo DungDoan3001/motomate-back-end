@@ -68,8 +68,14 @@ namespace Applicaton.Web.API.Extensions
                     dest.Picture = src.Image.ImageUrl;
                     dest.PublicId = src.Image.PublicId;
                 });
-            // Brand
-            CreateMap<Brand, BrandResponseModel>()
+
+            // Role
+            CreateMap<Role, RoleReponseModel>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+
+			// Brand
+			CreateMap<Brand, BrandResponseModel>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => textInfo.ToTitleCase(src.Name.ToLower())))
                 .AfterMap((src, dest) =>
                 {
