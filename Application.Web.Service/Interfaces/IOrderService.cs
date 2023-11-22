@@ -11,5 +11,6 @@ namespace Application.Web.Service.Interfaces
 		Task SendEmailsForTripRequest(List<TripRequest> tripRequests);
 		Task<List<TripRequest>> UpdateTripRequestStatusAsync(TripRequestStatusRequestModel requestModel);
 		Task<List<List<TripRequest>>> GetTripRequestsByLessorIdAsync(Guid lessorId);
+		Task<List<List<TripRequest>>> GetTripRequestsByLesseeIdAsync(Guid lesseeId);
 	}
 }

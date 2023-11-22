@@ -14,5 +14,6 @@ namespace Application.Web.Service.Interfaces
         Task<User> GetUserInformationByIdAsync(Guid id);
         Task<(List<User>, PaginationMetadata)> GetAllUserInformationWithPaginationAsync(PaginationRequestModel pagination, UserQuery userQuery);
         Task<bool> UpdateUserRoleAsync(UserRoleRequestModel roleRequestModel);
+        Task<List<Role>> GetAllAvailableRolesAsync();
 	}
 }

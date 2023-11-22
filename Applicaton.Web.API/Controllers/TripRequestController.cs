@@ -33,7 +33,7 @@ namespace Applicaton.Web.API.Controllers
 		}
 
 		/// <summary>
-		/// Acquire brands information with pagination
+		/// Acquire orders information with pagination by parentOrderId
 		/// </summary>
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
@@ -46,6 +46,80 @@ namespace Applicaton.Web.API.Controllers
 				var tripRequests = await _orderService.GetAllTripRequestsByParentOrderId(parentOrderId, query.LessorUsername);
 
 				var tripRequestsToReturn = _mapper.Map<List<TripRequest>, TripRequestReponseModel>(tripRequests);
+
+				return Ok(tripRequestsToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Acquire orders information with pagination by lessorId
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("lessor/{lessorId}")]
+		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestByLessorId([FromRoute] Guid lessorId)
+		{
+			try
+			{
+				var tripRequests = await _orderService.GetTripRequestsByLessorIdAsync(lessorId);
+
+				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, TripRequestReponseModel>(tripRequests);
+
+				return Ok(tripRequestsToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Acquire orders information with pagination by lesseeId
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("lessee/{lesseeId}")]
+		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestLesseeId([FromRoute] Guid lesseeId)
+		{
+			try
+			{
+				var tripRequests = await _orderService.GetTripRequestsByLesseeIdAsync(lesseeId);
+
+				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, TripRequestReponseModel>(tripRequests);
 
 				return Ok(tripRequestsToReturn);
 			}

@@ -25,6 +25,9 @@ namespace Application.Web.Database.DTOs.ResponseModels
         [JsonPropertyName("lessorImage")]
         public string LessorImage { get; set; }
 
+        [JsonPropertyName("address")]
+        public string Address { get; set; }
+
         [JsonPropertyName("vehicles")]
         public List<VehicleOfLessor> Vehicles { get; set; }
     }
