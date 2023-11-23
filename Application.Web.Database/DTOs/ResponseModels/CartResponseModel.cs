@@ -40,7 +40,10 @@ namespace Application.Web.Database.DTOs.ResponseModels
         [JsonPropertyName("vehicleName")]
         public string VehicleName { get; set; }
 
-        [JsonPropertyName("brand")]
+		[JsonPropertyName("address")]
+		public string Address { get; set; }
+
+		[JsonPropertyName("brand")]
         public string Brand { get; set; }
 
         [JsonPropertyName("color")]
