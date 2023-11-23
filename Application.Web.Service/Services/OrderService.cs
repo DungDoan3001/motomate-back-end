@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
@@ -59,7 +58,7 @@ namespace Application.Web.Service.Services
 			return result;
 		}
 
-		public async Task<List<List<TripRequest>>> GetTripRequestsByLessorIdAsync(Guid lessorId)
+		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLessorIdAsync(PaginationRequestModel pagination, Guid lessorId)
 		{
 			var tripRequests = await _tripRequestQueries.GetAllTripRequestsBasedOnLessorId(lessorId);
 
@@ -72,10 +71,19 @@ namespace Application.Web.Service.Services
 				tripRequestsByParentId.Add(tripRequestsByParentOrderId.ToList());
             }
 
-            return tripRequestsByParentId;
+			var totalItemCount = tripRequestsByParentId.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+			var TripRequestsToReturn = tripRequestsByParentId
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+			return (TripRequestsToReturn, paginationMetadata);
         }
 
-		public async Task<List<List<TripRequest>>> GetTripRequestsByLesseeIdAsync(Guid lesseeId)
+		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLesseeIdAsync(PaginationRequestModel pagination,Guid lesseeId)
 		{
 			var tripRequests = await _tripRequestQueries.GetAllTripRequestsBasedOnLesseeId(lesseeId);
 
@@ -88,7 +96,16 @@ namespace Application.Web.Service.Services
 				tripRequestsByParentId.Add(tripRequestsByParentOrderId.ToList());
 			}
 
-			return tripRequestsByParentId;
+			var totalItemCount = tripRequestsByParentId.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+			var TripRequestsToReturn = tripRequestsByParentId
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+			return (TripRequestsToReturn, paginationMetadata);
 		}
 
 		public async Task<List<TripRequest>> CreateTripRequestsFromStripeEventAsync(Event stripeEvent)

@@ -1,4 +1,5 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Stripe;
 
@@ -10,7 +11,7 @@ namespace Application.Web.Service.Interfaces
 		Task<List<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, string? lessorUsername = "");
 		Task SendEmailsForTripRequest(List<TripRequest> tripRequests);
 		Task<List<TripRequest>> UpdateTripRequestStatusAsync(TripRequestStatusRequestModel requestModel);
-		Task<List<List<TripRequest>>> GetTripRequestsByLessorIdAsync(Guid lessorId);
-		Task<List<List<TripRequest>>> GetTripRequestsByLesseeIdAsync(Guid lesseeId);
+		Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLessorIdAsync(PaginationRequestModel pagination, Guid lessorId);
+		Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLesseeIdAsync(PaginationRequestModel pagination, Guid lesseeId);
 	}
 }
