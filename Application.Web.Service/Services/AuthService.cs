@@ -8,9 +8,11 @@ using Application.Web.Database.Models;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
+using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Google.Apis.Auth;
+using LazyCache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -24,10 +26,12 @@ namespace Application.Web.Service.Services
         private readonly UserManager<User> _userManager;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
+		private readonly CacheKeyConstants _cacheKeyConstants;
+		private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<ResetPassword> _resetPasswordRepo;
+		private readonly IAppCache _cache;
 
-        public AuthService(UserManager<User> userManager, IConfiguration configuration, IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService)
+		public AuthService(UserManager<User> userManager, IConfiguration configuration, IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService, CacheKeyConstants cacheKeyConstants, IAppCache cache)
         {
             _unitOfWork = unitOfWork;
             _resetPasswordRepo = unitOfWork.GetBaseRepo<ResetPassword>();
@@ -35,7 +39,10 @@ namespace Application.Web.Service.Services
             _emailService = emailService;
             _config = configuration;
             _mapper = mapper;
-        }
+            _cacheKeyConstants = cacheKeyConstants;
+            _cache = cache;
+
+		}
 
         public async Task<IdentityResult> RegisterUserAsync(UserRegistrationRequestModel userRegistration)
         {
@@ -196,7 +203,17 @@ namespace Application.Web.Service.Services
 
             var result = await _userManager.UpdateAsync(user);
 
-            return result.Succeeded;
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
+
+			return result.Succeeded;
         }
 
         private async Task<bool> SendChangePasswordEmailAsync(User user, string encodedToken)
