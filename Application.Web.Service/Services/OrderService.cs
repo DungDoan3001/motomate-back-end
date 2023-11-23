@@ -152,6 +152,8 @@ namespace Application.Web.Service.Services
 
 			var listParentIds = await _tripRequestQueries.GetParentIdsFromTripRequests(requestModel.RequestIds);
 
+			listParentIds = listParentIds.Distinct().ToList();
+
 			if(listParentIds.Count == 0)
 				throw new StatusCodeException(message: "Must have a request to update.", statusCode: StatusCodes.Status400BadRequest);
 
