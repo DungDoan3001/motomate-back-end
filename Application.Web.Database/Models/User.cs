@@ -26,7 +26,10 @@ namespace Application.Web.Database.Models
         [Column("address")]
         public string Address { get; set; }
 
-        [Column("date_of_birth")]
+        [Column("is_locked")]
+        public bool IsLocked { get; set; } = false;
+
+		[Column("date_of_birth")]
         public DateTime? DateOfBirth { get; set; } = null;
 
         public virtual ResetPassword? ResetPassword { get; set; }

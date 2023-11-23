@@ -154,13 +154,48 @@ namespace Applicaton.Web.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Accquire a token from user and start reset password
-        /// </summary>
-        /// <returns>Status code of the action.</returns>
-        /// <response code="200">Successfully reset password.</response>
-        /// <response code="500">There is something wrong while execute.</response>
-        [HttpPost("change/password/{encodedToken}")]
+		/// <summary>
+		/// Send an update to lock or unlock user.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully send an email.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPost("{userId}/lock")]
+		public async Task<IActionResult> UpdateUserLockOrUnlockStatus([FromRoute] Guid userId)
+		{
+			try
+			{
+				bool result = await _authService.LockUserAccountAsync(userId);
+
+				return result ? Ok("User status has been set") : BadRequest("Can not update the status");
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.InnerException.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Accquire a token from user and start reset password
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully reset password.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPost("change/password/{encodedToken}")]
         public async Task<IActionResult> ChangeUserPassword([FromRoute] string encodedToken, [FromBody] ChangePasswordRequestModel changePasswordRequest)
         {
             try
