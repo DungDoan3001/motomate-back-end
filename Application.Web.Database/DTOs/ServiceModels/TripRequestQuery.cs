@@ -9,5 +9,8 @@ namespace Application.Web.Database.DTOs.ServiceModels
 
 		[JsonPropertyName("lesseeUsername")]
 		public string? LesseeUsername { get; set; } = "";
+
+		[JsonPropertyName("searchQuery")]
+		public string? SearchQuery { get; set; } = "";
 	}
 }

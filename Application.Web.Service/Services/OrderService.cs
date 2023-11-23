@@ -187,6 +187,19 @@ namespace Application.Web.Service.Services
             {
 				var holder = parentTripRequest;
 
+				if (!query.SearchQuery.IsNullOrEmpty())
+				{
+					var searchQuery = query.SearchQuery.ToUpper().Trim().RemoveDiacritics();
+
+					holder = holder
+						.Where(x => x.ParentOrderId
+									.ToUpper()
+									.Trim()
+									.RemoveDiacritics()
+									.Contains(searchQuery))
+						.ToList();
+				}
+
 				if (!query.LessorUsername.IsNullOrEmpty())
 				{					
 					holder = holder
@@ -212,7 +225,7 @@ namespace Application.Web.Service.Services
 				result.Add(holder);
             }
 
-			return result;
+			return result.Where(s => s.Count > 0).Distinct().ToList();
         }
 
 		private async Task<bool> ApproveTripRequestAsync(Guid tripRequestId)
