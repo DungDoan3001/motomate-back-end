@@ -5,6 +5,7 @@ using Application.Web.Database.Models;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,7 @@ namespace Applicaton.Web.API.Controllers
 		private readonly IOrderService _orderService;
 
 		private const string controllerPrefix = "TripRequest";
+		private const int maxPageSize = 20;
 
 		public TripRequestController(
 			IMapper mapper,
@@ -39,7 +41,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("parent/{parentOrderId}")]
-		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestByParentOrderId([FromQuery] TripRequestQuery query, [FromRoute] string parentOrderId)
+		public async Task<ActionResult<TripRequestReponseModel>> GetTripRequestByParentOrderId([FromQuery] TripRequestQuery query, [FromRoute] string parentOrderId)
 		{
 			try
 			{
@@ -76,13 +78,21 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("lessor/{lessorId}")]
-		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestByLessorId([FromRoute] Guid lessorId)
+		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestByLessorId([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid lessorId)
 		{
 			try
 			{
-				var tripRequests = await _orderService.GetTripRequestsByLessorIdAsync(lessorId);
+				if (pagination.pageSize > maxPageSize)
+				{
+					pagination.pageSize = maxPageSize;
+				}
 
-				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, TripRequestReponseModel>(tripRequests);
+				var (tripRequests, paginationMetadata) = await _orderService.GetTripRequestsByLessorIdAsync(pagination, lessorId);
+
+				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+				Response.AddPaginationHeader(paginationMetadata);
+
+				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
 				return Ok(tripRequestsToReturn);
 			}
@@ -113,13 +123,16 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("lessee/{lesseeId}")]
-		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestLesseeId([FromRoute] Guid lesseeId)
+		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestLesseeId([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid lesseeId)
 		{
 			try
 			{
-				var tripRequests = await _orderService.GetTripRequestsByLesseeIdAsync(lesseeId);
+				var (tripRequests, paginationMetadata) = await _orderService.GetTripRequestsByLesseeIdAsync(pagination, lesseeId);
 
-				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, TripRequestReponseModel>(tripRequests);
+				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+				Response.AddPaginationHeader(paginationMetadata);
+
+				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
 				return Ok(tripRequestsToReturn);
 			}
@@ -177,39 +190,6 @@ namespace Applicaton.Web.API.Controllers
 					StatusCode = StatusCodes.Status500InternalServerError,
 					Errors = { ex.Message }
 				});
-			}
-		}
-
-		[HttpPost("test/{parentOrderId}")]
-		public async Task<IActionResult> TestEndpoint([FromRoute] string parentOrderId)
-		{
-			try
-			{
-				var request = await _orderService.GetTripRequestsByLessorIdAsync(Guid.Parse(parentOrderId));
-
-				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, List<TripRequestReponseModel>>(request);
-
-				return Ok(tripRequestsToReturn);
-			}
-			catch (StatusCodeException ex)
-			{
-				return StatusCode(ex.StatusCode, new ErrorResponseModel
-				{
-					Message = ex.Message,
-					StatusCode = ex.StatusCode
-				});
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
-				//return StatusCode(StatusCodes.Status409Conflict, new ErrorResponseModel
-				//{
-				//	Message = "Error while performing action.",
-				//	StatusCode = StatusCodes.Status500InternalServerError,
-				//	Errors = { ex.Message, ex.InnerException.Message }
-				//});
-
-				return Ok(ex.Message);
 			}
 		}
 	}
