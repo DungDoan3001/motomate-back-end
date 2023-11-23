@@ -166,7 +166,7 @@ namespace Application.Web.Service.Services
             return user;
         }
 
-        public async Task<bool> UpdateUserRoleAsync(UserRoleRequestModel roleRequestModel)
+        public async Task<User> UpdateUserRoleAsync(UserRoleRequestModel roleRequestModel)
         {
             var user = await _userManager.FindByIdAsync(roleRequestModel.UserId.ToString()) ?? throw new StatusCodeException(message: "User not found!", statusCode: StatusCodes.Status404NotFound);
 
@@ -180,7 +180,7 @@ namespace Application.Web.Service.Services
 
             var result = await _userManager.AddToRoleAsync(user, newRole.Name);
 
-            return result.Succeeded;
+            return await _userQueries.GetUserByIdAsync(roleRequestModel.UserId);
         }
 
         public async Task<bool> DeleteUserAsync(string username)

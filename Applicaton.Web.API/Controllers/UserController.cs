@@ -294,12 +294,11 @@ namespace Applicaton.Web.API.Controllers
 		{
 			try
 			{
-				var result = await _userService.UpdateUserRoleAsync(requestModel);
+				var user = await _userService.UpdateUserRoleAsync(requestModel);
 
-				if (!result)
-					throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);
+				var userToReturn = _mapper.Map<UserResponseModel>(user);
 
-				return Ok();
+				return Ok(userToReturn);
 			}
 			catch (StatusCodeException ex)
 			{
