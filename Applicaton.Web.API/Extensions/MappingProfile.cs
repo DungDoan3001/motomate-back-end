@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
 using static Application.Web.Database.DTOs.ResponseModels.CheckoutOrderResponseModel;
+using Stripe;
 
 namespace Applicaton.Web.API.Extensions
 {
@@ -396,8 +397,8 @@ namespace Applicaton.Web.API.Extensions
                                 Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
                                 PickUpLocation = item.PickUpLocation,
                                 DropOffLocation = item.DropOffLocation,
-                                PickUpDateTime = item.PickUpDateTime,
-                                DropOffDateTime = item.DropOffDateTime,
+                                PickUpDateTime = DateTime.SpecifyKind(item.PickUpDateTime, DateTimeKind.Utc),
+                                DropOffDateTime = DateTime.SpecifyKind(item.PickUpDateTime, DateTimeKind.Utc),
                                 RentDates = new List<VehicleUnavailableDateOfCheckout>()
                             };
 
@@ -430,6 +431,14 @@ namespace Applicaton.Web.API.Extensions
 
 					dest.UserName = src.FirstOrDefault().Lessee.UserName;
 
+                    dest.CreatedAt = src.FirstOrDefault().Created_At;
+
+                    dest.DateRent = new DateRentOfTripRequest
+                    {
+                        From = src.Min(x => x.PickUpDateTime),
+                        To = src.Max(x => x.DropOffDateTime)
+                    };
+
 					dest.Shops = new List<ShopOfTripRequest>();
 
 					var groupsOfShop = src.GroupBy(x => x.Lessor);
@@ -460,8 +469,8 @@ namespace Applicaton.Web.API.Extensions
                                 Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
                                 PickUpLocation = item.PickUpLocation,
                                 DropOffLocation = item.DropOffLocation,
-                                PickUpDateTime = item.PickUpDateTime,
-                                DropOffDateTime = item.DropOffDateTime,
+                                PickUpDateTime = DateTime.SpecifyKind(item.PickUpDateTime, DateTimeKind.Utc),
+                                DropOffDateTime = DateTime.SpecifyKind(item.PickUpDateTime, DateTimeKind.Utc),
                             };
 
                             if(!item.Status && item.InCompleteTrip == null && item.CompletedTrip == null)

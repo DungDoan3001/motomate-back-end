@@ -45,7 +45,7 @@ namespace Applicaton.Web.API.Controllers
 		{
 			try
 			{
-				var tripRequests = await _orderService.GetAllTripRequestsByParentOrderId(parentOrderId, query.LessorUsername);
+				var tripRequests = await _orderService.GetAllTripRequestsByParentOrderId(parentOrderId, query);
 
 				var tripRequestsToReturn = _mapper.Map<List<TripRequest>, TripRequestReponseModel>(tripRequests);
 
@@ -78,7 +78,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("lessor/{lessorId}")]
-		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestByLessorId([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid lessorId)
+		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestByLessorId([FromQuery] TripRequestQuery query, [FromQuery] PaginationRequestModel pagination, [FromRoute] Guid lessorId)
 		{
 			try
 			{
@@ -87,7 +87,7 @@ namespace Applicaton.Web.API.Controllers
 					pagination.pageSize = maxPageSize;
 				}
 
-				var (tripRequests, paginationMetadata) = await _orderService.GetTripRequestsByLessorIdAsync(pagination, lessorId);
+				var (tripRequests, paginationMetadata) = await _orderService.GetTripRequestsByLessorIdAsync(pagination, lessorId, query);
 
 				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 				Response.AddPaginationHeader(paginationMetadata);
@@ -123,11 +123,11 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("lessee/{lesseeId}")]
-		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestLesseeId([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid lesseeId)
+		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestLesseeId([FromQuery] TripRequestQuery query, [FromQuery] PaginationRequestModel pagination, [FromRoute] Guid lesseeId)
 		{
 			try
 			{
-				var (tripRequests, paginationMetadata) = await _orderService.GetTripRequestsByLesseeIdAsync(pagination, lesseeId);
+				var (tripRequests, paginationMetadata) = await _orderService.GetTripRequestsByLesseeIdAsync(pagination, lesseeId, query);
 
 				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 				Response.AddPaginationHeader(paginationMetadata);
