@@ -12,7 +12,6 @@ using Diacritics.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Stripe;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application.Web.Service.Services
 {
@@ -57,6 +56,15 @@ namespace Application.Web.Service.Services
 		public async Task<List<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, TripRequestQuery query)
 		{
 			var result = await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(parentOrderId) ?? throw new StatusCodeException(message: "parentId not found.", statusCode: StatusCodes.Status404NotFound);
+
+			var resultToReturn = HandleTripRequestQuery(new List<List<TripRequest>> { result }, query);
+
+			return resultToReturn.FirstOrDefault();
+		}
+
+		public async Task<List<TripRequest>> GetAllTripRequestsByPaymentIntentId(string paymentIntentId, TripRequestQuery query)
+		{
+			var result = await _tripRequestQueries.GetTripRequestsBasedOnPaymentIntentId(paymentIntentId) ?? throw new StatusCodeException(message: "parentId not found.", statusCode: StatusCodes.Status404NotFound);
 
 			var resultToReturn = HandleTripRequestQuery(new List<List<TripRequest>> { result }, query);
 

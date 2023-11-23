@@ -13,11 +13,29 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		[JsonPropertyName("username")]
 		public string UserName { get; set; }
 
+		[JsonPropertyName("fullName")]
+		public string FullName { get; set; }
+
+		[JsonPropertyName("email")]
+		public string Email { get; set; }
+
+		[JsonPropertyName("phone")]
+		public string Phone { get; set; }
+
+		[JsonPropertyName("address")]
+		public string Address { get; set; }
+
+		[JsonPropertyName("avatar")]
+		public string Avatar { get; set; }
+
 		[JsonPropertyName("dateRent")]
 		public DateRentOfTripRequest DateRent { get; set; }
 
 		[JsonPropertyName("createdAt")]
 		public DateTime CreatedAt { get; set; }
+
+		[JsonPropertyName("totalAmmount")]
+		public decimal TotalAmmount { get; set; }
 
 		[JsonPropertyName("shops")]
 		public List<ShopOfTripRequest> Shops { get; set; }

@@ -6,20 +6,19 @@ using System.Globalization;
 using Application.Web.Service.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography.X509Certificates;
 using static Application.Web.Database.DTOs.ResponseModels.CheckoutOrderResponseModel;
-using Stripe;
+using Application.Web.Service.Interfaces;
 
 namespace Applicaton.Web.API.Extensions
 {
-    public class MapUserAction : IMappingAction<User, UserResponseModel>
+	public class MapUserAction : IMappingAction<User, UserResponseModel>
     {
 		private readonly UserManager<User> _userManager;
 
 		public MapUserAction(UserManager<User> userManager)
         {
             _userManager = userManager;
-        }
+		}
 
         public void Process(User source, UserResponseModel desination, ResolutionContext context)
         {
@@ -432,6 +431,18 @@ namespace Applicaton.Web.API.Extensions
 
 					dest.UserName = src.FirstOrDefault().Lessee.UserName;
 
+                    dest.FullName = src.FirstOrDefault().Lessee.FullName;
+
+                    dest.Email = src.FirstOrDefault().Lessee.Email;
+
+                    dest.Phone = src.FirstOrDefault().Lessee.PhoneNumber;
+
+                    dest.Address = src.FirstOrDefault().Lessee.Address;
+
+                    dest.Avatar = src.FirstOrDefault().Lessee.Picture;
+
+                    dest.TotalAmmount = 0;
+
                     dest.CreatedAt = DateTime.SpecifyKind(src.FirstOrDefault().Created_At, DateTimeKind.Utc);
 
                     dest.DateRent = new DateRentOfTripRequest
@@ -465,7 +476,7 @@ namespace Applicaton.Web.API.Extensions
                                 VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
                                 Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
                                 Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
-                                Price = item.Ammount,
+                                Price = item.Ammount * (int)Math.Round(((decimal)item.DropOffDateTime.Subtract(item.PickUpDateTime).TotalHours / 24), 2),
                                 LicensePlate = item.Vehicle.LicensePlate,
                                 Image = item.Vehicle.VehicleImages.OrderBy(x => x.Image.CreatedAt).FirstOrDefault().Image.ImageUrl,
                                 PickUpLocation = item.PickUpLocation,
@@ -473,6 +484,8 @@ namespace Applicaton.Web.API.Extensions
                                 PickUpDateTime = DateTime.SpecifyKind(item.PickUpDateTime, DateTimeKind.Utc),
                                 DropOffDateTime = DateTime.SpecifyKind(item.DropOffDateTime, DateTimeKind.Utc),
                             };
+
+                            dest.TotalAmmount += tripRequestVehicleOfLessor.Price;
 
                             if(!item.Status && item.InCompleteTrip == null && item.CompletedTrip == null)
                             {
