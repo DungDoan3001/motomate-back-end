@@ -431,7 +431,7 @@ namespace Applicaton.Web.API.Extensions
 
 					dest.UserName = src.FirstOrDefault().Lessee.UserName;
 
-                    dest.CreatedAt = src.FirstOrDefault().Created_At;
+                    dest.CreatedAt = DateTime.SpecifyKind(src.FirstOrDefault().Created_At, DateTimeKind.Utc);
 
                     dest.DateRent = new DateRentOfTripRequest
                     {
