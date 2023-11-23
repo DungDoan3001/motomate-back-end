@@ -470,7 +470,7 @@ namespace Applicaton.Web.API.Extensions
                                 PickUpLocation = item.PickUpLocation,
                                 DropOffLocation = item.DropOffLocation,
                                 PickUpDateTime = DateTime.SpecifyKind(item.PickUpDateTime, DateTimeKind.Utc),
-                                DropOffDateTime = DateTime.SpecifyKind(item.PickUpDateTime, DateTimeKind.Utc),
+                                DropOffDateTime = DateTime.SpecifyKind(item.DropOffDateTime, DateTimeKind.Utc),
                             };
 
                             if(!item.Status && item.InCompleteTrip == null && item.CompletedTrip == null)

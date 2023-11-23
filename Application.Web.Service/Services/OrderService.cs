@@ -56,7 +56,7 @@ namespace Application.Web.Service.Services
 
 		public async Task<List<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, TripRequestQuery query)
 		{
-			var result = await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(parentOrderId);
+			var result = await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(parentOrderId) ?? throw new StatusCodeException(message: "parentId not found.", statusCode: StatusCodes.Status404NotFound);
 
 			var resultToReturn = HandleTripRequestQuery(new List<List<TripRequest>> { result }, query);
 
