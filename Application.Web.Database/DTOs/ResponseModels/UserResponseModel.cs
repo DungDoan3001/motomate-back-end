@@ -7,6 +7,9 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		[JsonPropertyName("id")]
 		public Guid Id { get; set; }
 
+		[JsonPropertyName("islocked")]
+		public bool IsLocked { get; set; }
+
 		[JsonPropertyName("firstName")]
 		public string FirstName { get; set; }
 

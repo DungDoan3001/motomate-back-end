@@ -60,6 +60,7 @@ namespace Applicaton.Web.API.Extensions
             CreateMap<UserRegistrationRequestModel, User>();
 			CreateMap<User, UserResponseModel>()
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.IsLocked, opt => opt.MapFrom(src => src.IsLocked))
                 .AfterMap<MapUserAction>();
 
             CreateMap<UserRequestModel, User>()
