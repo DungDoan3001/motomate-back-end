@@ -176,6 +176,9 @@ namespace Application.Web.Service.Services
         {
             User user = await _userManager.FindByEmailAsync(email);
 
+            if (user.IsLocked)
+                throw new StatusCodeException(message: $"{user.UserName} is locked!", statusCode: StatusCodes.Status401Unauthorized);
+
             var signingCreadentials = GetSigningCredentials();
 
             var claims = await GetClaims(user);
@@ -183,6 +186,17 @@ namespace Application.Web.Service.Services
             var tokenOptions = GenerateTokenOptions(signingCreadentials, claims);
 
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+        }
+
+        public async Task<bool> LockUserAccountAsync(Guid userId)
+        {
+            User user = await _userManager.FindByIdAsync(userId.ToString()) ?? throw new StatusCodeException(message: "User not found!", statusCode: StatusCodes.Status404NotFound);
+
+            user.IsLocked = !user.IsLocked;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            return result.Succeeded;
         }
 
         private async Task<bool> SendChangePasswordEmailAsync(User user, string encodedToken)

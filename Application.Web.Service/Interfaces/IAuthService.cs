@@ -11,5 +11,7 @@ namespace Application.Web.Service.Services
         Task<string> CreateTokenAsync(string username);
         Task<bool> SendEmailResetPassword(string userEmail);
         Task<bool> ChangePassword(string encodedToken, ChangePasswordRequestModel changePasswordRequest);
-    }
+        Task<bool> LockUserAccountAsync(Guid userId);
+
+	}
 }
