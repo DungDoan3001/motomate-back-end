@@ -13,8 +13,23 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		[JsonPropertyName("username")]
 		public string UserName { get; set; }
 
+		[JsonPropertyName("dateRent")]
+		public DateRentOfTripRequest DateRent { get; set; }
+
+		[JsonPropertyName("createdAt")]
+		public DateTime CreatedAt { get; set; }
+
 		[JsonPropertyName("shops")]
 		public List<ShopOfTripRequest> Shops { get; set; }
+	}
+
+	public class DateRentOfTripRequest
+	{
+		[JsonPropertyName("from")]
+		public DateTime From { get; set; }
+
+		[JsonPropertyName("to")]
+		public DateTime To { get; set; }
 	}
 
 	public class ShopOfTripRequest

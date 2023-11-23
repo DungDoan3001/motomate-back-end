@@ -6,5 +6,8 @@ namespace Application.Web.Database.DTOs.ServiceModels
 	{
 		[JsonPropertyName("lessorUsername")]
 		public string? LessorUsername { get; set; } = "";
+
+		[JsonPropertyName("lesseeUsername")]
+		public string? LesseeUsername { get; set; } = "";
 	}
 }

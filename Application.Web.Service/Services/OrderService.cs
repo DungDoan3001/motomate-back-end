@@ -8,8 +8,11 @@ using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Diacritics.Extensions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using Stripe;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application.Web.Service.Services
 {
@@ -51,14 +54,16 @@ namespace Application.Web.Service.Services
 		}
 
 
-		public async Task<List<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, string? lessorUsername = "")
+		public async Task<List<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, TripRequestQuery query)
 		{
 			var result = await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(parentOrderId);
 
-			return result;
+			var resultToReturn = HandleTripRequestQuery(new List<List<TripRequest>> { result }, query);
+
+			return resultToReturn.FirstOrDefault();
 		}
 
-		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLessorIdAsync(PaginationRequestModel pagination, Guid lessorId)
+		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLessorIdAsync(PaginationRequestModel pagination, Guid lessorId, TripRequestQuery query)
 		{
 			var tripRequests = await _tripRequestQueries.GetAllTripRequestsBasedOnLessorId(lessorId);
 
@@ -70,6 +75,8 @@ namespace Application.Web.Service.Services
             {
 				tripRequestsByParentId.Add(tripRequestsByParentOrderId.ToList());
             }
+
+			tripRequestsByParentId = HandleTripRequestQuery(tripRequestsByParentId, query);
 
 			var totalItemCount = tripRequestsByParentId.Count;
 
@@ -83,7 +90,7 @@ namespace Application.Web.Service.Services
 			return (TripRequestsToReturn, paginationMetadata);
         }
 
-		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLesseeIdAsync(PaginationRequestModel pagination,Guid lesseeId)
+		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLesseeIdAsync(PaginationRequestModel pagination,Guid lesseeId, TripRequestQuery query)
 		{
 			var tripRequests = await _tripRequestQueries.GetAllTripRequestsBasedOnLesseeId(lesseeId);
 
@@ -95,6 +102,8 @@ namespace Application.Web.Service.Services
 			{
 				tripRequestsByParentId.Add(tripRequestsByParentOrderId.ToList());
 			}
+
+			tripRequestsByParentId = HandleTripRequestQuery(tripRequestsByParentId, query);
 
 			var totalItemCount = tripRequestsByParentId.Count;
 
@@ -159,6 +168,42 @@ namespace Application.Web.Service.Services
 
 			return await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(listParentIds.FirstOrDefault());
 		}
+
+		private List<List<TripRequest>> HandleTripRequestQuery(List<List<TripRequest>> parentTripRequests, TripRequestQuery query)
+		{
+			var result = new List<List<TripRequest>>();
+
+            foreach (var parentTripRequest in parentTripRequests)
+            {
+				var holder = parentTripRequest;
+
+				if (!query.LessorUsername.IsNullOrEmpty())
+				{					
+					holder = holder
+						.Where(x => x.Lessor.UserName
+											.ToUpper()
+											.Trim()
+											.RemoveDiacritics()
+											.Equals(query.LessorUsername.ToUpper().Trim().RemoveDiacritics()))
+						.ToList();
+				}
+
+				if (!query.LesseeUsername.IsNullOrEmpty())
+				{
+					holder = holder
+						.Where(x => x.Lessee.UserName
+											.ToUpper()
+											.Trim()
+											.RemoveDiacritics()
+											.Equals(query.LesseeUsername.ToUpper().Trim().RemoveDiacritics()))
+						.ToList();
+				}
+
+				result.Add(holder);
+            }
+
+			return result;
+        }
 
 		private async Task<bool> ApproveTripRequestAsync(Guid tripRequestId)
 		{
