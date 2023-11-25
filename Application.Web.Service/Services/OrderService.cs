@@ -102,6 +102,33 @@ namespace Application.Web.Service.Services
 			return (TripRequestsToReturn, paginationMetadata);
         }
 
+		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetAllTripRequests(PaginationRequestModel pagination, TripRequestQuery query)
+		{
+			var tripRequests = await _tripRequestQueries.GetAllTripRequests();
+
+			var groupTripRequestsByParentIds = tripRequests.GroupBy(x => x.ParentOrderId).ToList();
+
+			var tripRequestsByParentId = new List<List<TripRequest>>();
+
+			foreach (var tripRequestsByParentOrderId in groupTripRequestsByParentIds)
+			{
+				tripRequestsByParentId.Add(tripRequestsByParentOrderId.ToList());
+			}
+
+			tripRequestsByParentId = HandleTripRequestQuery(tripRequestsByParentId, query);
+
+			var totalItemCount = tripRequestsByParentId.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+			var TripRequestsToReturn = tripRequestsByParentId
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+			return (TripRequestsToReturn, paginationMetadata);
+		}
+
 		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLesseeIdAsync(PaginationRequestModel pagination,Guid lesseeId, TripRequestQuery query)
 		{
 			var tripRequests = await _tripRequestQueries.GetAllTripRequestsBasedOnLesseeId(lesseeId);
