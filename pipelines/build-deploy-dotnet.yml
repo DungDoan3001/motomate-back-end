@@ -20,10 +20,6 @@ stages:
       - job: 
         displayName: "Dotnet Build & Publish"
         steps:
-          - task: UseDotNet@2
-            displayName: "Use Dotnet $(DOTNET_VERSION)"
-            inputs:
-              version: $(DOTNET_VERSION)
           - task: CmdLine@2
             displayName: "Dotnet build"
             inputs:
