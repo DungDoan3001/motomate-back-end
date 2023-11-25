@@ -11,7 +11,7 @@ variables:
 - name: ARTIFACT_NAME
   value: "motormate-dotnet"
 - name: OUTPUT_SOLUTION
-  value: "$(System.DefaultWorkingDirectory)/output/$(ARTIFACT_NAME)"
+  value: "$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME)"
 
 stages:
   - stage: 
@@ -32,3 +32,4 @@ stages:
             displayName: "List"
             inputs:
               script: 'ls -a'
+          
