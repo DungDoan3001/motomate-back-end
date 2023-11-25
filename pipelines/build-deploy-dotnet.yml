@@ -43,4 +43,5 @@ stages:
               appName: 'motormate-backend-web-app'
               package: '$(OUTPUT_SOLUTION).zip'
               runtimeStack: 'DOTNETCORE|6.0'
+              appSettings: "-WEBSITE_RUN_FROM_PACKAGE \"1\""
           
