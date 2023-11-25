@@ -28,6 +28,9 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		[JsonPropertyName("avatar")]
 		public string Avatar { get; set; }
 
+		[JsonPropertyName("status")]
+		public string Status { get; set; }
+
 		[JsonPropertyName("dateRent")]
 		public DateRentOfTripRequest DateRent { get; set; }
 

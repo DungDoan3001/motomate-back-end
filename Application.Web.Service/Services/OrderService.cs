@@ -8,6 +8,7 @@ using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using AutoMapper;
 using Diacritics.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +18,7 @@ namespace Application.Web.Service.Services
 {
 	public class OrderService : IOrderService
 	{
+		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IGenericRepository<TripRequest> _tripRequestRepo;
 		private readonly IGenericRepository<CheckOutOrder> _checkoutOrderRepo;
@@ -30,6 +32,7 @@ namespace Application.Web.Service.Services
 		private readonly IPaymentService _paymentService;
 
 		public OrderService(
+			IMapper mapper,
 			IUnitOfWork unitOfWork,
 			ICheckoutOrderQueries checkoutOrderQueries,
 			ITripRequestQueries tripRequestQueries,
@@ -37,6 +40,7 @@ namespace Application.Web.Service.Services
 			IPaymentService paymentService
 			)
 		{
+			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 			_tripRequestRepo = unitOfWork.GetBaseRepo<TripRequest>();
 			_checkoutOrderRepo = unitOfWork.GetBaseRepo<CheckOutOrder>();
@@ -182,6 +186,31 @@ namespace Application.Web.Service.Services
 		private List<List<TripRequest>> HandleTripRequestQuery(List<List<TripRequest>> parentTripRequests, TripRequestQuery query)
 		{
 			var result = new List<List<TripRequest>>();
+
+			if(!query.Status.IsNullOrEmpty())
+			{
+				var queryStatus = query.Status.Trim().ToUpper().RemoveDiacritics();
+				if (queryStatus.Equals(Constants.PENDING.ToUpper()))
+				{
+					parentTripRequests = parentTripRequests.Where(x => Helpers.Helpers.GetParentOrderStatus(x).Equals(Constants.PENDING)).ToList();
+				} 
+				else if (queryStatus.Equals(Constants.ONGOING.ToUpper()))
+				{
+					parentTripRequests = parentTripRequests.Where(x => Helpers.Helpers.GetParentOrderStatus(x).Equals(Constants.ONGOING)).ToList();
+				}
+				else if (queryStatus.Equals(Constants.COMPLETED.ToUpper()))
+				{
+					parentTripRequests = parentTripRequests.Where(x => Helpers.Helpers.GetParentOrderStatus(x).Equals(Constants.COMPLETED)).ToList();
+				}
+				else if (queryStatus.Equals(Constants.CANCELED.ToUpper()))
+				{
+					parentTripRequests = parentTripRequests.Where(x => Helpers.Helpers.GetParentOrderStatus(x).Equals(Constants.CANCELED)).ToList();
+				}
+				else
+				{
+					throw new StatusCodeException(message: $"Only allow value {Constants.PENDING}, {Constants.ONGOING}, {Constants.COMPLETED}, {Constants.CANCELED}", statusCode: StatusCodes.Status400BadRequest);
+				}
+			}
 
             foreach (var parentTripRequest in parentTripRequests)
             {

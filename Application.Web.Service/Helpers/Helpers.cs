@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using Application.Web.Database.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Web.Service.Helpers
@@ -33,5 +34,64 @@ namespace Application.Web.Service.Helpers
 
             return Regex.IsMatch(phoneNumber, phoneNumberRegexPattern);
         }
-    }
+
+		public static string GetParentOrderStatus(IEnumerable<TripRequest> tripRequests)
+		{
+			var getTripRequestStatus = ((TripRequest tripRequest) =>
+			{
+				if (!tripRequest.Status && tripRequest.InCompleteTrip == null && tripRequest.CompletedTrip == null)
+				{
+					return Constants.PENDING;
+				}
+				else if (tripRequest.Status && tripRequest.InCompleteTrip == null && tripRequest.CompletedTrip == null)
+				{
+					return Constants.ONGOING;
+				}
+				else if (!tripRequest.Status && tripRequest.InCompleteTrip != null && tripRequest.CompletedTrip == null)
+				{
+					return Constants.CANCELED;
+				}
+				else if (tripRequest.Status && tripRequest.InCompleteTrip == null && tripRequest.CompletedTrip != null)
+				{
+					return Constants.COMPLETED;
+				}
+
+				return null;
+			});
+
+			var countTripRequestStatus = ((IEnumerable<TripRequest> tripRequests, string status) =>
+			{
+				return tripRequests.Count((x) =>
+				{
+					var tripStatus = getTripRequestStatus(x);
+					return tripStatus.Equals(status);
+				});
+			});
+
+			var tripRequestsCount = tripRequests.Count();
+
+			if (countTripRequestStatus(tripRequests, Constants.CANCELED).Equals(tripRequestsCount))
+			{
+				return Constants.CANCELED;
+			}
+			else if (countTripRequestStatus(tripRequests, Constants.COMPLETED).Equals(tripRequestsCount))
+			{
+				return Constants.COMPLETED;
+			}
+			else if (countTripRequestStatus(tripRequests, Constants.ONGOING).Equals(tripRequestsCount))
+			{
+				return Constants.ONGOING;
+			}
+			else if(countTripRequestStatus(tripRequests, Constants.PENDING).Equals(tripRequestsCount))
+			{
+				return Constants.PENDING;
+			}
+			else if ((countTripRequestStatus(tripRequests, Constants.ONGOING) > 0 && countTripRequestStatus(tripRequests, Constants.ONGOING) < tripRequestsCount) ||
+					 countTripRequestStatus(tripRequests, Constants.PENDING) > 0 && countTripRequestStatus(tripRequests, Constants.PENDING) < tripRequestsCount)
+			{
+				return Constants.ONGOING;
+			}
+			return null;
+		}
+	}
 }
