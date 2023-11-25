@@ -6,6 +6,12 @@ pool:
 variables:
 - name: DOTNET_VERSION
   value: 6.x
+- name: SOLUTION_FILE_LOCATION
+  value: $(System.DefaultWorkingDirectory)/MotorMate.sln
+- name: ARTIFACT_NAME
+  value: "motormate-dotnet"
+- name: OUTPUT_SOLUTION
+  value: "$(System.DefaultWorkingDirectory)/output/$(ARTIFACT_NAME)"
 
 stages:
   - stage: 
@@ -18,9 +24,15 @@ stages:
             displayName: "Use Dotnet $(DOTNET_VERSION)"
             inputs:
               version: $(DOTNET_VERSION)
-          - task: DotNetCoreCLI@2
+          - task: CmdLine@2
             displayName: "Dotnet build"
             inputs:
-              command: 'build'
-              projects: '$(System.DefaultWorkingDirectory)/Applicaton.Web.API/Applicaton.Web.API.csproj'
-              arguments: '--configuration Release'
+              script: 'dotnet build $(SOLUTION_FILE_LOCATION) --configuration Release'
+          - task: CmdLine@2
+            displayName: "Dotnet publish"
+            inputs:
+              script: 'dotnet publish $(SOLUTION_FILE_LOCATION) -c Release -o $(OUTPUT_SOLUTION)'
+          - task: CmdLine@2
+            displayName: "List"
+            inputs:
+              script: 'ls -a'
