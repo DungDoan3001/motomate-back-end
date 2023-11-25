@@ -1,0 +1,11 @@
+trigger: none
+
+pool:
+  name: Linux-agent
+  
+stages:
+  - stage: 
+    jobs:
+      - job: 
+        steps:
+          - script: echo "hello"
