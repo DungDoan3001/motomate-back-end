@@ -1,4 +1,9 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - main
+      - master
+      - develop
 
 pool:
   name: Linux-agent
@@ -33,6 +38,7 @@ stages:
               archiveFile: '$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME).zip'
               replaceExistingArchive: true
           - task: AzureRmWebAppDeployment@4
+            condition: in(variables['Build.SourceBranch'], "main", "master","develop")
             displayName: "Deploy to Azure Web App"
             inputs:
               ConnectionType: 'AzureRM'
