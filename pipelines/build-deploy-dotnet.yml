@@ -36,14 +36,11 @@ stages:
               archiveType: 'zip'
               archiveFile: '$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME).zip'
               replaceExistingArchive: true
-          - task: AzureRmWebAppDeployment@4
+          - task: AzureWebApp@1
             inputs:
-              ConnectionType: 'AzureRM'
               azureSubscription: 'DunDon Free Subcription(cfd7c513-8b41-4dc8-b1ed-69bad9822f7d)'
               appType: 'webAppLinux'
-              WebAppName: 'motormate-backend-web-app'
-              packageForLinux: '$(OUTPUT_SOLUTION).zip'
-              RuntimeStack: 'DOTNETCORE|6.0'
-              AppSettings: "-WEBSITE_DYNAMIC_CACHE 0"
-          
+              appName: 'motormate-backend-web-app'
+              package: 'OUTPUT_SOLUTION.zip'
+              runtimeStack: 'DOTNETCORE|6.0'
           
