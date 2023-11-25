@@ -28,10 +28,6 @@ stages:
             displayName: "Dotnet publish"
             inputs:
               script: 'dotnet publish $(SOLUTION_FILE_LOCATION) -c Release -o $(OUTPUT_SOLUTION)'
-          - task: CmdLine@2
-            displayName: "List"
-            inputs:
-              script: 'ls -a'
           - task: ArchiveFiles@2
             displayName: "Archive file"
             inputs:
@@ -40,9 +36,13 @@ stages:
               archiveType: 'zip'
               archiveFile: '$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME).zip'
               replaceExistingArchive: true
-          - task: CmdLine@2
-            displayName: "List"
+          - task: AzureRmWebAppDeployment@4
             inputs:
-              script: 'ls -a'
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'DunDon Free Subcription(cfd7c513-8b41-4dc8-b1ed-69bad9822f7d)'
+              appType: 'webAppLinux'
+              WebAppName: 'motormate-backend-web-app'
+              packageForLinux: '$(OUTPUT_SOLUTION).zip'
+              RuntimeStack: 'DOTNETCORE|6.0'
           
           
