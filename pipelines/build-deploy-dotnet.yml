@@ -39,6 +39,10 @@ stages:
               includeRootFolder: false
               archiveType: 'zip'
               archiveFile: '$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME).zip'
-              replaceExistingArchive: true"
+              replaceExistingArchive: true
+          - task: CmdLine@2
+            displayName: "List"
+            inputs:
+              script: 'ls -a'
           
           
