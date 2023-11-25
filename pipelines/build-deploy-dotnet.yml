@@ -32,4 +32,13 @@ stages:
             displayName: "List"
             inputs:
               script: 'ls -a'
+          - task: ArchiveFiles@2
+            displayName: "Archive file"
+            inputs:
+              rootFolderOrFile: '$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME)'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME).zip'
+              replaceExistingArchive: true"
+          
           
