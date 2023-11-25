@@ -2,12 +2,22 @@ trigger: none
 
 pool:
   name: Linux-agent
-  
+
+variables:
+- name: DOTNET_VERSION
+  value: 6.x
+
 stages:
   - stage: 
+    displayName: "Dotnet Build & Publish"
     jobs:
       - job: 
+        displayName: "Dotnet Build & Publish"
         steps:
+          - task: UseDotNet@2
+            displayName: "Use Dotnet $(DOTNET_VERSION)"
+            inputs:
+              version: $(DOTNET_VERSION)
           - task: DotNetCoreCLI@2
             displayName: "Dotnet build"
             inputs:
