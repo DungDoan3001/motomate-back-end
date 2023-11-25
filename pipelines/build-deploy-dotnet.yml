@@ -44,5 +44,6 @@ stages:
               WebAppName: 'motormate-backend-web-app'
               packageForLinux: '$(OUTPUT_SOLUTION).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
+              AppSettings: "-WEBSITE_DYNAMIC_CACHE 0"
           
           
