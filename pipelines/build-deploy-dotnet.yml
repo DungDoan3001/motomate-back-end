@@ -34,7 +34,7 @@ stages:
               archiveFile: '$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME).zip'
               replaceExistingArchive: true
           - task: AzureRmWebAppDeployment@4
-            condition: in(variables['Build.SourceBranch'], 'main', 'master', 'develop')
+            condition: in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/main', 'refs/heads/develop')
             displayName: "Deploy to Azure Web App"
             inputs:
               ConnectionType: 'AzureRM'
