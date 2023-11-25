@@ -1,0 +1,52 @@
+trigger:
+  branches:
+    include:
+      - main
+      - master
+      - develop
+
+pool:
+  name: Linux-agent
+
+variables:
+- name: DOTNET_VERSION
+  value: 6.x
+- name: SOLUTION_FILE_LOCATION
+  value: $(System.DefaultWorkingDirectory)/MotorMate.sln
+- name: ARTIFACT_NAME
+  value: "motormate-dotnet"
+- name: OUTPUT_SOLUTION
+  value: "$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME)"
+
+stages:
+  - stage: 
+    displayName: "Dotnet Build & Publish"
+    jobs:
+      - job: 
+        displayName: "Dotnet Build & Publish"
+        steps:
+          - task: CmdLine@2
+            displayName: "Dotnet publish"
+            inputs:
+              script: 'dotnet publish $(SOLUTION_FILE_LOCATION) -c Release -o $(OUTPUT_SOLUTION)'
+          - task: ArchiveFiles@2
+            displayName: "Archive solution"
+            inputs:
+              rootFolderOrFile: '$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME)'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(System.DefaultWorkingDirectory)/$(ARTIFACT_NAME).zip'
+              replaceExistingArchive: true
+          - task: AzureRmWebAppDeployment@4
+            condition: in(variables['Build.SourceBranch'], 'main', 'master', 'develop')
+            displayName: "Deploy to Azure Web App"
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'DunDon Free Subcription(cfd7c513-8b41-4dc8-b1ed-69bad9822f7d)'
+              appType: 'webAppLinux'
+              WebAppName: 'motormate-backend-web-app'
+              packageForLinux: '$(OUTPUT_SOLUTION).zip'
+              RuntimeStack: 'DOTNETCORE|6.0'
+              StartupCommand: 'dotnet ./Applicaton.Web.API.dll'
+        
+          
