@@ -21,10 +21,6 @@ stages:
         displayName: "Dotnet Build & Publish"
         steps:
           - task: CmdLine@2
-            displayName: "Dotnet build"
-            inputs:
-              script: 'dotnet build $(SOLUTION_FILE_LOCATION) --configuration Release'
-          - task: CmdLine@2
             displayName: "Dotnet publish"
             inputs:
               script: 'dotnet publish $(SOLUTION_FILE_LOCATION) -c Release -o $(OUTPUT_SOLUTION)'
