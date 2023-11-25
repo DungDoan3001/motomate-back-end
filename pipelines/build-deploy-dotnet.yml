@@ -8,4 +8,9 @@ stages:
     jobs:
       - job: 
         steps:
-          - script: echo "hello"
+          - task: DotNetCoreCLI@2
+            displayName: "Dotnet build"
+            inputs:
+              command: 'build'
+              projects: '$(System.DefaultWorkingDirectory)/Applicaton.Web.API/Applicaton.Web.API.csproj'
+              arguments: '--configuration Release'
