@@ -445,6 +445,8 @@ namespace Applicaton.Web.API.Extensions
 
                     dest.CreatedAt = DateTime.SpecifyKind(src.FirstOrDefault().Created_At, DateTimeKind.Utc);
 
+                    dest.Status = Helpers.GetParentOrderStatus(src);
+
                     dest.DateRent = new DateRentOfTripRequest
                     {
                         From = src.Min(x => x.PickUpDateTime),

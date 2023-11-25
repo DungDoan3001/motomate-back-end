@@ -39,6 +39,20 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.ToListAsync();
 		}
 
+		public async Task<List<TripRequest>> GetAllTripRequests()
+		{
+			return await dbSet
+				.Include(X => X.Lessee)
+				.Include(X => X.Lessor)
+				.Include(x => x.InCompleteTrip)
+				.Include(x => x.CompletedTrip)
+				.Include(x => x.Vehicle).ThenInclude(x => x.Color)
+				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
+				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
+				.Include(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
+				.ToListAsync();
+		}
+
 		public async Task<List<TripRequest>> GetAllTripRequestsBasedOnLesseeId(Guid lesseeId)
 		{
 			return await dbSet

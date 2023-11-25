@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Application.Web.Database.DTOs.ServiceModels
 {
@@ -12,5 +14,8 @@ namespace Application.Web.Database.DTOs.ServiceModels
 
 		[JsonPropertyName("searchQuery")]
 		public string? SearchQuery { get; set; } = "";
+
+		[JsonPropertyName("status")]
+		public string? Status { get; set; } = "";
 	}
 }

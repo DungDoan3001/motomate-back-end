@@ -109,6 +109,51 @@ namespace Applicaton.Web.API.Controllers
 		}
 
 		/// <summary>
+		/// Acquire orders information with pagination
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("")]
+		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetAllTripRequest([FromQuery] TripRequestQuery query, [FromQuery] PaginationRequestModel pagination)
+		{
+			try
+			{
+				if (pagination.pageSize > maxPageSize)
+				{
+					pagination.pageSize = maxPageSize;
+				}
+
+				var (tripRequests, paginationMetadata) = await _orderService.GetAllTripRequests(pagination, query);
+
+				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+				Response.AddPaginationHeader(paginationMetadata);
+
+				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
+
+				return Ok(tripRequestsToReturn.OrderByDescending(x => x.CreatedAt).ToList());
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
 		/// Acquire orders information with pagination by lessorId
 		/// </summary>
 		/// <returns>Status code of the action.</returns>
