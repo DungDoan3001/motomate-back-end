@@ -18,7 +18,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
                                 .ThenInclude(vi => vi.Image)
                 .Include(v => v.Owner)
                 .Include(c => c.Color)
-				.Include(ov => ov.TripRequests.Where(tr => tr.PickUpDateTime > DateTime.UtcNow))
+				.Include(ov => ov.TripRequests).ThenInclude(x => x.VehicleReview).ThenInclude(x => x.User)
+				.Include(ov => ov.TripRequests).ThenInclude(x => x.VehicleReview).ThenInclude(x => x.VehicleReviewImages).ThenInclude(x => x.Image)
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
                 .Take(pagination.pageSize)
                 .ToListAsync();
@@ -32,7 +33,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
                                 .ThenInclude(vi => vi.Image)
 				.Include(v => v.Owner)
 				.Include(c => c.Color)
-                .Include(ov => ov.TripRequests.Where(tr => tr.PickUpDateTime > DateTime.UtcNow))
+				.Include(ov => ov.TripRequests).ThenInclude(x => x.VehicleReview).ThenInclude(x => x.User)
+				.Include(ov => ov.TripRequests).ThenInclude(x => x.VehicleReview).ThenInclude(x => x.VehicleReviewImages).ThenInclude(x => x.Image)
 				.ToListAsync();
         }
 
@@ -44,7 +46,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
                                 .ThenInclude(vi => vi.Image)
 				.Include(v => v.Owner)
 				.Include(c => c.Color)
-				.Include(ov => ov.TripRequests.Where(tr => tr.PickUpDateTime > DateTime.UtcNow))
+				.Include(ov => ov.TripRequests).ThenInclude(x => x.VehicleReview).ThenInclude(x => x.User)
+				.Include(ov => ov.TripRequests).ThenInclude(x => x.VehicleReview).ThenInclude(x => x.VehicleReviewImages).ThenInclude(x => x.Image)
 				.Where(v => v.OwnerId.Equals(ownerId))
 				.ToListAsync();
 		}
@@ -57,8 +60,9 @@ namespace Application.Web.Database.Queries.ServiceQueries
                                 .ThenInclude(vi => vi.Image)
                 .Include(v => v.Owner)
                 .Include(c => c.Color)
-                .Include(ov => ov.TripRequests.Where(tr => tr.PickUpDateTime > DateTime.UtcNow))
-                .Where(v => v.Id.Equals(vehicleId))
+				.Include(ov => ov.TripRequests).ThenInclude(x => x.VehicleReview).ThenInclude(x => x.User)
+				.Include(ov => ov.TripRequests).ThenInclude(x => x.VehicleReview).ThenInclude(x => x.VehicleReviewImages).ThenInclude(x => x.Image)
+				.Where(v => v.Id.Equals(vehicleId))
                 .FirstOrDefaultAsync();
         }
 

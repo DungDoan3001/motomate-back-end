@@ -16,11 +16,12 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(X => X.Lessor)
 				.Include(x => x.InCompleteTrip)
 				.Include(x => x.CompletedTrip)
+				.Include(x => x.VehicleReview)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Color)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
-				.Where(x => x.PaymentIntentId.Equals(paymentIntentId))
+				.Where(x => x.PaymentIntentId.ToUpper().Equals(paymentIntentId.ToUpper().Trim()))
 				.ToListAsync();
 		}
 
@@ -31,6 +32,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(X => X.Lessor)
 				.Include(x => x.InCompleteTrip)
 				.Include(x => x.CompletedTrip)
+				.Include(x => x.VehicleReview)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Color)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
@@ -46,6 +48,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(X => X.Lessor)
 				.Include(x => x.InCompleteTrip)
 				.Include(x => x.CompletedTrip)
+				.Include(x => x.VehicleReview)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Color)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
@@ -60,6 +63,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(X => X.Lessor)
 				.Include(x => x.InCompleteTrip)
 				.Include(x => x.CompletedTrip)
+				.Include(x => x.VehicleReview)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Color)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
@@ -75,6 +79,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(X => X.Lessor)
 				.Include(x => x.InCompleteTrip)
 				.Include(x => x.CompletedTrip)
+				.Include(x => x.VehicleReview)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Color)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
@@ -90,11 +95,12 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(X => X.Lessor)
 				.Include(x => x.InCompleteTrip)
 				.Include(x => x.CompletedTrip)
+				.Include(x => x.VehicleReview)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Color)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
-				.Where(x => x.ParentOrderId.Equals(parentOrderId))
+				.Where(x => x.ParentOrderId.ToUpper().Equals(parentOrderId.ToUpper().Trim()))
 				.ToListAsync();
 		}
 
@@ -104,6 +110,11 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Where(x => tripRequestIds.Contains(x.Id))
 				.Select(x => x.ParentOrderId)
 				.ToListAsync();
+		}
+
+		public async Task<bool> CheckIfTripRequestExisted(Guid tripRequestId)
+		{
+			return await dbSet.AnyAsync(x => x.Id.Equals(tripRequestId));
 		}
 	}
 }

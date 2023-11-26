@@ -11,5 +11,6 @@ namespace Application.Web.Database.Queries.Interface
 		Task<List<TripRequest>> GetAllTripRequestsBasedOnLesseeId(Guid lesseeId);
 		Task<List<string>> GetParentIdsFromTripRequests(List<Guid> tripRequestIds);
 		Task<List<TripRequest>> GetAllTripRequests();
+		Task<bool> CheckIfTripRequestExisted(Guid tripRequestId);
 	}
 }

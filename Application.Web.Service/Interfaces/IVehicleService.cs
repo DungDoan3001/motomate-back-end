@@ -12,8 +12,8 @@ namespace Application.Web.Service.Interfaces
         Task<Vehicle> CreateVehicleAsync(VehicleRequestModel requestModel);
         Task<Vehicle> UpdateVehicleAsync(VehicleRequestModel requestModel, Guid vehicleId);
         Task<bool> DeleteVehicleAsync(Guid vehicleId);
-        Task<List<Vehicle>> GetAllVehiclesByOwnerIdAsync(VehicleQuery vehicleQuery, Guid ownerId);
-        Task<(bool, bool)> HandleLockVehicleAsync(Guid vehicleId);
+        Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetAllVehiclesByOwnerIdAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery, Guid ownerId);
+		Task<(bool, bool)> HandleLockVehicleAsync(Guid vehicleId);
         Task<Vehicle> UpdateVehicleStatusAsync(Guid vehicleId, int statusNumber);
         Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesByStatusAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery, string statusRoute);
         Task<List<Vehicle>> GetRelatedVehicleAsync(Guid vehicleId);

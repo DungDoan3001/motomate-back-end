@@ -20,7 +20,7 @@ namespace Application.Web.Database.Models
 		public string Content { get; set; }
 
 		[Column("rating")]
-		public decimal Rating { get; set; } // From 1 -> 5
+		public int Rating { get; set; } // From 1 -> 5
 
 		[Column("created_at")]
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

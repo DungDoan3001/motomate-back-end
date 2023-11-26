@@ -11,6 +11,7 @@ namespace Application.Web.Database.DTOs.ResponseModels
         public bool IsAvaiable { get; set; }
         public bool IsActive { get; set; }
         public bool IsLocked { get; set; }
+        public decimal Rating { get; set; }
         public decimal Price { get; set; }
         public string Address { get; set; }
         public string District { get; set; }
@@ -21,6 +22,7 @@ namespace Application.Web.Database.DTOs.ResponseModels
         public string InsuranceNumber { get; set; }
         public DateTime InsuranceExpiry { get; set; }
         public List<VehicleUnavailableDate> UnavailableDates { get; set; }
+        public List<ReviewOfVehicle> Reviews {  get; set; }
         public string Status { get; set; }
         public List<ImageOfVehicle> Images { get; set; }
     }
@@ -68,5 +70,32 @@ namespace Application.Web.Database.DTOs.ResponseModels
     {
         public DateTime From { get; set; }
         public DateTime To { get; set; }
+    }
+
+    public class ReviewOfVehicle
+    {
+        [JsonPropertyName("userId")]
+        public Guid UserId { get; set; }
+
+        [JsonPropertyName("username")]
+        public string UserName { get; set; }
+
+        [JsonPropertyName("email")]
+        public string Email { get; set; }
+
+        [JsonPropertyName("avatar")]
+        public string Avatar { get; set; }
+
+        [JsonPropertyName("rating")]
+        public int Rating { get; set; }
+
+        [JsonPropertyName("title")]
+        public string Title { get; set; }
+
+        [JsonPropertyName("content")]
+        public string Content { get; set; }
+
+        [JsonPropertyName("images")]
+        public List<string> Images { get; set; }
     }
 }
