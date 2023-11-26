@@ -45,5 +45,6 @@ namespace Application.Web.Database.Models
 		public virtual Vehicle Vehicle { get; set; }
 		public virtual InCompleteTrip InCompleteTrip { get; set; }
 		public virtual CompletedTrip CompletedTrip { get; set; }
+		public virtual VehicleReview VehicleReview { get; set; }
 	}
 }

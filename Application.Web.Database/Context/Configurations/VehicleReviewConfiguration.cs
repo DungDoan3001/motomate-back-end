@@ -15,6 +15,18 @@ namespace Application.Web.Database.Context.Configurations
 				.WithMany(x => x.VehicleReviews)
 				.HasForeignKey(x => x.VehicleId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+			builder
+				.HasOne(x => x.User)
+				.WithMany(x => x.VehicleReviews)
+				.HasForeignKey(x => x.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			builder
+				.HasOne(x => x.TripRequest)
+				.WithOne(x => x.VehicleReview)
+				.HasForeignKey<VehicleReview>(x => x.TripRequestId)
+				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}
 }
