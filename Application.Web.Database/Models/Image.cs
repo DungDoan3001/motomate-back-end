@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Application.Web.Database.Models
 {
@@ -16,6 +17,8 @@ namespace Application.Web.Database.Models
         public virtual ICollection<BrandImage> BrandImages { get; set;}
 
         public virtual ICollection<VehicleImage> VehicleImages { get; set; }
+
+        public virtual ICollection<VehicleReviewImage> VehicleReviewImages { get; set; }
 
         public virtual Blog Blog { get; set; }
     }
