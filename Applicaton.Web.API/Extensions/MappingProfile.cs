@@ -563,6 +563,21 @@ namespace Applicaton.Web.API.Extensions
             CreateMap<BlogCategory, CategoryOfBlog>();
             CreateMap<User, AuthorOfBlog>();
             CreateMap<Image, ImageOfBlog>();
+
+            CreateMap<VehicleReview, VehicleReviewResponseModel>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.UserId = src.User.Id;
+                    dest.Username = src.User.UserName;
+                    dest.Email = src.User.Email;
+                    dest.Avatar = src.User.Picture;
+
+                    dest.Rating = src.Rating;
+                    dest.Title = src.Title;
+                    dest.Content = src.Content;
+
+                    dest.Images = src.VehicleReviewImages.Select(x => x.Image.ImageUrl).ToList();
+                });
         }
     }
 }

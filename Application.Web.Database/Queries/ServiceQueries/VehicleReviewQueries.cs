@@ -1,10 +1,11 @@
 ﻿using Application.Web.Database.Context;
 using Application.Web.Database.Models;
+using Application.Web.Database.Queries.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Database.Queries.ServiceQueries
 {
-	public class VehicleReviewQueries : BaseQuery<VehicleReview>
+	public class VehicleReviewQueries : BaseQuery<VehicleReview>, IVehicleReviewQueries
 	{
 		public VehicleReviewQueries(ApplicationContext dbContext) : base(dbContext) { }
 
@@ -24,6 +25,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
 		public async Task<IEnumerable<VehicleReview>> GetAllVehicleReviewByVehicleIdAsync(Guid vehicleId)
 		{
 			return await dbSet
+				.Include(x => x.User)
+				.Include(x => x.VehicleReviewImages).ThenInclude(x => x.Image)
 				.Where(x => x.VehicleId.Equals(vehicleId))
 				.ToListAsync();
 		}
