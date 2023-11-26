@@ -17,5 +17,6 @@ namespace Application.Web.Service.Interfaces
         Task<Vehicle> UpdateVehicleStatusAsync(Guid vehicleId, int statusNumber);
         Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesByStatusAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery, string statusRoute);
         Task<List<Vehicle>> GetRelatedVehicleAsync(Guid vehicleId);
+        Task<(IEnumerable<VehicleReview>, PaginationMetadata)> GetVehicleReviewByVehicleIdAsync(PaginationRequestModel pagination, Guid vehicleId);
 	}
 }

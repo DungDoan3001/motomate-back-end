@@ -199,6 +199,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<IBlogCategoryQueries, BlogCategoryQueries>();
             services.AddScoped<ICheckoutOrderQueries, CheckoutOrderQueries>();
             services.AddScoped<ITripRequestQueries, TripRequestQueries>();
+            services.AddScoped<IVehicleReviewQueries, VehicleReviewQueries>();
         }
 
         public static void RegistryDatabaseDependencies (this IServiceCollection services)

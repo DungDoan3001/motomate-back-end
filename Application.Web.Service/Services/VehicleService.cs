@@ -2,6 +2,7 @@ using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
+using Application.Web.Database.Queries.ServiceQueries;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
@@ -24,7 +25,8 @@ namespace Application.Web.Service.Services
         private readonly IGenericRepository<Image> _imageRepo;
         private readonly IGenericRepository<VehicleImage> _vehicleImageRepo;
         private readonly IVehicleQueries _vehicleQueries;
-        private readonly IModelQueries _modelQueries;
+		private readonly IVehicleReviewQueries _vehicleReviewQueries;
+		private readonly IModelQueries _modelQueries;
         private readonly IColorQueries _colorQueries;
         private readonly IUserService _userService;
         private readonly IModelService _modelService;
@@ -32,7 +34,7 @@ namespace Application.Web.Service.Services
         private CacheKeyConstants _cacheKeyConstants;
 
         public VehicleService(IUnitOfWork unitOfWork, IMapper mapper,
-                                IVehicleQueries vehicleQueries, IColorQueries colorQueries, IModelQueries modelQueries,
+                                IVehicleQueries vehicleQueries, IColorQueries colorQueries, IModelQueries modelQueries, IVehicleReviewQueries vehicleReviewQueries,
                                 IUserService userService, IModelService modelService,
                                 IAppCache cache, CacheKeyConstants cacheKeyConstants)
         {
@@ -42,13 +44,30 @@ namespace Application.Web.Service.Services
             _imageRepo = unitOfWork.GetBaseRepo<Image>();
             _vehicleImageRepo = unitOfWork.GetBaseRepo<VehicleImage>();
             _vehicleQueries = vehicleQueries;
-            _modelQueries = modelQueries;
+            _vehicleReviewQueries = vehicleReviewQueries;
+			_modelQueries = modelQueries;
             _colorQueries = colorQueries;
             _userService = userService;
             _modelService = modelService;
             _cache = cache;
             _cacheKeyConstants = cacheKeyConstants;
         }
+        
+        public async Task<(IEnumerable<VehicleReview>, PaginationMetadata)> GetVehicleReviewByVehicleIdAsync(PaginationRequestModel pagination, Guid vehicleId)
+        {
+            var vehicleReviews = await _vehicleReviewQueries.GetAllVehicleReviewByVehicleIdAsync(vehicleId) ?? throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
+
+			var totalItemCount = vehicleReviews.Count();
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+			var vehiclesToReturn = vehicleReviews
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+            return (vehiclesToReturn, paginationMetadata);
+		}
 
         public async Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery)
         {

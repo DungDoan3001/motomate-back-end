@@ -28,13 +28,58 @@ namespace Applicaton.Web.API.Controllers
             _vehicleService = vehicleService;
         }
 
-        /// <summary>
-        /// Acquire vehicles information with pagination
-        /// </summary>
-        /// <returns>Status code of the action.</returns>
-        /// <response code="200">Successfully get items information.</response>
-        /// <response code="500">There is something wrong while execute.</response>
-        [HttpGet]
+		/// <summary>
+		/// Acquire vehicle reviews information with pagination
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("review/{vehicleId}")]
+		public async Task<ActionResult<IEnumerable<VehicleReviewResponseModel>>> GetVehicleReviewsByVehicleId([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid vehicleId)
+		{
+			try
+			{
+				if (pagination.pageSize > maxPageSize)
+				{
+					pagination.pageSize = maxPageSize;
+				}
+
+				var (reviews, paginationMetadata) = await _vehicleService.GetVehicleReviewByVehicleIdAsync(pagination, vehicleId);
+
+				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+				Response.AddPaginationHeader(paginationMetadata);
+
+				var reviewsToReturn = _mapper.Map<IEnumerable<VehicleReviewResponseModel>>(reviews);
+
+				return Ok(reviewsToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Acquire vehicles information with pagination
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet]
         public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetVehiclesByStatusAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery)
         {
             try
