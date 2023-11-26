@@ -75,7 +75,32 @@ namespace Application.Web.Service.Services
             return (vehiclesToReturn, paginationMetadata);
         }
 
-        public async Task<List<Vehicle>> GetAllVehiclesAsync(VehicleQuery vehicleQuery)
+		public async Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetAllVehiclesByOwnerIdAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery, Guid ownerId)
+		{
+			var key = $"{_cacheKeyConstants.VehicleCacheKey}-Owner-{ownerId}";
+
+			var vehicles = await _cache.GetOrAddAsync(
+				key,
+				async () => await _vehicleQueries.GetAllVehiclesByOwnerIdAsync(ownerId),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
+
+			var totalItemCount = vehicles.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+            var vehiclesToReturn = vehicles
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+			return (vehiclesToReturn, paginationMetadata);
+		}
+
+		public async Task<List<Vehicle>> GetAllVehiclesAsync(VehicleQuery vehicleQuery)
         {
             var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
 
@@ -120,22 +145,6 @@ namespace Application.Web.Service.Services
 
 			return vehiclesToReturn;
 		}
-
-		public async Task<List<Vehicle>> GetAllVehiclesByOwnerIdAsync(VehicleQuery vehicleQuery, Guid ownerId)
-        {
-            var key = $"{_cacheKeyConstants.VehicleCacheKey}-Owner-{ownerId}";
-
-            var vehicles = await _cache.GetOrAddAsync(
-                key,
-                async () => await _vehicleQueries.GetAllVehiclesByOwnerIdAsync(ownerId),
-                TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
-
-            _cacheKeyConstants.AddKeyToList(key);
-
-            var vehiclesToReturn = HandleVehicleQuery(vehicleQuery, vehicles);
-
-            return vehiclesToReturn;
-        }
 
         public async Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesByStatusAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery, string statusRoute)
         {

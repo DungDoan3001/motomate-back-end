@@ -15,5 +15,6 @@ namespace Application.Web.Service.Interfaces
 		Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLessorIdAsync(PaginationRequestModel pagination, Guid lessorId, TripRequestQuery query);
 		Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLesseeIdAsync(PaginationRequestModel pagination, Guid lesseeId, TripRequestQuery query);
 		Task<(List<List<TripRequest>>, PaginationMetadata)> GetAllTripRequests(PaginationRequestModel pagination, TripRequestQuery query);
+		Task<bool> CreateNewReviewTripRequestAsync(TripRequestReviewRequestModel requestModel);
 	}
 }

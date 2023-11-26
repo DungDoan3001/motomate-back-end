@@ -25,9 +25,13 @@ namespace Application.Web.Service.Services
 		private readonly IGenericRepository<CompletedTrip> _completedTripRepo;
 		private readonly IGenericRepository<InCompleteTrip> _inCompleteTripRepo;
 		private readonly IGenericRepository<Cart> _cartRepo;
+		private readonly IGenericRepository<VehicleReview> _vehicleReviewRepo;
+		private readonly IGenericRepository<VehicleReviewImage> _vehicleReviewImageRepo;
+		private readonly IGenericRepository<Image> _imageRepo;
 		private readonly IGenericRepository<CartVehicle> _cartVehicleRepo;
 		private readonly ICheckoutOrderQueries _checkoutOrderQueries;
 		private readonly ITripRequestQueries _tripRequestQueries;
+		private readonly IUserQueries _userQueries;
 		private readonly IEmailService _emailService;
 		private readonly IPaymentService _paymentService;
 
@@ -37,7 +41,8 @@ namespace Application.Web.Service.Services
 			ICheckoutOrderQueries checkoutOrderQueries,
 			ITripRequestQueries tripRequestQueries,
 			IEmailService emailService,
-			IPaymentService paymentService
+			IPaymentService paymentService,
+			IUserQueries userQueries
 			)
 		{
 			_mapper = mapper;
@@ -48,9 +53,13 @@ namespace Application.Web.Service.Services
 			_inCompleteTripRepo = unitOfWork.GetBaseRepo<InCompleteTrip>();
 			_cartVehicleRepo = unitOfWork.GetBaseRepo<CartVehicle>();
 			_cartRepo = unitOfWork.GetBaseRepo<Cart>();
+			_vehicleReviewRepo = unitOfWork.GetBaseRepo<VehicleReview>();
+			_vehicleReviewImageRepo = unitOfWork.GetBaseRepo<VehicleReviewImage>();
+			_imageRepo = unitOfWork.GetBaseRepo<Image>();
 
 			_checkoutOrderQueries = checkoutOrderQueries;
 			_tripRequestQueries = tripRequestQueries;
+			_userQueries = userQueries;
 
 			_emailService = emailService;
 			_paymentService = paymentService;
@@ -209,6 +218,70 @@ namespace Application.Web.Service.Services
 
 			return await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(listParentIds.FirstOrDefault());
 		}
+
+		public async Task<bool> CreateNewReviewTripRequestAsync(TripRequestReviewRequestModel requestModel)
+		{
+			var tripRequest = await HandleCheckingReviewModel(requestModel);
+
+			var vehicleReview = new VehicleReview
+			{
+				TripRequestId = tripRequest.Id,
+				UserId = requestModel.UserId,
+				VehicleId = tripRequest.Vehicle.Id,
+				Title = requestModel.Title,
+				Content = requestModel.Content,
+				Rating = requestModel.Rating,
+			};
+
+			var newImageList = new List<Image>();
+			var newVehicleReviewImageList = new List<VehicleReviewImage>();
+
+			foreach(var image in requestModel.Images)
+			{
+				var newImage = new Image
+				{
+					ImageUrl = image.Image,
+					PublicId = image.PublicId,
+				};
+
+				var vehicleReviewImage = new VehicleReviewImage
+				{
+					ImageId = newImage.Id,
+					VehicleReviewId = vehicleReview.Id,
+				};
+
+				newImageList.Add(newImage);
+				newVehicleReviewImageList.Add(vehicleReviewImage);
+			};
+
+			_vehicleReviewRepo.Add(vehicleReview);
+			_imageRepo.AddRange(newImageList);
+			_vehicleReviewImageRepo.AddRange(newVehicleReviewImageList);
+
+			await _unitOfWork.CompleteAsync();
+
+			return true;
+		}
+
+		private async Task<TripRequest> HandleCheckingReviewModel(TripRequestReviewRequestModel requestModel)
+		{
+			var isUserExisted = await _userQueries.CheckIfUserExisted(requestModel.UserId);
+			var tripRequest = await _tripRequestQueries.GetTripRequestByIdAsync(requestModel.RequestId);
+
+            if (!isUserExisted)
+				throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
+
+			if (tripRequest == null)
+				throw new StatusCodeException(message: "Request Id not found.", statusCode: StatusCodes.Status404NotFound);
+
+			if (tripRequest.CompletedTrip == null)
+				throw new StatusCodeException(message: "The request is not completed yet.", statusCode: StatusCodes.Status409Conflict);
+
+			if (!Constants.ALLOW_RATING_INPUT.Contains(requestModel.Rating))
+				throw new StatusCodeException(message: "Rating does not allow, only allow 1, 2, 3, 4, 5.", statusCode: StatusCodes.Status400BadRequest);
+
+			return tripRequest;
+        }
 
 		private List<List<TripRequest>> HandleTripRequestQuery(List<List<TripRequest>> parentTripRequests, TripRequestQuery query)
 		{

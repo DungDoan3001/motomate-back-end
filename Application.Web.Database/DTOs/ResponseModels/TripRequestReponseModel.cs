@@ -76,11 +76,17 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		[JsonPropertyName("vehicleId")]
 		public Guid VehicleId { get; set; }
 
+		[JsonPropertyName("isReviewed")]
+		public bool IsReviewed { get; set; }
+
 		[JsonPropertyName("status")]
 		public string Status { get; set; }
 
 		[JsonPropertyName("vehicleName")]
 		public string VehicleName { get; set; }
+
+		[JsonPropertyName("address")]
+		public string Address { get; set; }
 
 		[JsonPropertyName("pickUpLocation")]
 		public string PickUpLocation { get; set; }

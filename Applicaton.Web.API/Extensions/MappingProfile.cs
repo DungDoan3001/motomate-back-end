@@ -185,7 +185,7 @@ namespace Applicaton.Web.API.Extensions
 
                     if(src.TripRequests.Count > 0)
                     {
-                        foreach (var tripRequest in src.TripRequests)
+                        foreach (var tripRequest in src.TripRequests.Where(x => x.PickUpDateTime > DateTime.UtcNow))
                         {
                             unavailableDates.Add(new VehicleUnavailableDate
                             {
@@ -194,6 +194,30 @@ namespace Applicaton.Web.API.Extensions
                             });
                         }
                     }
+
+                    var reviewList = new List<ReviewOfVehicle>();
+                    foreach(var tripRequest in src.TripRequests)
+                    {
+                        if(tripRequest.VehicleReview != null)
+                        {
+							var review = new ReviewOfVehicle
+							{
+								UserId = tripRequest.VehicleReview.User.Id,
+								UserName = tripRequest.VehicleReview.User.UserName,
+								Email = tripRequest.VehicleReview.User.Email,
+								Avatar = tripRequest.VehicleReview.User.Picture,
+								Rating = tripRequest.VehicleReview.Rating,
+								Title = tripRequest.VehicleReview.Title,
+								Content = tripRequest.VehicleReview.Content,
+								Images = tripRequest.VehicleReview.VehicleReviewImages.Select(x => x.Image.ImageUrl).ToList()
+							};
+
+							reviewList.Add(review);
+						}
+                    }
+
+                    dest.Reviews = reviewList;
+                    dest.Rating = dest.Reviews.Any() ? (decimal)dest.Reviews.Average(x => x.Rating) : 0;
 
                     dest.Address = textInfo.ToTitleCase(src.Address.ToLower());
                     dest.Ward = textInfo.ToTitleCase(src.Ward.ToLower());
@@ -475,7 +499,9 @@ namespace Applicaton.Web.API.Extensions
                             {
                                 RequestId = item.Id,
                                 VehicleId = item.Vehicle.Id,
+                                IsReviewed = item.VehicleReview != null ? true : false,
                                 VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
+                                Address = item.Vehicle.Address,
                                 Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
                                 Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
                                 Price = item.Ammount * (int)Math.Round(((decimal)item.DropOffDateTime.Subtract(item.PickUpDateTime).TotalHours / 24), 2),
@@ -489,7 +515,7 @@ namespace Applicaton.Web.API.Extensions
 
                             dest.TotalAmmount += tripRequestVehicleOfLessor.Price;
 
-                            if(!item.Status && item.InCompleteTrip == null && item.CompletedTrip == null)
+							if (!item.Status && item.InCompleteTrip == null && item.CompletedTrip == null)
                             {
                                 tripRequestVehicleOfLessor.Status = Constants.PENDING;
                             } 

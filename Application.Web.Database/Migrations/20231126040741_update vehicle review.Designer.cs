@@ -3,6 +3,7 @@ using System;
 using Application.Web.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231126040741_update vehicle review")]
+    partial class updatevehiclereview
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -519,28 +521,28 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("60929087-1227-4efd-af43-e9ae2524eb0e"),
-                            ConcurrencyStamp = "1137c1d1-3b8e-416d-a45f-85e1b46f00af",
+                            ConcurrencyStamp = "5b80bd5b-e4c1-41b2-8470-8d80ae10a746",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "a2d701e2-525e-4e86-a072-0be2cb3d3d93",
+                            ConcurrencyStamp = "537a4f16-3c42-4705-aabf-2b5bb20f2ff1",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("20308981-486a-456e-833c-1a8821121b3e"),
-                            ConcurrencyStamp = "4ea9cfa0-05d0-49a7-aa57-7e213bf54b00",
+                            ConcurrencyStamp = "58553b3e-0c05-4a69-91df-5aa28a0ba23d",
                             Name = "Lessor",
                             NormalizedName = "LESSOR"
                         },
                         new
                         {
                             Id = new Guid("19021360-14c6-49ab-a91b-79c388115f4e"),
-                            ConcurrencyStamp = "8170e8f6-132c-4b99-bf05-b880978b2d76",
+                            ConcurrencyStamp = "63064f3d-8f6e-4d0b-a571-b9dc88bc9a29",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         });
@@ -835,24 +837,11 @@ namespace Application.Web.Database.Migrations
                         .HasColumnType("text")
                         .HasColumnName("title");
 
-                    b.Property<Guid>("TripRequestId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("FK_trip_request_id");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("FK_user_id");
-
                     b.Property<Guid>("VehicleId")
                         .HasColumnType("uuid")
                         .HasColumnName("FK_vehicle_id");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TripRequestId")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
 
                     b.HasIndex("VehicleId");
 
@@ -1297,27 +1286,11 @@ namespace Application.Web.Database.Migrations
 
             modelBuilder.Entity("Application.Web.Database.Models.VehicleReview", b =>
                 {
-                    b.HasOne("Application.Web.Database.Models.TripRequest", "TripRequest")
-                        .WithOne("VehicleReview")
-                        .HasForeignKey("Application.Web.Database.Models.VehicleReview", "TripRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Application.Web.Database.Models.User", "User")
-                        .WithMany("VehicleReviews")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Application.Web.Database.Models.Vehicle", "Vehicle")
                         .WithMany("VehicleReviews")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("TripRequest");
-
-                    b.Navigation("User");
 
                     b.Navigation("Vehicle");
                 });
@@ -1476,8 +1449,6 @@ namespace Application.Web.Database.Migrations
                     b.Navigation("CompletedTrip");
 
                     b.Navigation("InCompleteTrip");
-
-                    b.Navigation("VehicleReview");
                 });
 
             modelBuilder.Entity("Application.Web.Database.Models.User", b =>
@@ -1499,8 +1470,6 @@ namespace Application.Web.Database.Migrations
                     b.Navigation("ResetPassword");
 
                     b.Navigation("UserRoles");
-
-                    b.Navigation("VehicleReviews");
 
                     b.Navigation("Vehicles");
                 });

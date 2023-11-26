@@ -50,6 +50,7 @@ namespace Application.Web.Database.Models
 
         public virtual ICollection<TripRequest> LessorTripRequests { get; set; }
         public virtual ICollection<TripRequest> LesseeTripRequests { get; set; }
+        public virtual ICollection<VehicleReview> VehicleReviews { get; set; }
 
     }
 }

@@ -154,11 +154,19 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("owner/{ownerId}")]
-		public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetAllVehiclesByOwnerIdAsync([FromQuery] VehicleQuery vehicleQuery, [FromRoute] Guid ownerId)
+		public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetAllVehiclesByOwnerIdAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery, [FromRoute] Guid ownerId)
 		{
 			try
 			{
-				var vehicles = await _vehicleService.GetAllVehiclesByOwnerIdAsync(vehicleQuery, ownerId);
+				if (pagination.pageSize > maxPageSize)
+				{
+					pagination.pageSize = maxPageSize;
+				}
+
+				var (vehicles, paginationMetadata) = await _vehicleService.GetAllVehiclesByOwnerIdAsync(pagination, vehicleQuery, ownerId);
+
+				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+				Response.AddPaginationHeader(paginationMetadata);
 
 				var vehiclesToReturn = _mapper.Map<IEnumerable<VehicleResponseModel>>(vehicles);
 

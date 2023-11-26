@@ -131,7 +131,7 @@ namespace Applicaton.Web.API.Controllers
 
 				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
-				return Ok(tripRequestsToReturn.OrderByDescending(x => x.CreatedAt).ToList());
+				return Ok(tripRequestsToReturn.OrderBy(x => x.CreatedAt).ToList());
 			}
 			catch (StatusCodeException ex)
 			{
@@ -176,7 +176,7 @@ namespace Applicaton.Web.API.Controllers
 
 				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
-				return Ok(tripRequestsToReturn.OrderByDescending(x => x.CreatedAt).ToList());
+				return Ok(tripRequestsToReturn.OrderBy(x => x.CreatedAt).ToList());
 			}
 			catch (StatusCodeException ex)
 			{
@@ -216,7 +216,7 @@ namespace Applicaton.Web.API.Controllers
 
 				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
-				return Ok(tripRequestsToReturn.OrderByDescending(x => x.CreatedAt).ToList());
+				return Ok(tripRequestsToReturn.OrderBy(x => x.CreatedAt).ToList());
 			}
 			catch (StatusCodeException ex)
 			{
@@ -254,6 +254,41 @@ namespace Applicaton.Web.API.Controllers
 				var tripRequestsToReturn = _mapper.Map<List<TripRequest>, TripRequestReponseModel>(tripRequests);
 
 				return Ok(tripRequestsToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Add review to trip request per vehicle
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPost("review")]
+		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> CreateReviewToTripRequest([FromBody] TripRequestReviewRequestModel requestModel)
+		{
+			try
+			{
+				var result = await _orderService.CreateNewReviewTripRequestAsync(requestModel);
+
+				return result ? NoContent() : BadRequest();
 			}
 			catch (StatusCodeException ex)
 			{

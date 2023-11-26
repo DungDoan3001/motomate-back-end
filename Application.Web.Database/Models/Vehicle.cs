@@ -68,5 +68,7 @@ namespace Application.Web.Database.Models
         public virtual ICollection<TripRequest> TripRequests { get; set;}
 
         public virtual ICollection<CheckOutOrderVehicle> CheckOutOrderVehicles { get; set; }
+
+        public virtual ICollection<VehicleReview> VehicleReviews { get; set; }
     }
 }
