@@ -583,6 +583,44 @@ namespace Application.Web.Service.Services
                                    .ToList();
             }
 
+            if(vehicleQuery.DateRent != null)
+            {
+                var from = vehicleQuery.DateRent.From;
+                var to = vehicleQuery.DateRent.To;
+
+                if(to <= from)
+                    throw new StatusCodeException(message: "to can not before from.", statusCode: StatusCodes.Status400BadRequest);
+
+                var checkIfVehicleIsBooked = ((DateTime From, DateTime To, DateTime PickUpDate, DateTime DropOffTime) =>
+                {
+                    if ((PickUpDate > From && PickUpDate < To) && (DropOffTime > From && DropOffTime < To))
+                    {
+                        return true;
+                    }
+                    else if ((PickUpDate < From) && (DropOffTime > From && DropOffTime < To))
+                    {
+                        return true;
+                    }
+                    else if ((DropOffTime < To) && (PickUpDate > From && DropOffTime < To))
+                    {
+                        return true;
+                    }
+                    else if (PickUpDate < From && DropOffTime > To)
+                    {
+                        return true;
+                    } 
+                    else
+                    {
+                        return false;
+                    } 
+
+                });
+
+                vehicles = vehicles
+                    .Where(x => x.TripRequests.Any(x => !checkIfVehicleIsBooked(from, to, x.PickUpDateTime, x.DropOffDateTime)))
+                    .ToList();
+			}
+
             return vehicles;
         }
     }
