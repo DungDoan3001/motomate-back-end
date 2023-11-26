@@ -195,30 +195,8 @@ namespace Applicaton.Web.API.Extensions
                         }
                     }
 
-                    var reviewList = new List<ReviewOfVehicle>();
-                    foreach(var tripRequest in src.TripRequests)
-                    {
-                        if(tripRequest.VehicleReview != null)
-                        {
-							var review = new ReviewOfVehicle
-							{
-								UserId = tripRequest.VehicleReview.User.Id,
-								UserName = tripRequest.VehicleReview.User.UserName,
-								Email = tripRequest.VehicleReview.User.Email,
-								Avatar = tripRequest.VehicleReview.User.Picture,
-								Rating = tripRequest.VehicleReview.Rating,
-								Title = tripRequest.VehicleReview.Title,
-								Content = tripRequest.VehicleReview.Content,
-								Images = tripRequest.VehicleReview.VehicleReviewImages.Select(x => x.Image.ImageUrl).ToList()
-							};
-
-							reviewList.Add(review);
-						}
-                    }
-
-                    dest.Reviews = reviewList;
-                    dest.Rating = dest.Reviews.Any() ? (decimal)dest.Reviews.Average(x => x.Rating) : 0;
-
+                    dest.TotalRating = src.VehicleReviews.Any() ? src.VehicleReviews.Count : 0;
+					dest.Rating = src.VehicleReviews.Any() ? (decimal)src.VehicleReviews.Average(x => x.Rating) : 0;
                     dest.Address = textInfo.ToTitleCase(src.Address.ToLower());
                     dest.Ward = textInfo.ToTitleCase(src.Ward.ToLower());
                     dest.District = textInfo.ToTitleCase(src.District.ToLower());
