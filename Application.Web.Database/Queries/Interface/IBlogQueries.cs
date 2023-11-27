@@ -6,5 +6,6 @@ namespace Application.Web.Database.Queries.Interface
 	{
 		Task<List<Blog>> GetAllBlogsAsync();
 		Task<Blog> GetBlogById(Guid blogId);
+		Task<bool> CheckIfBlogExist(Guid blogId);
 	}
 }

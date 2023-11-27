@@ -16,5 +16,13 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Where(x => x.BlogId.Equals(blogId))
 				.ToListAsync();
 		}
+
+		public async Task<BlogComment> GetBlogCommentById(Guid blogCommentId)
+		{
+			return await dbSet
+				.Include(x => x.User)
+				.Where(x => x.Id.Equals(blogCommentId))
+				.FirstOrDefaultAsync();
+		}
 	}
 }
