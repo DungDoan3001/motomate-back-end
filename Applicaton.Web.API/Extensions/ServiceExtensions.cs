@@ -182,6 +182,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<ICheckoutService, CheckoutService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IMockDataService, MockDataService>();
+            services.AddScoped<IBlogCommentService, BlogCommentService>();
         }
 
         public static void RegisterQueryDependencies (this IServiceCollection services)
@@ -200,6 +201,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<ICheckoutOrderQueries, CheckoutOrderQueries>();
             services.AddScoped<ITripRequestQueries, TripRequestQueries>();
             services.AddScoped<IVehicleReviewQueries, VehicleReviewQueries>();
+            services.AddScoped<IBlogCommentQueries, BlogCommentQueries>();
         }
 
         public static void RegistryDatabaseDependencies (this IServiceCollection services)

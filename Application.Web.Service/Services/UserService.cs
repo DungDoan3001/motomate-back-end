@@ -59,7 +59,7 @@ namespace Application.Web.Service.Services
         }
 
 
-        public async Task<List<Role>> GetAllAvailableRolesAsync()
+        public async Task<IEnumerable<Role>> GetAllAvailableRolesAsync()
         {
             var roles = await _roleManager.Roles.ToListAsync();
 
@@ -100,7 +100,7 @@ namespace Application.Web.Service.Services
             return user;
         }
 
-        public async Task<List<User>> GetAllUsersInformationAsync(UserQuery userQuery)
+        public async Task<IEnumerable<User>> GetAllUsersInformationAsync(UserQuery userQuery)
         {
             var key = $"{_cacheKeyConstants.UserCacheKey}-All";
 
@@ -116,7 +116,7 @@ namespace Application.Web.Service.Services
             return users;
         }
 
-        public async Task<(List<User>, PaginationMetadata)> GetAllUserInformationWithPaginationAsync(PaginationRequestModel pagination, UserQuery userQuery)
+        public async Task<(IEnumerable<User>, PaginationMetadata)> GetAllUserInformationWithPaginationAsync(PaginationRequestModel pagination, UserQuery userQuery)
         {
             var key = $"{_cacheKeyConstants.UserCacheKey}-All";
 
@@ -129,17 +129,8 @@ namespace Application.Web.Service.Services
 
             users = await HandleUserQuery(userQuery, users);
 
-            var totalItemCount = users.Count;
-
-            var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-            var usersToReturn = users
-                .Skip(pagination.pageSize * (pagination.pageNumber - 1))
-                .Take(pagination.pageSize)
-                .ToList();
-
-            return (usersToReturn, paginationMetadata);
-        }
+			return Helpers.Helpers.GetPaginationModel<User>(users, pagination);
+		}
 
         public async Task<User> UpdateUserAsync(UserRequestModel requestModel, string username)
         {

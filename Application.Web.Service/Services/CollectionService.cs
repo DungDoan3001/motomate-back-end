@@ -1,4 +1,5 @@
-﻿using Application.Web.Database.DTOs.RequestModels;
+﻿using System;
+using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
@@ -43,16 +44,8 @@ namespace Application.Web.Service.Services
 
             _cacheKeyConstants.AddKeyToList(key);
 
-            var totalItemCount = collections.Count;
-
-            var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-            var collectionsToReturn = collections
-                .Skip(pagination.pageSize * (pagination.pageNumber - 1))
-                .Take(pagination.pageSize);
-
-            return (collectionsToReturn, paginationMetadata);
-        }
+			return Helpers.Helpers.GetPaginationModel<Collection>(collections, pagination);
+		}
 
         public async Task<IEnumerable<Collection>> GetAllCollectionAsync()
         {

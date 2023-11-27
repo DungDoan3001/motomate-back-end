@@ -47,15 +47,7 @@ namespace Application.Web.Service.Services
 
             _cacheKeyConstants.AddKeyToList(key);
 
-			var totalItemCount = brands.Count;
-
-            var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-            var brandsToReturn = brands
-                .Skip(pagination.pageSize * (pagination.pageNumber - 1))
-                .Take(pagination.pageSize);
-
-			return (brandsToReturn, paginationMetadata);
+			return Helpers.Helpers.GetPaginationModel<Brand>(brands, pagination);
         }
 
         public async Task<List<Brand>> GetAllBrandsAsync()

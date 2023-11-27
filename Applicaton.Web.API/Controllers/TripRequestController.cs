@@ -47,7 +47,7 @@ namespace Applicaton.Web.API.Controllers
 			{
 				var tripRequests = await _orderService.GetAllTripRequestsByParentOrderId(parentOrderId, query);
 
-				var tripRequestsToReturn = _mapper.Map<List<TripRequest>, TripRequestReponseModel>(tripRequests);
+				var tripRequestsToReturn = _mapper.Map<IEnumerable<TripRequest>, TripRequestReponseModel>(tripRequests);
 
 				return Ok(tripRequestsToReturn);
 			}
@@ -84,7 +84,7 @@ namespace Applicaton.Web.API.Controllers
 			{
 				var tripRequests = await _orderService.GetAllTripRequestsByPaymentIntentId(paymentIntentId, query);
 
-				var tripRequestsToReturn = _mapper.Map<List<TripRequest>, TripRequestReponseModel>(tripRequests);
+				var tripRequestsToReturn = _mapper.Map<IEnumerable<TripRequest>, TripRequestReponseModel>(tripRequests);
 
 				return Ok(tripRequestsToReturn);
 			}
@@ -129,7 +129,7 @@ namespace Applicaton.Web.API.Controllers
 				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 				Response.AddPaginationHeader(paginationMetadata);
 
-				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
+				var tripRequestsToReturn = _mapper.Map<IEnumerable<IEnumerable<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
 				return Ok(tripRequestsToReturn.OrderBy(x => x.CreatedAt).ToList());
 			}
@@ -174,7 +174,7 @@ namespace Applicaton.Web.API.Controllers
 				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 				Response.AddPaginationHeader(paginationMetadata);
 
-				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
+				var tripRequestsToReturn = _mapper.Map<IEnumerable<IEnumerable<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
 				return Ok(tripRequestsToReturn.OrderBy(x => x.CreatedAt).ToList());
 			}
@@ -214,7 +214,7 @@ namespace Applicaton.Web.API.Controllers
 				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 				Response.AddPaginationHeader(paginationMetadata);
 
-				var tripRequestsToReturn = _mapper.Map<List<List<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
+				var tripRequestsToReturn = _mapper.Map<IEnumerable<IEnumerable<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
 				return Ok(tripRequestsToReturn.OrderBy(x => x.CreatedAt).ToList());
 			}
@@ -251,7 +251,7 @@ namespace Applicaton.Web.API.Controllers
 			{
 				var tripRequests = await _orderService.UpdateTripRequestStatusAsync(requestModel);
 
-				var tripRequestsToReturn = _mapper.Map<List<TripRequest>, TripRequestReponseModel>(tripRequests);
+				var tripRequestsToReturn = _mapper.Map<IEnumerable<TripRequest>, TripRequestReponseModel>(tripRequests);
 
 				return Ok(tripRequestsToReturn);
 			}
