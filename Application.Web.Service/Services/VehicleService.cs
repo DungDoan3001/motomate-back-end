@@ -57,16 +57,7 @@ namespace Application.Web.Service.Services
         {
             var vehicleReviews = await _vehicleReviewQueries.GetAllVehicleReviewByVehicleIdAsync(vehicleId) ?? throw new StatusCodeException(message: "Vehicle not found.", statusCode: StatusCodes.Status404NotFound);
 
-			var totalItemCount = vehicleReviews.Count();
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-			var vehiclesToReturn = vehicleReviews
-				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
-				.Take(pagination.pageSize)
-				.ToList();
-
-            return (vehiclesToReturn, paginationMetadata);
+			return Helpers.Helpers.GetPaginationModel<VehicleReview>(vehicleReviews, pagination);
 		}
 
         public async Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetVehiclesAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery)
@@ -82,17 +73,8 @@ namespace Application.Web.Service.Services
 
             vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
 
-            var totalItemCount = vehicles.Count;
-
-            var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-            var vehiclesToReturn = vehicles
-                .Skip(pagination.pageSize * (pagination.pageNumber - 1))
-                .Take(pagination.pageSize)
-                .ToList();
-
-            return (vehiclesToReturn, paginationMetadata);
-        }
+			return Helpers.Helpers.GetPaginationModel<Vehicle>(vehicles, pagination);
+		}
 
 		public async Task<(IEnumerable<Vehicle>, PaginationMetadata)> GetAllVehiclesByOwnerIdAsync(PaginationRequestModel pagination, VehicleQuery vehicleQuery, Guid ownerId)
 		{
@@ -107,19 +89,10 @@ namespace Application.Web.Service.Services
 
 			vehicles = HandleVehicleQuery(vehicleQuery, vehicles);
 
-			var totalItemCount = vehicles.Count;
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-            var vehiclesToReturn = vehicles
-				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
-				.Take(pagination.pageSize)
-				.ToList();
-
-			return (vehiclesToReturn, paginationMetadata);
+			return Helpers.Helpers.GetPaginationModel<Vehicle>(vehicles, pagination);
 		}
 
-		public async Task<List<Vehicle>> GetAllVehiclesAsync(VehicleQuery vehicleQuery)
+		public async Task<IEnumerable<Vehicle>> GetAllVehiclesAsync(VehicleQuery vehicleQuery)
         {
             var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
 
@@ -135,7 +108,7 @@ namespace Application.Web.Service.Services
             return vehiclesToReturn;
         }
 
-		public async Task<List<Vehicle>> GetRelatedVehicleAsync(Guid vehicleId)
+		public async Task<IEnumerable<Vehicle>> GetRelatedVehicleAsync(Guid vehicleId)
 		{
 			var key = $"{_cacheKeyConstants.VehicleCacheKey}-All";
 
@@ -193,20 +166,10 @@ namespace Application.Web.Service.Services
                                                 .Select(x => x.Key)
                                                 .FirstOrDefault();
 
-            var totalItemCount = vehicles
-                .Where(v => v.Status.Equals(statusNumber))
-                .Count();
+            vehicles = vehicles.Where(x => x.Status.Equals(statusNumber)).ToList();
 
-            var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-            var vehiclesToReturn = vehicles
-                .Where(v => v.Status.Equals(statusNumber))
-                .Skip(pagination.pageSize * (pagination.pageNumber - 1))
-                .Take(pagination.pageSize)
-                .ToList();
-
-            return (vehiclesToReturn, paginationMetadata);
-        }
+			return Helpers.Helpers.GetPaginationModel<Vehicle>(vehicles, pagination);
+		}
 
         public async Task<Vehicle> GetVehicleByIdAsync(Guid vehicleId)
         {

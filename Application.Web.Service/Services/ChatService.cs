@@ -1,3 +1,4 @@
+using System;
 using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
@@ -103,17 +104,7 @@ namespace Application.Web.Service.Services
 		{
 			var chats = await _chatQueries.GetAllChatsByUserIdAsync(userId);
 
-			var totalItemCount = chats.Count;
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-			var chatsToReturn = chats
-				.OrderByDescending(chat => chat.LastUpdatedAt)
-				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
-				.Take(pagination.pageSize)
-				.ToList();
-
-			return (chatsToReturn, paginationMetadata);
+			return Helpers.Helpers.GetPaginationModel<Chat>(chats, pagination);
 		}
 
 		public async Task<(IEnumerable<Message>, PaginationMetadata)> GetAllMessagesByChatId(PaginationRequestModel pagination, Guid chatId)
@@ -122,17 +113,7 @@ namespace Application.Web.Service.Services
 
 			var messages = await _messageQueries.GetAllMessageByChatId(chatId);
 
-			var totalItemCount = messages.Count;
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-			var messagePaging = messages
-				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
-				.Take(pagination.pageSize);
-
-			var messagesToReturn = messagePaging.OrderBy(x => x.CreatedAt);
-
-			return (messagesToReturn, paginationMetadata);
+			return Helpers.Helpers.GetPaginationModel<Message>(messages, pagination);
 		}
 
 

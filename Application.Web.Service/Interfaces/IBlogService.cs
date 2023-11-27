@@ -6,7 +6,7 @@ namespace Application.Web.Service.Interfaces
 {
 	public interface IBlogService
 	{
-		Task<(List<Blog>, PaginationMetadata)> GetAllBlogsAsync(PaginationRequestModel pagination);
+		Task<(IEnumerable<Blog>, PaginationMetadata)> GetAllBlogsAsync(PaginationRequestModel pagination);
 		Task<Blog> GetBlogByIdAsync(Guid blogId);
 		Task<Blog> CreateBlogAsync(BlogRequestModel requestModel);
 		Task<Blog> UpdateBlogAsync(BlogRequestModel requestModel, Guid blogId);

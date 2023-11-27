@@ -580,6 +580,21 @@ namespace Applicaton.Web.API.Extensions
 
                     dest.Images = src.VehicleReviewImages.Select(x => x.Image.ImageUrl).ToList();
                 });
+
+            CreateMap<BlogComment, BlogCommentResponseModel>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.BlogId = src.BlogId;
+                    dest.CommentId = src.Id;
+                    dest.UserId = src.User.Id;
+
+                    dest.Username = src.User.UserName;
+                    dest.FullName = src.User.FullName;
+                    dest.Email = src.User.Email;
+
+                    dest.Comment = src.Comment;
+                    dest.CreatedAt = DateTime.SpecifyKind(src.CreatedAt, DateTimeKind.Utc);
+                });
         }
     }
 }

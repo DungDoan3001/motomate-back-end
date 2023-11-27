@@ -28,5 +28,7 @@ namespace Application.Web.Database.Models
 		public virtual User Author { get; set; }
 		public virtual Image Image { get; set; }
 		public virtual BlogCategory Category { get; set; }
+
+		public virtual ICollection<BlogComment> BlogComments { get; set; }
 	}
 }

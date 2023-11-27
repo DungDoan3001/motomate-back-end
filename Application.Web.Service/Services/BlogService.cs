@@ -45,7 +45,7 @@ namespace Application.Web.Service.Services
 			_blogCategoryQueries = blogCategoryQueries;
 		}
 
-		public async Task<(List<Blog>, PaginationMetadata)> GetAllBlogsAsync(PaginationRequestModel pagination)
+		public async Task<(IEnumerable<Blog>, PaginationMetadata)> GetAllBlogsAsync(PaginationRequestModel pagination)
 		{
 			var key = $"{_cacheKeyConstants.BlogCacheKey}-All";
 
@@ -56,16 +56,16 @@ namespace Application.Web.Service.Services
 
 			_cacheKeyConstants.AddKeyToList(key);
 
-			var totalItemCount = blogs.Count;
+			//var totalItemCount = blogs.Count;
 
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+			//var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
-			var blogsToReturn = blogs
-				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
-				.Take(pagination.pageSize)
-				.ToList();
+			//var blogsToReturn = blogs
+			//	.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+			//	.Take(pagination.pageSize)
+			//	.ToList();
 
-			return (blogsToReturn, paginationMetadata);
+			return Helpers.Helpers.GetPaginationModel<Blog>(blogs, pagination);
 		}
 
 		public async Task<Blog> GetBlogByIdAsync(Guid blogId)

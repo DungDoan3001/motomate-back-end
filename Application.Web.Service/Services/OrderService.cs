@@ -66,7 +66,7 @@ namespace Application.Web.Service.Services
 		}
 
 
-		public async Task<List<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, TripRequestQuery query)
+		public async Task<IEnumerable<TripRequest>> GetAllTripRequestsByParentOrderId(string parentOrderId, TripRequestQuery query)
 		{
 			var result = await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(parentOrderId) ?? throw new StatusCodeException(message: "parentId not found.", statusCode: StatusCodes.Status404NotFound);
 
@@ -75,7 +75,7 @@ namespace Application.Web.Service.Services
 			return resultToReturn.FirstOrDefault();
 		}
 
-		public async Task<List<TripRequest>> GetAllTripRequestsByPaymentIntentId(string paymentIntentId, TripRequestQuery query)
+		public async Task<IEnumerable<TripRequest>> GetAllTripRequestsByPaymentIntentId(string paymentIntentId, TripRequestQuery query)
 		{
 			var result = await _tripRequestQueries.GetTripRequestsBasedOnPaymentIntentId(paymentIntentId) ?? throw new StatusCodeException(message: "parentId not found.", statusCode: StatusCodes.Status404NotFound);
 
@@ -84,7 +84,7 @@ namespace Application.Web.Service.Services
 			return resultToReturn.FirstOrDefault();
 		}
 
-		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLessorIdAsync(PaginationRequestModel pagination, Guid lessorId, TripRequestQuery query)
+		public async Task<(IEnumerable<IEnumerable<TripRequest>>, PaginationMetadata)> GetTripRequestsByLessorIdAsync(PaginationRequestModel pagination, Guid lessorId, TripRequestQuery query)
 		{
 			var tripRequests = await _tripRequestQueries.GetAllTripRequestsBasedOnLessorId(lessorId);
 
@@ -99,19 +99,10 @@ namespace Application.Web.Service.Services
 
 			tripRequestsByParentId = HandleTripRequestQuery(tripRequestsByParentId, query);
 
-			var totalItemCount = tripRequestsByParentId.Count;
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-			var TripRequestsToReturn = tripRequestsByParentId
-				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
-				.Take(pagination.pageSize)
-				.ToList();
-
-			return (TripRequestsToReturn, paginationMetadata);
+			return Helpers.Helpers.GetPaginationModel<IEnumerable<TripRequest>>(tripRequestsByParentId, pagination);
         }
 
-		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetAllTripRequests(PaginationRequestModel pagination, TripRequestQuery query)
+		public async Task<(IEnumerable<IEnumerable<TripRequest>>, PaginationMetadata)> GetAllTripRequests(PaginationRequestModel pagination, TripRequestQuery query)
 		{
 			var tripRequests = await _tripRequestQueries.GetAllTripRequests();
 
@@ -126,19 +117,10 @@ namespace Application.Web.Service.Services
 
 			tripRequestsByParentId = HandleTripRequestQuery(tripRequestsByParentId, query);
 
-			var totalItemCount = tripRequestsByParentId.Count;
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-			var TripRequestsToReturn = tripRequestsByParentId
-				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
-				.Take(pagination.pageSize)
-				.ToList();
-
-			return (TripRequestsToReturn, paginationMetadata);
+			return Helpers.Helpers.GetPaginationModel<IEnumerable<TripRequest>>(tripRequestsByParentId, pagination);
 		}
 
-		public async Task<(List<List<TripRequest>>, PaginationMetadata)> GetTripRequestsByLesseeIdAsync(PaginationRequestModel pagination,Guid lesseeId, TripRequestQuery query)
+		public async Task<(IEnumerable<IEnumerable<TripRequest>>, PaginationMetadata)> GetTripRequestsByLesseeIdAsync(PaginationRequestModel pagination,Guid lesseeId, TripRequestQuery query)
 		{
 			var tripRequests = await _tripRequestQueries.GetAllTripRequestsBasedOnLesseeId(lesseeId);
 
@@ -153,19 +135,10 @@ namespace Application.Web.Service.Services
 
 			tripRequestsByParentId = HandleTripRequestQuery(tripRequestsByParentId, query);
 
-			var totalItemCount = tripRequestsByParentId.Count;
-
-			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-			var TripRequestsToReturn = tripRequestsByParentId
-				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
-				.Take(pagination.pageSize)
-				.ToList();
-
-			return (TripRequestsToReturn, paginationMetadata);
+			return Helpers.Helpers.GetPaginationModel<IEnumerable<TripRequest>>(tripRequestsByParentId, pagination);
 		}
 
-		public async Task<List<TripRequest>> CreateTripRequestsFromStripeEventAsync(Event stripeEvent)
+		public async Task<IEnumerable<TripRequest>> CreateTripRequestsFromStripeEventAsync(Event stripeEvent)
 		{
 			var charge = (Charge)stripeEvent.Data.Object;
 
@@ -183,7 +156,7 @@ namespace Application.Web.Service.Services
 			return null;
 		}
 
-		public async Task<List<TripRequest>> UpdateTripRequestStatusAsync(TripRequestStatusRequestModel requestModel)
+		public async Task<IEnumerable<TripRequest>> UpdateTripRequestStatusAsync(TripRequestStatusRequestModel requestModel)
 		{
 			var isValidStatus = Constants.AVAILABLE_UPDATE_TRIP_STATUS.Contains(requestModel.Status);
 

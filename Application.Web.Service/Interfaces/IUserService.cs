@@ -8,12 +8,12 @@ namespace Application.Web.Service.Interfaces
     {
         Task<User> GetUserInformationByEmailAsync(string email);
         Task<User> GetUserInformationByUsernameAsync(string username);
-        Task<List<User>> GetAllUsersInformationAsync(UserQuery userQuery);
+        Task<IEnumerable<User>> GetAllUsersInformationAsync(UserQuery userQuery);
         Task<User> UpdateUserAsync(UserRequestModel requestModel, string username);
         Task<bool> DeleteUserAsync(string username);
         Task<User> GetUserInformationByIdAsync(Guid id);
-        Task<(List<User>, PaginationMetadata)> GetAllUserInformationWithPaginationAsync(PaginationRequestModel pagination, UserQuery userQuery);
+        Task<(IEnumerable<User>, PaginationMetadata)> GetAllUserInformationWithPaginationAsync(PaginationRequestModel pagination, UserQuery userQuery);
         Task<User> UpdateUserRoleAsync(UserRoleRequestModel roleRequestModel);
-		Task<List<Role>> GetAllAvailableRolesAsync();
+		Task<IEnumerable<Role>> GetAllAvailableRolesAsync();
 	}
 }

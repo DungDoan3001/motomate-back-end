@@ -48,7 +48,7 @@ namespace Applicaton.Web.API.Controllers
             {
                 var users = await _userService.GetAllUsersInformationAsync(userQuery);
 
-                var usersToReturn = _mapper.Map<List<User>, List<UserResponseModel>>(users);
+                var usersToReturn = _mapper.Map<IEnumerable<User>, IEnumerable<UserResponseModel>>(users);
 
                 return Ok(usersToReturn);
             }
@@ -93,7 +93,7 @@ namespace Applicaton.Web.API.Controllers
 				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 				Response.AddPaginationHeader(paginationMetadata);
 
-				var usersToReturn = _mapper.Map<List<User>, List<UserResponseModel>>(users);
+				var usersToReturn = _mapper.Map<IEnumerable<User>, IEnumerable<UserResponseModel>>(users);
 
 				return Ok(usersToReturn);
 			}
@@ -170,7 +170,7 @@ namespace Applicaton.Web.API.Controllers
 			{
 				var roles = await _userService.GetAllAvailableRolesAsync();
 
-				var rolesToReturn = _mapper.Map<List<Role>, List<RoleReponseModel>>(roles);
+				var rolesToReturn = _mapper.Map<IEnumerable<Role>, IEnumerable<RoleReponseModel>>(roles);
 
 				return Ok(rolesToReturn);
 			}

@@ -51,17 +51,8 @@ namespace Application.Web.Service.Services
 
 			_cacheKeyConstants.AddKeyToList(key);
 
-			var totalItemCount = models.Count;
-
-            var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
-
-			var modelsToReturn = models
-							.Skip(pagination.pageSize * (pagination.pageNumber - 1))
-							.Take(pagination.pageSize)
-							.ToList();
-
-			return (modelsToReturn, paginationMetadata);
-        }
+			return Helpers.Helpers.GetPaginationModel<Model>(models, pagination);
+		}
 
         public async Task<IEnumerable<Model>> GetAllModelsAsync()
         {

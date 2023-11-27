@@ -1,7 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using Application.Web.Database.DTOs.RequestModels;
+using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Microsoft.IdentityModel.Tokens;
+using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace Application.Web.Service.Helpers
 {
@@ -92,6 +95,19 @@ namespace Application.Web.Service.Helpers
 				return Constants.ONGOING;
 			}
 			return null;
+		}
+
+		public static (IEnumerable<T>, PaginationMetadata) GetPaginationModel<T>(IEnumerable<T> items, PaginationRequestModel pagination) where T : class
+		{
+			var totalItemCount = items.Count();
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+			var itemsToReturn = items
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize);
+
+			return (itemsToReturn, paginationMetadata);
 		}
 	}
 }

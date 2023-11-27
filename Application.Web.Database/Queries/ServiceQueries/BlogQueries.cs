@@ -27,5 +27,11 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Where(b => b.Id.Equals(blogId))
 				.FirstOrDefaultAsync();
 		}
+
+		public async Task<bool> CheckIfBlogExist(Guid blogId)
+		{
+			return await dbSet
+				.AnyAsync(x => x.Id.Equals(blogId));
+		}
 	}
 }

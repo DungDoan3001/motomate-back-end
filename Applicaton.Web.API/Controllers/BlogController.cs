@@ -9,6 +9,7 @@ using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
 
 namespace Applicaton.Web.API.Controllers
 {
@@ -19,14 +20,16 @@ namespace Applicaton.Web.API.Controllers
 		private readonly ILogger<BlogController> _logger;
 		private readonly IMapper _mapper;
 		private readonly IBlogService _blogService;
+		private readonly IBlogCommentService _blogCommentService;
 		private const string controllerPrefix = "Blog";
 		private const int maxPageSize = 20;
 
-		public BlogController(ILogger<BlogController> logger, IMapper mapper, IBlogService blogService)
+		public BlogController(ILogger<BlogController> logger, IMapper mapper, IBlogService blogService, IBlogCommentService blogCommentService)
 		{
 			_logger = logger;
 			_mapper = mapper;
 			_blogService = blogService;
+			_blogCommentService = blogCommentService;
 		}
 
 		/// <summary>
@@ -113,6 +116,164 @@ namespace Applicaton.Web.API.Controllers
 				});
 			}
 		}
+
+		/// <summary>
+		/// Acquire blog reviews information by identification
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("{blogId}/comment")]
+		public async Task<ActionResult<BlogCommentResponseModel>> GetBlogReviewsAsync([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid blogId)
+		{
+			try
+			{
+				if (pagination.pageSize > maxPageSize)
+				{
+					pagination.pageSize = maxPageSize;
+				}
+
+				var (comments, paginationMetadata) = await _blogCommentService.GetAllBlogCommentByBlogIdAsync(pagination, blogId);
+
+				//Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+				Response.AddPaginationHeader(paginationMetadata);
+
+				var commentsToReturn = _mapper.Map<IEnumerable<BlogCommentResponseModel>>(comments);
+
+				return Ok(commentsToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Update blog comment by blog specification
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully created item.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPost("{blogId}/comment")]
+		public async Task<ActionResult<BlogCommentResponseModel>> CreateBlogReviewAsync([FromRoute] Guid blogId, [FromBody] BlogCommentRequestModel requestModel)
+		{
+			try
+			{
+				var review = await _blogCommentService.CreateBlogCommentAsync(requestModel, blogId);
+
+				var reviewToReturn = _mapper.Map<BlogCommentResponseModel>(review);
+
+				return Ok(reviewToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Update blog information by identification.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully updated item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPut("comment/{commentId}")]
+		public async Task<ActionResult<BlogResponseModel>> UpdateBlogAsync([FromBody] BlogCommentRequestModel requestModel, [FromRoute] Guid commentId)
+		{
+			try
+			{
+				var comment = await _blogCommentService.UpdateBlogCommentAsync(requestModel, commentId);
+
+				var reviewToReturn = _mapper.Map<BlogCommentResponseModel>(comment);
+
+				return Ok(reviewToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Delete comment by identification
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="204">Successfully deleted item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpDelete("comment/{commentId}")]
+		public async Task<IActionResult> DeleteCommentAsync([FromRoute] Guid commentId)
+		{
+			try
+			{
+				var result = await _blogCommentService.DeleteBlogCommentAsync(commentId);
+
+				if (!result)
+					throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);
+				else
+					return NoContent();
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
 
 		/// <summary>
 		/// Create a blog
