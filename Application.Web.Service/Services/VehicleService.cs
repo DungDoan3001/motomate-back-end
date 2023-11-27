@@ -589,19 +589,19 @@ namespace Application.Web.Service.Services
                 var to = vehicleQuery.DateRent.To;
 
                 if(to <= from)
-                    throw new StatusCodeException(message: "to can not before from.", statusCode: StatusCodes.Status400BadRequest);
+                    throw new StatusCodeException(message: "To can not before From.", statusCode: StatusCodes.Status400BadRequest);
 
                 var checkIfVehicleIsBooked = ((DateTime From, DateTime To, DateTime PickUpDate, DateTime DropOffTime) =>
                 {
-                    if ((PickUpDate > From && PickUpDate < To) && (DropOffTime > From && DropOffTime < To))
+                    if(PickUpDate < From && DropOffTime >= From && DropOffTime <= To)
                     {
                         return true;
                     }
-                    else if ((PickUpDate < From) && (DropOffTime > From && DropOffTime < To))
+                    else if (PickUpDate >= From && PickUpDate <= To && DropOffTime >= From && DropOffTime <= To)
                     {
                         return true;
                     }
-                    else if ((DropOffTime < To) && (PickUpDate > From && DropOffTime < To))
+                    else if (PickUpDate >= From && PickUpDate <= To && DropOffTime > To)
                     {
                         return true;
                     }
@@ -612,14 +612,14 @@ namespace Application.Web.Service.Services
                     else
                     {
                         return false;
-                    } 
+                    }
 
                 });
 
                 vehicles = vehicles
-                    .Where(x => x.TripRequests.Any(x => !checkIfVehicleIsBooked(from, to, x.PickUpDateTime, x.DropOffDateTime)))
+                    .Where(x => x.TripRequests.Any(x => checkIfVehicleIsBooked(from, to, x.PickUpDateTime, x.DropOffDateTime)).Equals(false))
                     .ToList();
-			}
+            }
 
             return vehicles;
         }

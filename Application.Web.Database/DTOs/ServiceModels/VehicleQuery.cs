@@ -21,9 +21,7 @@ namespace Application.Web.Database.DTOs.ServiceModels
 
 	public class DateRent
 	{
-		[Required]
 		public DateTime From { get; set;}
-		[Required]
 		public DateTime To { get; set;}
 	}
 }
