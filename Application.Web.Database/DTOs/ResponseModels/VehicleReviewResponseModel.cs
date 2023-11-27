@@ -30,5 +30,8 @@ namespace Application.Web.Database.DTOs.ResponseModels
 
 		[JsonPropertyName("images")]
 		public List<string> Images { get; set; }
+
+		[JsonPropertyName("createdAt")]
+		public DateTime CreatedAt { get; set; }
 	}
 }
