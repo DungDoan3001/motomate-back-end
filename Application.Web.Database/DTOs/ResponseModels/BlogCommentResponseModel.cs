@@ -22,6 +22,9 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		[JsonPropertyName("Email")]
 		public string Email { get; set; }
 
+		[JsonPropertyName("avatar")]
+		public string Avatar { get; set; }
+
 		[JsonPropertyName("Comment")]
 		public string Comment { get; set; }
 
