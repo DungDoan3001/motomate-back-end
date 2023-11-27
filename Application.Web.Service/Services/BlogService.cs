@@ -85,7 +85,7 @@ namespace Application.Web.Service.Services
 		public async Task<Blog> CreateBlogAsync(BlogRequestModel requestModel)
 		{
 			var category = await _blogCategoryQueries.GetByIdAsync(requestModel.CategoryId) ?? throw new StatusCodeException(message: "Category not found.", statusCode: StatusCodes.Status404NotFound);
-			var user = await _userManager.FindByIdAsync(requestModel.AuthorId.ToString()) ?? throw new StatusCodeException(message: "Category not found.", statusCode: StatusCodes.Status404NotFound);
+			var user = await _userManager.FindByIdAsync(requestModel.AuthorId.ToString()) ?? throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
 			
 			var newBlog = _mapper.Map<Blog>(requestModel);
 
