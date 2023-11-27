@@ -124,7 +124,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("{blogId}/comment")]
-		public async Task<ActionResult<BlogCommentResponseModel>> GetBlogReviewsAsync([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid blogId)
+		public async Task<ActionResult<IEnumerable<BlogCommentResponseModel>>> GetBlogReviewsAsync([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid blogId)
 		{
 			try
 			{
