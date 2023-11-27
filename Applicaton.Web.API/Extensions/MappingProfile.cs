@@ -567,6 +567,7 @@ namespace Applicaton.Web.API.Extensions
             CreateMap<VehicleReview, VehicleReviewResponseModel>()
                 .AfterMap((src, dest) =>
                 {
+                    dest.VehicleId = src.VehicleId;
                     dest.UserId = src.User.Id;
                     dest.Username = src.User.UserName;
                     dest.Email = src.User.Email;

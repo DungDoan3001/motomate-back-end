@@ -4,6 +4,8 @@ namespace Application.Web.Database.DTOs.ResponseModels
 {
 	public class VehicleReviewResponseModel
 	{
+		[JsonPropertyName("vehicleId")]
+		public Guid VehicleId { get; set; }
 
 		[JsonPropertyName("userId")]
 		public Guid UserId { get; set; }
