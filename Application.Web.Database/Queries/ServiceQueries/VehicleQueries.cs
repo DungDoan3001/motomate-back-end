@@ -19,7 +19,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(v => v.Owner)
                 .Include(c => c.Color)
                 .Include(x => x.VehicleReviews)
-				.Include(ov => ov.TripRequests.Where(x => x.Created_At > DateTime.UtcNow))
+				.Include(ov => ov.TripRequests)
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
                 .Take(pagination.pageSize)
                 .ToListAsync();
@@ -34,7 +34,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(v => v.Owner)
 				.Include(c => c.Color)
 				.Include(x => x.VehicleReviews)
-				.Include(ov => ov.TripRequests.Where(x => x.Created_At > DateTime.UtcNow))
+				.Include(ov => ov.TripRequests)
 				.ToListAsync();
         }
 
@@ -47,7 +47,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(v => v.Owner)
 				.Include(c => c.Color)
                 .Include(x => x.VehicleReviews)
-				.Include(ov => ov.TripRequests.Where(x => x.Created_At > DateTime.UtcNow))
+				.Include(ov => ov.TripRequests)
 				.Where(v => v.OwnerId.Equals(ownerId))
 				.ToListAsync();
 		}
@@ -61,7 +61,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(v => v.Owner)
                 .Include(c => c.Color)
                 .Include(x => x.VehicleReviews)
-				.Include(ov => ov.TripRequests.Where(x => x.Created_At > DateTime.UtcNow))
+				.Include(ov => ov.TripRequests)
 				.Where(v => v.Id.Equals(vehicleId))
                 .FirstOrDefaultAsync();
         }
