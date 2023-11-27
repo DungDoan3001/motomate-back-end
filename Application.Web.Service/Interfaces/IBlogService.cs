@@ -11,5 +11,6 @@ namespace Application.Web.Service.Interfaces
 		Task<Blog> CreateBlogAsync(BlogRequestModel requestModel);
 		Task<Blog> UpdateBlogAsync(BlogRequestModel requestModel, Guid blogId);
 		Task<bool> DeleteBlogAsync(Guid blogId);
+		Task<IEnumerable<Blog>> GetRelatedBlogAsync(Guid blogId);
 	}
 }

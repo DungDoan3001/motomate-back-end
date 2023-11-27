@@ -68,6 +68,26 @@ namespace Application.Web.Service.Services
 			return Helpers.Helpers.GetPaginationModel<Blog>(blogs, pagination);
 		}
 
+		public async Task<IEnumerable<Blog>> GetRelatedBlogAsync(Guid blogId)
+		{
+			var key = $"{_cacheKeyConstants.BlogCacheKey}-All";
+
+			var blogs = await _cache.GetOrAddAsync(
+				key,
+				async () => await _blogQueries.GetAllBlogsAsync(),
+				TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+			_cacheKeyConstants.AddKeyToList(key);
+
+			var blog = blogs.FirstOrDefault(x => x.Id.Equals(blogId));
+
+			blogs.Remove(blog);
+
+			var relatedBlogs = blogs.Where(x => x.CategoryId.Equals(blog.CategoryId)).OrderByDescending(x => x.Created_At).Take(10);
+
+			return relatedBlogs;
+		}
+
 		public async Task<Blog> GetBlogByIdAsync(Guid blogId)
 		{
 			var key = $"{_cacheKeyConstants.BlogCacheKey}-{blogId}";

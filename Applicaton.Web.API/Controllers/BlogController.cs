@@ -118,6 +118,46 @@ namespace Applicaton.Web.API.Controllers
 		}
 
 		/// <summary>
+		/// Acquire related blogs based on blog information by identification
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("{id}/related")]
+		public async Task<ActionResult<BlogResponseModel>> GetBlogRelatedAsync([FromRoute] Guid id)
+		{
+			try
+			{
+				var blog = await _blogService.GetRelatedBlogAsync(id);
+
+				if (blog == null)
+					return NotFound();
+
+				var blogToReturn = _mapper.Map<List<BlogResponseModel>>(blog);
+
+				return Ok(blogToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
 		/// Acquire blog reviews information by identification
 		/// </summary>
 		/// <returns>Status code of the action.</returns>
