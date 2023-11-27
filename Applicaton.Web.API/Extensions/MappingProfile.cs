@@ -572,6 +572,7 @@ namespace Applicaton.Web.API.Extensions
                     dest.Username = src.User.UserName;
                     dest.Email = src.User.Email;
                     dest.Avatar = src.User.Picture;
+                    dest.CreatedAt = DateTime.SpecifyKind(src.CreatedAt, DateTimeKind.Utc);
 
                     dest.Rating = src.Rating;
                     dest.Title = src.Title;
