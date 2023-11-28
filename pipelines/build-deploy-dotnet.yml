@@ -40,7 +40,7 @@ stages:
               ConnectionType: 'AzureRM'
               azureSubscription: 'DunDon Free Subcription(cfd7c513-8b41-4dc8-b1ed-69bad9822f7d)'
               appType: 'webAppLinux'
-              WebAppName: 'motormate-backend-web-app'
+              WebAppName: 'motormate-backend-web-api'
               packageForLinux: '$(OUTPUT_SOLUTION).zip'
               RuntimeStack: 'DOTNETCORE|6.0'
               StartupCommand: 'dotnet ./Applicaton.Web.API.dll'
