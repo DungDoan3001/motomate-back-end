@@ -223,6 +223,8 @@ namespace Applicaton.Web.API.Extensions
                                                 "http://localhost:3000",
 												"https://motormate-admin.vercel.app",
 												"http://motormate-admin.vercel.app",
+												"https://motormate-frontend-web-client.azurewebsites.net",
+												"https://motormate-frontend-web-admin.azurewebsites.net"
 											};
 
 
