@@ -224,7 +224,9 @@ namespace Applicaton.Web.API.Extensions
 												"https://motormate-admin.vercel.app",
 												"http://motormate-admin.vercel.app",
 												"https://motormate-frontend-web-client.azurewebsites.net",
-												"https://motormate-frontend-web-admin.azurewebsites.net"
+												"https://motormate-frontend-web-admin.azurewebsites.net",
+                                                "http://motormate-frontend-web-client.azurewebsites.net",
+												"http://motormate-frontend-web-admin.azurewebsites.net"
 											};
 
 
