@@ -104,7 +104,17 @@ namespace Application.Web.Service.Services
 		{
 			var chats = await _chatQueries.GetAllChatsByUserIdAsync(userId);
 
-			return Helpers.Helpers.GetPaginationModel<Chat>(chats, pagination);
+			var totalItemCount = chats.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+			var chatsToReturn = chats
+				.OrderByDescending(chat => chat.LastUpdatedAt)
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+			return (chatsToReturn, paginationMetadata);
 		}
 
 		public async Task<(IEnumerable<Message>, PaginationMetadata)> GetAllMessagesByChatId(PaginationRequestModel pagination, Guid chatId)
@@ -113,7 +123,19 @@ namespace Application.Web.Service.Services
 
 			var messages = await _messageQueries.GetAllMessageByChatId(chatId);
 
-			return Helpers.Helpers.GetPaginationModel<Message>(messages, pagination);
+			var totalItemCount = messages.Count;
+
+			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
+
+			var messagePaging = messages
+				.OrderBy(message => message.CreatedAt)
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.ToList();
+
+			var messagesToReturn = messagePaging.OrderBy(x => x.CreatedAt);
+
+			return (messagesToReturn, paginationMetadata);
 		}
 
 
