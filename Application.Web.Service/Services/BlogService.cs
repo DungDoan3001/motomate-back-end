@@ -11,6 +11,7 @@ using AutoMapper;
 using LazyCache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Service.Services
 {
@@ -81,9 +82,16 @@ namespace Application.Web.Service.Services
 
 			var blog = blogs.FirstOrDefault(x => x.Id.Equals(blogId));
 
-			blogs.Remove(blog);
+			var relatedBlogs = blogs
+				.Where(x => x.CategoryId
+				.Equals(blog.CategoryId))
+				.OrderByDescending(x => x.Created_At)
+				.AsQueryable()
+				.AsNoTracking()
+				.Take(10)
+				.ToList();
 
-			var relatedBlogs = blogs.Where(x => x.CategoryId.Equals(blog.CategoryId)).OrderByDescending(x => x.Created_At).Take(10);
+			relatedBlogs.Remove(blog);
 
 			return relatedBlogs;
 		}
