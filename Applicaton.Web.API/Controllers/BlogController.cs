@@ -246,7 +246,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpPut("comment/{commentId}")]
-		public async Task<ActionResult<BlogResponseModel>> UpdateBlogAsync([FromBody] BlogCommentRequestModel requestModel, [FromRoute] Guid commentId)
+		public async Task<ActionResult<BlogResponseModel>> UpdateBlogCommentAsync([FromBody] BlogCommentRequestModel requestModel, [FromRoute] Guid commentId)
 		{
 			try
 			{

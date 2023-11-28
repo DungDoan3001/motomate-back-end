@@ -150,11 +150,14 @@ namespace Application.Web.Service.Services
 		{
 			var category = await _blogCategoryQueries.GetByIdAsync(requestModel.CategoryId) ?? throw new StatusCodeException(message: "Category not found.", statusCode: StatusCodes.Status404NotFound);
 			var user = await _userManager.FindByIdAsync(requestModel.AuthorId.ToString()) ?? throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
-			var blog = await _blogQueries.GetBlogById(blogId) ?? throw new StatusCodeException(message: "Blog not found.", statusCode: StatusCodes.Status404NotFound); ;
-		
-			var blogToUpdate = _mapper.Map<BlogRequestModel, Blog>(requestModel, blog);
+			var blog = await _blogRepo.GetById(blogId) ?? throw new StatusCodeException(message: "Blog not found.", statusCode: StatusCodes.Status404NotFound); ;
+			var originalImageId = blog.ImageId;
 
-			_imageRepo.Delete(blogToUpdate.Image.Id);
+			blog.Title = requestModel.Title;
+			blog.Content = requestModel.Content;
+			blog.ShortDescription = requestModel.ShortDescription;
+			blog.AuthorId = requestModel.AuthorId;
+			blog.CategoryId = requestModel.CategoryId;
 
 			var blogImage = new Image
 			{
@@ -162,15 +165,13 @@ namespace Application.Web.Service.Services
 				PublicId = requestModel.PublicId,
 			};
 
-			blogToUpdate.ImageId = blogImage.Id;
+			blog.ImageId = blogImage.Id;
 
 			_imageRepo.Add(blogImage);
-			_blogRepo.Update(blogToUpdate);
+			_imageRepo.Delete(originalImageId);
+			_blogRepo.Update(blog);
 
 			await _unitOfWork.CompleteAsync();
-
-			_unitOfWork.Detach(blogImage);
-			_unitOfWork.Detach(blogToUpdate);
 
 			await Task.Run(() =>
 			{
@@ -182,7 +183,7 @@ namespace Application.Web.Service.Services
 				_cacheKeyConstants.CacheKeyList = new List<string>();
 			});
 
-			return await GetBlogByIdAsync(blogToUpdate.Id);
+			return await _blogQueries.GetBlogById(blog.Id);
 		}
 
 		public async Task<bool> DeleteBlogAsync(Guid blogId)
