@@ -10,6 +10,7 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Diacritics.Extensions;
+using LazyCache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Stripe;
@@ -18,6 +19,7 @@ namespace Application.Web.Service.Services
 {
 	public class OrderService : IOrderService
 	{
+		private readonly IAppCache _cache;
 		private readonly IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IGenericRepository<TripRequest> _tripRequestRepo;
@@ -34,17 +36,21 @@ namespace Application.Web.Service.Services
 		private readonly IUserQueries _userQueries;
 		private readonly IEmailService _emailService;
 		private readonly IPaymentService _paymentService;
+		private readonly CacheKeyConstants _cacheKeyConstants;
 
 		public OrderService(
+			IAppCache cache,
 			IMapper mapper,
 			IUnitOfWork unitOfWork,
 			ICheckoutOrderQueries checkoutOrderQueries,
 			ITripRequestQueries tripRequestQueries,
 			IEmailService emailService,
 			IPaymentService paymentService,
-			IUserQueries userQueries
+			IUserQueries userQueries,
+			CacheKeyConstants cacheKeyConstants
 			)
 		{
+			_cache = cache;
 			_mapper = mapper;
 			_unitOfWork = unitOfWork;
 			_tripRequestRepo = unitOfWork.GetBaseRepo<TripRequest>();
@@ -63,6 +69,8 @@ namespace Application.Web.Service.Services
 
 			_emailService = emailService;
 			_paymentService = paymentService;
+
+			_cacheKeyConstants = cacheKeyConstants;
 		}
 
 
@@ -150,6 +158,16 @@ namespace Application.Web.Service.Services
 
 				await SendEmailsForTripRequest(tripRequests);
 
+				await Task.Run(() =>
+				{
+					foreach (var key in _cacheKeyConstants.CacheKeyList)
+					{
+						_cache.Remove(key);
+					}
+
+					_cacheKeyConstants.CacheKeyList = new List<string>();
+				});
+
 				return tripRequests;
 			}
 
@@ -188,6 +206,16 @@ namespace Application.Web.Service.Services
 					_ = await CancelTripRequestAsync(request, requestModel.Reason);
 				}
 			}
+
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
 
 			return await _tripRequestQueries.GetTripRequestsBasedOnParentOrderId(listParentIds.FirstOrDefault());
 		}
@@ -232,6 +260,16 @@ namespace Application.Web.Service.Services
 			_vehicleReviewImageRepo.AddRange(newVehicleReviewImageList);
 
 			await _unitOfWork.CompleteAsync();
+
+			await Task.Run(() =>
+			{
+				foreach (var key in _cacheKeyConstants.CacheKeyList)
+				{
+					_cache.Remove(key);
+				}
+
+				_cacheKeyConstants.CacheKeyList = new List<string>();
+			});
 
 			return true;
 		}

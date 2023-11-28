@@ -131,7 +131,7 @@ namespace Applicaton.Web.API.Controllers
 
 				var tripRequestsToReturn = _mapper.Map<IEnumerable<IEnumerable<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
-				return Ok(tripRequestsToReturn.OrderBy(x => x.CreatedAt).ToList());
+				return Ok(tripRequestsToReturn.OrderByDescending(x => x.CreatedAt).ToList());
 			}
 			catch (StatusCodeException ex)
 			{
@@ -176,7 +176,7 @@ namespace Applicaton.Web.API.Controllers
 
 				var tripRequestsToReturn = _mapper.Map<IEnumerable<IEnumerable<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
-				return Ok(tripRequestsToReturn.OrderBy(x => x.CreatedAt).ToList());
+				return Ok(tripRequestsToReturn.OrderByDescending(x => x.CreatedAt).ToList());
 			}
 			catch (StatusCodeException ex)
 			{
@@ -216,7 +216,7 @@ namespace Applicaton.Web.API.Controllers
 
 				var tripRequestsToReturn = _mapper.Map<IEnumerable<IEnumerable<TripRequest>>, IEnumerable<TripRequestReponseModel>>(tripRequests);
 
-				return Ok(tripRequestsToReturn.OrderBy(x => x.CreatedAt).ToList());
+				return Ok(tripRequestsToReturn.OrderByDescending(x => x.CreatedAt).ToList());
 			}
 			catch (StatusCodeException ex)
 			{
