@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using Application.Web.Database.Constants;
 using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
@@ -218,15 +219,22 @@ namespace Application.Web.Service.Services
 
         private async Task<bool> SendChangePasswordEmailAsync(User user, string encodedToken)
         {
-            SendEmailOptions emailOptions = new()
-            {
-                ToName = user.FullName,
-                ToEmail = user.Email,
-                Body = encodedToken,
-                Subject = "[Motormate] Password Reset"
-            };
+			string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "resetPassword.html");
+			using (StreamReader reader = new StreamReader(Path.GetFullPath(filePath)))
+			{
+				string content = await reader.ReadToEndAsync();
+				content = Regex.Replace(content, "###RESET_TOKEN###", encodedToken);
 
-            return await _emailService.SendEmailAsync(emailOptions);
+				SendEmailOptions emailOptions = new SendEmailOptions
+				{
+					Subject = $"Reset password confirmation.",
+					Body = content,
+					ToEmail = user.Email,
+					ToName = user.FullName,
+				};
+
+				return await _emailService.SendEmailAsync(emailOptions);
+			}
         }
 
         private SigningCredentials GetSigningCredentials()
@@ -246,9 +254,16 @@ namespace Application.Web.Service.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserName),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim("Avatar", user.Picture)
+                new Claim(ClaimTypes.Name, user.FullName)
             }; 
+
+            if(!user.Picture.IsNullOrEmpty())
+            {
+                claims.Add(new Claim("Avatar", user.Picture));
+            } else
+            {
+                claims.Add(new Claim("Avatar", string.Empty));
+            }
 
             var roles = await _userManager.GetRolesAsync(user);
 

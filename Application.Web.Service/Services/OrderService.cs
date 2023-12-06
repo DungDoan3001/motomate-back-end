@@ -567,11 +567,15 @@ namespace Application.Web.Service.Services
 				}
 			}
 
-			_tripRequestRepo.AddRange(tripRequests);
 			_cartVehicleRepo.DeleteRange(cartVehicleToDelete);
 			_checkoutOrderRepo.Delete(checkoutOrder.Id);
+			_tripRequestRepo.AddRange(tripRequests);
 
 			await _unitOfWork.CompleteAsync();
+
+			_unitOfWork.Detach(cartVehicleToDelete);
+			_unitOfWork.Detach(checkoutOrder);
+			_unitOfWork.Detach(tripRequests);
 		}
 	}
 }
