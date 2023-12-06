@@ -542,7 +542,7 @@ namespace Application.Web.Service.Services
 			foreach (var vehicleToCheckout in checkoutOrder.CheckOutOrderVehicles)
 			{
 				var cart = await _cartRepo.FindOne(x => x.UserId.Equals(checkoutOrder.UserId)) ?? throw new StatusCodeException(message: "Cart not found with user.", statusCode: StatusCodes.Status409Conflict);
-				var cartVehicle = await _cartVehicleRepo.FindOne(x => x.VehicleId.Equals(vehicleToCheckout.Vehicle.Id) && x.CartId.Equals(cart.Id)) ?? throw new StatusCodeException(message: "Vehicle in cart.", statusCode: StatusCodes.Status409Conflict);
+				var cartVehicle = await _cartVehicleRepo.FindOne(x => x.VehicleId.Equals(vehicleToCheckout.Vehicle.Id) && x.CartId.Equals(cart.Id));
 
 				var tripRequest = new TripRequest
 				{
@@ -561,7 +561,10 @@ namespace Application.Web.Service.Services
 				};
 
 				tripRequests.Add(tripRequest);
-				cartVehicleToDelete.Add(cartVehicle);
+				if (cartVehicle != null )
+				{
+					cartVehicleToDelete.Add(cartVehicle);
+				}
 			}
 
 			_tripRequestRepo.AddRange(tripRequests);
