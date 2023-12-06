@@ -148,30 +148,47 @@ namespace Application.Web.Service.Services
 
 		public async Task<IEnumerable<TripRequest>> CreateTripRequestsFromStripeEventAsync(Event stripeEvent)
 		{
-			var charge = (Charge)stripeEvent.Data.Object;
-
-			if(charge.Status == "succeeded")
+			try
 			{
-				await CreateNewTripRequests(charge);
+				var charge = (Charge)stripeEvent.Data.Object;
 
-				var tripRequests = await _tripRequestQueries.GetTripRequestsBasedOnPaymentIntentId(charge.PaymentIntentId);
-
-				await SendEmailsForTripRequest(tripRequests);
-
-				await Task.Run(() =>
+				if (charge.Status == "succeeded")
 				{
-					foreach (var key in _cacheKeyConstants.CacheKeyList)
+					await CreateNewTripRequests(charge);
+
+					var tripRequests = await _tripRequestQueries.GetTripRequestsBasedOnPaymentIntentId(charge.PaymentIntentId);
+
+					await SendEmailsForTripRequest(tripRequests);
+
+					await Task.Run(() =>
 					{
-						_cache.Remove(key);
-					}
+						foreach (var key in _cacheKeyConstants.CacheKeyList)
+						{
+							_cache.Remove(key);
+						}
 
-					_cacheKeyConstants.CacheKeyList = new List<string>();
-				});
+						_cacheKeyConstants.CacheKeyList = new List<string>();
+					});
 
-				return tripRequests;
+					return tripRequests;
+				}
+
+				return null;
 			}
+			catch (Exception e)
+			{
+				var emailOptions = new SendEmailOptions
+				{
+					Body = e.Message,
+					Subject = "Motormate log",
+					ToName = "Dung Doan Thanh",
+					ToEmail = "dungdtgcs200419@fpt.edu.vn"
+				};
 
-			return null;
+				_ = await _emailService.SendEmailAsync(emailOptions);
+
+				throw;
+			}
 		}
 
 		public async Task<IEnumerable<TripRequest>> UpdateTripRequestStatusAsync(TripRequestStatusRequestModel requestModel)
