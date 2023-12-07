@@ -590,8 +590,13 @@ namespace Application.Web.Service.Services
 
 			await _unitOfWork.CompleteAsync();
 
-			_unitOfWork.Detach(cartVehicleToDelete);
 			_unitOfWork.Detach(checkoutOrder);
+
+			foreach (var cartVehicle in cartVehicleToDelete)
+			{
+				_unitOfWork.Detach(cartVehicle);
+			}
+
 			foreach (var tripRequest in tripRequests)
 			{
 				_unitOfWork.Detach(tripRequest);
