@@ -592,7 +592,10 @@ namespace Application.Web.Service.Services
 
 			_unitOfWork.Detach(cartVehicleToDelete);
 			_unitOfWork.Detach(checkoutOrder);
-			_unitOfWork.Detach(tripRequests);
+			foreach (var tripRequest in tripRequests)
+			{
+				_unitOfWork.Detach(tripRequest);
+			}
 		}
 	}
 }
