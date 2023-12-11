@@ -16,7 +16,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .OrderBy(c => c.Name)
                 .Include(c => c.Models
                                .OrderBy(m => m.Name))
-                .Include(c => c.Brand
+                .Include(c => c.Brand)
 				.AsNoTracking()
 				.ToListAsync();
         }
