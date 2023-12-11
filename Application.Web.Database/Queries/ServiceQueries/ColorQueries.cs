@@ -13,7 +13,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
         {
             return await dbSet
                 .OrderBy(c => c.Name)
-                .ToListAsync();
+				.AsNoTracking()
+				.ToListAsync();
         }
 
         public async Task<Guid> GetColorIdByColorNameAsync(string color)

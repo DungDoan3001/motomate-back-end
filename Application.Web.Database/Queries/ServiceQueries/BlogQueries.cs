@@ -15,6 +15,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(b => b.Author)
 				.Include(b => b.Category)
 				.Include(b => b.Image)
+				.AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -25,6 +26,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(b => b.Category)
 				.Include(b => b.Image)
 				.Where(b => b.Id.Equals(blogId))
+				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 

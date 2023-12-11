@@ -19,6 +19,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(c => c.CartVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.Owner)
 				.Include(c => c.CartVehicles).ThenInclude(cv => cv.Vehicle).ThenInclude(x => x.Color)
 				.Where(c => c.UserId.Equals(userId))
+				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 
@@ -35,6 +36,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 			return await dbSet
 				.Include(c => c.CartVehicles)
 				.Where(c => c.Id.Equals(cartId))
+				.AsNoTracking()
 				.AnyAsync(c => c.CartVehicles.Any(cv => cv.VehicleId.Equals(vehicleId)));
 		}
 	}
