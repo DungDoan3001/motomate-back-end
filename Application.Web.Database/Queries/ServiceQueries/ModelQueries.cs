@@ -16,6 +16,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .OrderBy(c => c.Name)
                 .Include(c => c.Collection)
                 .Include(c => c.ModelColors).ThenInclude(mc => mc.Color)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
@@ -25,6 +26,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .OrderBy(c => c.Name)
                 .Include(c => c.Collection)
                 .Include(c => c.ModelColors).ThenInclude(mc => mc.Color)
+                .AsNoTracking()
                 .Where(c => c.Id.Equals(id))
                 .FirstOrDefaultAsync();
         }
@@ -46,6 +48,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(c => c.Collection)
 				.Include(c => c.ModelColors).ThenInclude(mc => mc.Color)
 				.Where(c => c.CollectionId.Equals(collectionId))
+                .AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -56,6 +59,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(c => c.Collection)
                 .Include(c => c.ModelColors).ThenInclude(mc => mc.Color)
                 .Where(c => c.Name.Equals(name))
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
 
@@ -78,6 +82,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(c => c.ModelColors).ThenInclude(mc => mc.Color)
                 .Skip(pagination.pageSize * (pagination.pageNumber - 1))
                 .Take(pagination.pageSize)
+                .AsNoTracking()
                 .ToListAsync();
         }
     }

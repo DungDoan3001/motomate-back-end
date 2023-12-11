@@ -16,8 +16,9 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .OrderBy(c => c.Name)
                 .Include(c => c.Models
                                .OrderBy(m => m.Name))
-                .Include(c => c.Brand)
-                .ToListAsync();
+                .Include(c => c.Brand
+				.AsNoTracking()
+				.ToListAsync();
         }
 
         public async Task<Collection> GetCollectionByIdAsync(Guid id)
@@ -28,6 +29,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                                .OrderBy(m => m.Name))
                 .Include(c => c.Brand)
                 .Where(c => c.Id.Equals(id))
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
 
@@ -39,6 +41,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                                .OrderBy(m => m.Name))
                 .Include(c => c.Brand)
                 .Where(c => c.Name.Equals(name))
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
 
@@ -62,6 +65,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(c => c.Brand)
                 .Skip(pagination.pageSize * (pagination.pageNumber - 1))
                 .Take(pagination.pageSize)
+                .AsNoTracking()
                 .ToListAsync();
         }
     }

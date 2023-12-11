@@ -19,7 +19,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(b => b.BrandImages).ThenInclude(bi => bi.Image)
                 .Skip(pagination.pageSize * (pagination.pageNumber - 1))
                 .Take(pagination.pageSize)
-                .ToListAsync();
+				.AsNoTracking()
+				.ToListAsync();
         }
 
         public async Task<List<Brand>> GetAllBrandsAsync()
@@ -29,6 +30,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(b => b.Collections
                                .OrderBy(c => c.Name))
                 .Include(b => b.BrandImages).ThenInclude(bi => bi.Image)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
@@ -44,6 +46,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(b => b.Collections
                                .OrderBy(c => c.Name))
                 .Include(b => b.BrandImages).ThenInclude(bi => bi.Image)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
 
@@ -60,6 +63,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(b => b.Collections
                                .OrderBy(c => c.Name))
                 .Include(b => b.BrandImages).ThenInclude(bi => bi.Image)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
     }

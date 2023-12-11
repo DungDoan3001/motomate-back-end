@@ -324,7 +324,7 @@ namespace Applicaton.Web.API.Extensions
                                     VehicleId = item.Vehicle.Id,
                                     VehicleName = textInfo.ToTitleCase(item.Vehicle.Model.Name.ToLower()),
                                     Brand = textInfo.ToTitleCase(item.Vehicle.Model.Collection.Brand.Name.ToLower()),
-                                    Address = $"{textInfo.ToTitleCase(item.Vehicle.Address.ToLower())}, {textInfo.ToTitleCase(item.Vehicle.Ward.ToLower())}, {textInfo.ToTitleCase(item.Vehicle.District.ToLower())}, {textInfo.ToTitleCase(item.Vehicle.City.ToLower())}",
+                                    Address = textInfo.ToTitleCase(item.Vehicle.Address.ToLower()),
                                     Color = textInfo.ToTitleCase(item.Vehicle.Color.Name.ToLower()),
                                     Price = item.Vehicle.Price,
                                     LicensePlate = item.Vehicle.LicensePlate,

@@ -42,6 +42,14 @@ namespace Application.Web.Database.UnitOfWork
             _context.Entry(entity).State = EntityState.Detached;
         }
 
+        public void DetachRange<T>(IEnumerable<T> entities) where T : class
+        {
+            foreach (var entity in entities)
+            {
+                _context.Entry(entity).State = EntityState.Detached;
+            }
+        }
+
         public void Dispose()
         {
             _context.Dispose();
