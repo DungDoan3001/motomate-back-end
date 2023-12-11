@@ -307,6 +307,10 @@ namespace Application.Web.Service.Services
 
             await _unitOfWork.CompleteAsync();
 
+            _unitOfWork.Detach(vehicleToUpdate);
+            _unitOfWork.DetachRange(newImages);
+            _unitOfWork.DetachRange(vehicleImages);
+
             await Task.Run(() =>
             {
                 foreach (var key in _cacheKeyConstants.CacheKeyList)
@@ -317,7 +321,7 @@ namespace Application.Web.Service.Services
                 _cacheKeyConstants.CacheKeyList = new List<string>();
             });
 
-            return await GetVehicleByIdAsync(vehicleToUpdate.Id);
+            return await _vehicleQueries.GetByIdAsync(vehicleId);
         }
 
         public async Task<bool> DeleteVehicleAsync(Guid vehicleId)

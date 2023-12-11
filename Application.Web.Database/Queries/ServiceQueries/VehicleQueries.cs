@@ -63,6 +63,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
                 .Include(x => x.VehicleReviews)
 				.Include(ov => ov.TripRequests)
 				.Where(v => v.Id.Equals(vehicleId))
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
 
