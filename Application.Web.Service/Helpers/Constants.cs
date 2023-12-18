@@ -4,6 +4,8 @@
 	{
 		public static int[] validStatusNumbers = { 0, 1, 2 };
 
+		public static decimal PROFIT_KEEP_PERCENTAGE = (decimal)0.15;
+
 		public static string PENDING = "Pending";
 
 		public static string APPROVED = "Approved";

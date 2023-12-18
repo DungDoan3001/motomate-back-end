@@ -183,6 +183,7 @@ namespace Applicaton.Web.API.Extensions
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IMockDataService, MockDataService>();
             services.AddScoped<IBlogCommentService, BlogCommentService>();
+            services.AddScoped<IChartService, ChartService>();
         }
 
         public static void RegisterQueryDependencies (this IServiceCollection services)
