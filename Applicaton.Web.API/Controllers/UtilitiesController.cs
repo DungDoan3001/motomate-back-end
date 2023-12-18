@@ -8,11 +8,14 @@ namespace Applicaton.Web.API.Controllers
     public class UtilitiesController : ControllerBase
     {
         private readonly IUtilitiesService _utilitiesService;
+		private readonly IChartService _chartService;
 
-        public UtilitiesController(IUtilitiesService utilitiesService)
+		public UtilitiesController(IUtilitiesService utilitiesService, IChartService chartService)
         {
             _utilitiesService = utilitiesService;
-        }
+			_chartService = chartService;
+
+		}
 
         [HttpGet("cronjob")]
         public async Task<IActionResult> CronJobActivator()

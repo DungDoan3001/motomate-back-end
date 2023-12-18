@@ -52,7 +52,10 @@ namespace Application.Web.Database.Models
 		[Column("is_available")]
 		public bool IsAvailable { get; set; } = true;
 
-        [Column("FK_color_id")]
+		[Column("created_at")]
+		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+		[Column("FK_color_id")]
         public Guid ColorId { get; set; }
 
         public virtual User Owner { get; set; }
