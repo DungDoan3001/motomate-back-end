@@ -214,6 +214,8 @@ namespace Application.Web.Service.Services
             user.Picture = requestModel.Image.ImageUrl.Trim();
 
             user.PublicId = requestModel.Image.PublicId;
+
+            user.Bio = requestModel.Bio.Trim();
         }
 
         private async Task<List<User>> HandleUserQuery(UserQuery userQuery, List<User> users)
