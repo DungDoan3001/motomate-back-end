@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
 {
-    [Route("api/chat")]
+	[Route("api/chat")]
 	[ApiController]
 	public class ChatController : ControllerBase
 	{
@@ -20,11 +20,11 @@ namespace Applicaton.Web.API.Controllers
 		private const int maxPageSize = 20;
 
 		public ChatController(ILogger<ChatController> logger, IMapper mapper, IChatService chatService)
-        {
+		{
 			_logger = logger;
 			_mapper = mapper;
-            _chatService = chatService;
-        }
+			_chatService = chatService;
+		}
 
 		/// <summary>
 		/// Acquire chats information with pagination

@@ -16,61 +16,61 @@ using Microsoft.IdentityModel.Tokens;
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/user")]
-    [ApiController]
-    public class UserController : ControllerBase
-    {
-        private readonly IMapper _mapper;
-        private readonly ILogger<AuthController> _logger;
-        private readonly IUserService _userService;
+	[ApiController]
+	public class UserController : ControllerBase
+	{
+		private readonly IMapper _mapper;
+		private readonly ILogger<AuthController> _logger;
+		private readonly IUserService _userService;
 		private readonly UserManager<User> _userManager;
 		private readonly string controllerPrefix = "User";
 		private const int maxPageSize = 20;
 
 		public UserController(IMapper mapper, ILogger<AuthController> logger, IUserService userService, UserManager<User> userManager)
-        {
-            _mapper = mapper;
-            _logger = logger;
-            _userService = userService;
-            _userManager = userManager;
+		{
+			_mapper = mapper;
+			_logger = logger;
+			_userService = userService;
+			_userManager = userManager;
 
 		}
 
-        /// <summary>
-        /// Acquire all users information
-        /// </summary>
-        /// <returns>Status code of the action.</returns>
-        /// <response code="200">Successfully get items information.</response>
-        /// <response code="500">There is something wrong while execute.</response>
-        [HttpGet("all")]
-        public async Task<ActionResult<IEnumerable<UserResponseModel>>> GetAllUsersAsync([FromQuery] UserQuery userQuery)
-        {
-            try
-            {
-                var users = await _userService.GetAllUsersInformationAsync(userQuery);
+		/// <summary>
+		/// Acquire all users information
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("all")]
+		public async Task<ActionResult<IEnumerable<UserResponseModel>>> GetAllUsersAsync([FromQuery] UserQuery userQuery)
+		{
+			try
+			{
+				var users = await _userService.GetAllUsersInformationAsync(userQuery);
 
-                var usersToReturn = _mapper.Map<IEnumerable<User>, IEnumerable<UserResponseModel>>(users);
+				var usersToReturn = _mapper.Map<IEnumerable<User>, IEnumerable<UserResponseModel>>(users);
 
-                return Ok(usersToReturn);
-            }
-            catch (StatusCodeException ex)
-            {
-                return StatusCode(ex.StatusCode, new ErrorResponseModel
-                {
-                    Message = ex.Message,
-                    StatusCode = ex.StatusCode
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
-                {
-                    Message = "Error while performing action.",
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Errors = { ex.Message }
-                });
-            }
-        }
+				return Ok(usersToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
 
 		/// <summary>
 		/// Get all users information with pagition
@@ -124,38 +124,38 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("{username}/details")]
-        public async Task<ActionResult<UserResponseModel>> GetUserByUsernameAsync([FromRoute] string username)
-        {
-            try
-            {
-                if(username.IsNullOrEmpty())
-                    return BadRequest("username route is not null");
+		public async Task<ActionResult<UserResponseModel>> GetUserByUsernameAsync([FromRoute] string username)
+		{
+			try
+			{
+				if (username.IsNullOrEmpty())
+					return BadRequest("username route is not null");
 
-                var userDetail = await _userService.GetUserInformationByUsernameAsync(username);
+				var userDetail = await _userService.GetUserInformationByUsernameAsync(username);
 
-                var userToReturn = _mapper.Map<User, UserResponseModel>(userDetail);
+				var userToReturn = _mapper.Map<User, UserResponseModel>(userDetail);
 
-                return Ok(userToReturn);
-            }
-            catch (StatusCodeException ex)
-            {
-                return StatusCode(ex.StatusCode, new ErrorResponseModel
-                {
-                    Message = ex.Message,
-                    StatusCode = ex.StatusCode
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
-                {
-                    Message = "Error while performing action.",
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Errors = { ex.Message }
-                });
-            }
-        }
+				return Ok(userToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
 
 		/// <summary>
 		/// Acquire all available roles information
@@ -201,87 +201,89 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("details")]
-        public async Task<ActionResult<UserResponseModel>> GetCurrentUserInformationAsync()
-        {
-            try
-            {
-                var claimValues = IdentityHelpers.GetCurrentLoginUserClaims(HttpContext.User.Identity as ClaimsIdentity);
+		public async Task<ActionResult<UserResponseModel>> GetCurrentUserInformationAsync()
+		{
+			try
+			{
+				var claimValues = IdentityHelpers.GetCurrentLoginUserClaims(HttpContext.User.Identity as ClaimsIdentity);
 
-                var userDetail = await _userService.GetUserInformationByEmailAsync(claimValues.IdentityEmail);
+				var userDetail = await _userService.GetUserInformationByEmailAsync(claimValues.IdentityEmail);
 
-                var userToReturn = _mapper.Map<User, UserResponseModel>(userDetail);
+				var userToReturn = _mapper.Map<User, UserResponseModel>(userDetail);
 
-                return Ok(userToReturn);
-            }
-            catch (StatusCodeException ex)
-            {
-                return StatusCode(ex.StatusCode, new ErrorResponseModel
-                {
-                    Message = ex.Message,
-                    StatusCode = ex.StatusCode
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
-                {
-                    Message = "Error while performing action.",
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Errors = { ex.Message }
-                });
-            }
-        }
+				return Ok(userToReturn);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
 
-        /// <summary>
-        /// Update current user information.
-        /// </summary>
-        /// <returns>Status code of the action.</returns>
-        /// <response code="200">Successfully updated item information.</response>
-        /// <response code="500">There is something wrong while execute.</response>
-        [HttpPut("{username}")]
-        public async Task<ActionResult<UserResponseModel>> UpdateUserInformation([FromRoute] string username, [FromBody] UserRequestModel requestModel)
-        {
-            try
-            {
-                if (username.IsNullOrEmpty())
-                    return BadRequest("username route is not null");
+		/// <summary>
+		/// Update current user information.
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully updated item information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpPut("{username}")]
+		public async Task<ActionResult<UserResponseModel>> UpdateUserInformation([FromRoute] string username, [FromBody] UserRequestModel requestModel)
+		{
+			try
+			{
+				if (username.IsNullOrEmpty())
+					return BadRequest("username route is not null");
 
-                var claimValues = IdentityHelpers.GetCurrentLoginUserClaims(HttpContext.User.Identity as ClaimsIdentity);
+				var claimValues = IdentityHelpers.GetCurrentLoginUserClaims(HttpContext.User.Identity as ClaimsIdentity);
 
-                // Only allow admin or correct user to update
-                if(claimValues.IdentityUsername.Equals(username) ||  
-                    claimValues.IdentityRoles.Any(x => x.Equals(SeedDatabaseConstant.ADMIN.Name))) {
-					
-                    var user = await _userService.UpdateUserAsync(requestModel, username);
+				// Only allow admin or correct user to update
+				if (claimValues.IdentityUsername.Equals(username) ||
+					claimValues.IdentityRoles.Any(x => x.Equals(SeedDatabaseConstant.ADMIN.Name)))
+				{
+
+					var user = await _userService.UpdateUserAsync(requestModel, username);
 
 					var userToReturn = _mapper.Map<UserResponseModel>(user);
 
 					return Ok(userToReturn);
-				} else
-                {
-                    return Unauthorized();
-                }    
-            }
-            catch (StatusCodeException ex)
-            {
-                return StatusCode(ex.StatusCode, new ErrorResponseModel
-                {
-                    Message = ex.Message,
-                    StatusCode = ex.StatusCode
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
-                {
-                    Message = "Error while performing action.",
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Errors = { ex.Message }
-                });
-            }
-        }
+				}
+				else
+				{
+					return Unauthorized();
+				}
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
 
 		/// <summary>
 		/// Update user role information.
@@ -327,35 +329,35 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpDelete("{username}")]
-        public async Task<IActionResult> DeleteUserInformation([FromRoute] string username)
-        {
-            try
-            {
-                var result = await _userService.DeleteUserAsync(username);
+		public async Task<IActionResult> DeleteUserInformation([FromRoute] string username)
+		{
+			try
+			{
+				var result = await _userService.DeleteUserAsync(username);
 
-                if (!result)
-                    throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);
-                else
-                    return NoContent();
-            }
-            catch (StatusCodeException ex)
-            {
-                return StatusCode(ex.StatusCode, new ErrorResponseModel
-                {
-                    Message = ex.Message,
-                    StatusCode = ex.StatusCode
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
-                {
-                    Message = "Error while performing action.",
-                    StatusCode = StatusCodes.Status500InternalServerError,
-                    Errors = { ex.Message }
-                });
-            }
-        }
+				if (!result)
+					throw new StatusCodeException(message: "Error hit.", statusCode: StatusCodes.Status500InternalServerError);
+				else
+					return NoContent();
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
 	}
 }

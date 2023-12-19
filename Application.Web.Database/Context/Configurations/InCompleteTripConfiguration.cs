@@ -6,7 +6,7 @@ namespace Application.Web.Database.Context.Configurations
 {
 	public class InCompleteTripConfiguration : IEntityTypeConfiguration<InCompleteTrip>
 	{
-		public void Configure (EntityTypeBuilder<InCompleteTrip> builder)
+		public void Configure(EntityTypeBuilder<InCompleteTrip> builder)
 		{
 			builder.ToTable("table_in_complete_trip");
 

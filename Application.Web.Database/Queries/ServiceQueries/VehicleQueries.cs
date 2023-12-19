@@ -7,80 +7,80 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.Web.Database.Queries.ServiceQueries
 {
 	public class VehicleQueries : BaseQuery<Vehicle>, IVehicleQueries
-    {
-        public VehicleQueries(ApplicationContext dbContext) : base(dbContext) { }
+	{
+		public VehicleQueries(ApplicationContext dbContext) : base(dbContext) { }
 
-        public async Task<List<Vehicle>> GetVehiclesWithPaginationAync(PaginationRequestModel pagination)
-        {
-            return await dbSet
-                .Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
-                .Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
-                                .ThenInclude(vi => vi.Image)
-                .Include(v => v.Owner)
-                .Include(c => c.Color)
-                .Include(x => x.VehicleReviews)
-				.Include(ov => ov.TripRequests)
-				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
-                .Take(pagination.pageSize)
-                .AsNoTracking()
-                .ToListAsync();
-        }
-
-        public async Task<List<Vehicle>> GetAllVehiclesAsync()
-        {
-            return await dbSet
-                .Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
-                .Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
-                                .ThenInclude(vi => vi.Image)
+		public async Task<List<Vehicle>> GetVehiclesWithPaginationAync(PaginationRequestModel pagination)
+		{
+			return await dbSet
+				.Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
+				.Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
+								.ThenInclude(vi => vi.Image)
 				.Include(v => v.Owner)
 				.Include(c => c.Color)
 				.Include(x => x.VehicleReviews)
 				.Include(ov => ov.TripRequests)
-                .AsNoTracking()
+				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
+				.Take(pagination.pageSize)
+				.AsNoTracking()
 				.ToListAsync();
-        }
+		}
+
+		public async Task<List<Vehicle>> GetAllVehiclesAsync()
+		{
+			return await dbSet
+				.Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
+				.Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
+								.ThenInclude(vi => vi.Image)
+				.Include(v => v.Owner)
+				.Include(c => c.Color)
+				.Include(x => x.VehicleReviews)
+				.Include(ov => ov.TripRequests)
+				.AsNoTracking()
+				.ToListAsync();
+		}
 
 		public async Task<List<Vehicle>> GetAllVehiclesByOwnerIdAsync(Guid ownerId)
 		{
 			return await dbSet
 				.Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
 				.Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
-                                .ThenInclude(vi => vi.Image)
+								.ThenInclude(vi => vi.Image)
 				.Include(v => v.Owner)
 				.Include(c => c.Color)
-                .Include(x => x.VehicleReviews)
+				.Include(x => x.VehicleReviews)
 				.Include(ov => ov.TripRequests)
 				.Where(v => v.OwnerId.Equals(ownerId))
-                .AsNoTracking()
+				.AsNoTracking()
 				.ToListAsync();
 		}
 
 		public async Task<Vehicle> GetByIdAsync(Guid vehicleId)
-        {
-            return await dbSet
-                .Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
-                .Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
-                                .ThenInclude(vi => vi.Image)
-                .Include(v => v.Owner)
-                .Include(c => c.Color)
-                .Include(x => x.VehicleReviews)
+		{
+			return await dbSet
+				.Include(v => v.Model).ThenInclude(m => m.Collection).ThenInclude(c => c.Brand)
+				.Include(v => v.VehicleImages.OrderBy(x => x.Image.CreatedAt))
+								.ThenInclude(vi => vi.Image)
+				.Include(v => v.Owner)
+				.Include(c => c.Color)
+				.Include(x => x.VehicleReviews)
 				.Include(ov => ov.TripRequests)
 				.Where(v => v.Id.Equals(vehicleId))
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
-        }
+				.AsNoTracking()
+				.FirstOrDefaultAsync();
+		}
 
-        public async Task<bool> CheckIfVehicleExisted(Guid vehicleId)
-        {
-            return await dbSet
-                .AnyAsync(v => v.Id.Equals(vehicleId));
-        }
+		public async Task<bool> CheckIfVehicleExisted(Guid vehicleId)
+		{
+			return await dbSet
+				.AnyAsync(v => v.Id.Equals(vehicleId));
+		}
 
-        public async Task<bool> CheckIfLicensePlateExisted(string licensePlate)
-        {
-            return await dbSet
-                .AnyAsync(v => v.LicensePlate.ToUpper().Equals(licensePlate.ToUpper()));
-        }
+		public async Task<bool> CheckIfLicensePlateExisted(string licensePlate)
+		{
+			return await dbSet
+				.AnyAsync(v => v.LicensePlate.ToUpper().Equals(licensePlate.ToUpper()));
+		}
 
 		public async Task<bool> CheckIfInsuranceNumberExisted(string insuranceNumber)
 		{
@@ -89,8 +89,8 @@ namespace Application.Web.Database.Queries.ServiceQueries
 		}
 
 		public async Task<int> CountVehiclesAsync()
-        {
-            return await dbSet.CountAsync();
-        }
+		{
+			return await dbSet.CountAsync();
+		}
 	}
 }

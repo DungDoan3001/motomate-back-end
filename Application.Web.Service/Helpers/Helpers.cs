@@ -4,39 +4,38 @@ using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
 using Microsoft.IdentityModel.Tokens;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace Application.Web.Service.Helpers
 {
-    public static class Helpers
-    {
-        public static string GetCallerName([CallerMemberName] string caller = null)
-        {
-            return caller;
-        }
+	public static class Helpers
+	{
+		public static string GetCallerName([CallerMemberName] string caller = null)
+		{
+			return caller;
+		}
 
-        public static string ExtractEmailAddress(string email)
-        {
-            if(email.IsNullOrEmpty())
-                return null;
+		public static string ExtractEmailAddress(string email)
+		{
+			if (email.IsNullOrEmpty())
+				return null;
 
-            int index = email.IndexOf("@");
+			int index = email.IndexOf("@");
 
-            if (index >= 0)
-                return email.Substring(0, index);
+			if (index >= 0)
+				return email.Substring(0, index);
 
-            else return null;
-        }
+			else return null;
+		}
 
-        public static bool IsValidPhoneNumber(string phoneNumber)
-        {
-            if(phoneNumber.IsNullOrEmpty())
-                return false;
+		public static bool IsValidPhoneNumber(string phoneNumber)
+		{
+			if (phoneNumber.IsNullOrEmpty())
+				return false;
 
-            string phoneNumberRegexPattern = "^[0][1-9][0-9]{8}$";
+			string phoneNumberRegexPattern = "^[0][1-9][0-9]{8}$";
 
-            return Regex.IsMatch(phoneNumber, phoneNumberRegexPattern);
-        }
+			return Regex.IsMatch(phoneNumber, phoneNumberRegexPattern);
+		}
 
 		public static string GetParentOrderStatus(IEnumerable<TripRequest> tripRequests)
 		{
@@ -85,7 +84,7 @@ namespace Application.Web.Service.Helpers
 			{
 				return Constants.ONGOING;
 			}
-			else if(countTripRequestStatus(tripRequests, Constants.PENDING).Equals(tripRequestsCount))
+			else if (countTripRequestStatus(tripRequests, Constants.PENDING).Equals(tripRequestsCount))
 			{
 				return Constants.PENDING;
 			}

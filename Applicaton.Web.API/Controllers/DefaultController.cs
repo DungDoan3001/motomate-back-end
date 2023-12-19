@@ -6,10 +6,10 @@ namespace Applicaton.Web.API.Controllers
 	[ApiController]
 	public class DefaultController : ControllerBase
 	{
-        public DefaultController()
-        {
-            
-        }
+		public DefaultController()
+		{
+
+		}
 
 		[Route(""), HttpGet]
 		[ApiExplorerSettings(IgnoreApi = true)]

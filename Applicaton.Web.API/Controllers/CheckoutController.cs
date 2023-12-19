@@ -1,10 +1,8 @@
 ﻿using Application.Web.Database.DTOs.RequestModels;
 using Application.Web.Database.DTOs.ResponseModels;
-using Application.Web.Database.Models;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
-using Application.Web.Service.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
@@ -24,8 +22,8 @@ namespace Applicaton.Web.API.Controllers
 
 		public CheckoutController(
 			IConfiguration configuration,
-			IMapper mapper, 
-			ILogger<CheckoutController> logger, 
+			IMapper mapper,
+			ILogger<CheckoutController> logger,
 			ICheckoutService checkoutService,
 			IOrderService orderService)
 		{
@@ -113,5 +111,5 @@ namespace Applicaton.Web.API.Controllers
 				});
 			}
 		}
-    }
+	}
 }

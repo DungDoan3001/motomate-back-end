@@ -5,7 +5,7 @@ namespace Application.Web.Database.DTOs.ResponseModels.ChartResponseModels
 	public class TotalRevenueResponseModel
 	{
 		[JsonPropertyName("totalRevenue")]
-		public RevenuePerYear TotalRevenue {  get; set; }
+		public RevenuePerYear TotalRevenue { get; set; }
 	}
 
 	public class RevenuePerYear

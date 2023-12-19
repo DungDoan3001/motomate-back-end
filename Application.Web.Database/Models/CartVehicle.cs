@@ -2,7 +2,7 @@
 
 namespace Application.Web.Database.Models
 {
-    public class CartVehicle
+	public class CartVehicle
 	{
 		[Column("PK_FK_cart_id")]
 		public Guid CartId { get; set; }

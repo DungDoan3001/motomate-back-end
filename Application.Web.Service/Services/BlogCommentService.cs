@@ -5,7 +5,6 @@ using Application.Web.Database.Queries.Interface;
 using Application.Web.Database.Repository;
 using Application.Web.Database.UnitOfWork;
 using Application.Web.Service.Exceptions;
-using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 

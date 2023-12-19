@@ -30,6 +30,6 @@
 			APPROVED, CANCELED, COMPLETED
 		};
 
-		public static List<int> ALLOW_RATING_INPUT = new List<int> { 1,2,3,4,5 };
+		public static List<int> ALLOW_RATING_INPUT = new List<int> { 1, 2, 3, 4, 5 };
 	}
 }

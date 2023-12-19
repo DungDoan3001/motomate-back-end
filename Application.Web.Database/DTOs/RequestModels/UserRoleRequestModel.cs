@@ -7,7 +7,7 @@ namespace Application.Web.Database.DTOs.RequestModels
 	{
 		[Required]
 		[JsonPropertyName("userId")]
-		public Guid UserId{ get; set; }
+		public Guid UserId { get; set; }
 
 		[Required]
 		[JsonPropertyName("roleId")]

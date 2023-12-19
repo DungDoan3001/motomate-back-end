@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Database.Queries.ServiceQueries
 {
-    public class ChatQueries : BaseQuery<Chat>, IChatQueries
+	public class ChatQueries : BaseQuery<Chat>, IChatQueries
 	{
 		public ChatQueries(ApplicationContext dbContext) : base(dbContext) { }
 

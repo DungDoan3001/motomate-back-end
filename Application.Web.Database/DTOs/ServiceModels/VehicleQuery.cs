@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Application.Web.Database.DTOs.ServiceModels
+﻿namespace Application.Web.Database.DTOs.ServiceModels
 {
 	public class VehicleQuery
 	{
@@ -12,7 +10,7 @@ namespace Application.Web.Database.DTOs.ServiceModels
 
 		public List<string>? Cities { get; set; }
 
-		public string? Search {  get; set; }
+		public string? Search { get; set; }
 
 		public bool? IsSortPriceDesc { get; set; } = null;
 
@@ -21,7 +19,7 @@ namespace Application.Web.Database.DTOs.ServiceModels
 
 	public class DateRent
 	{
-		public DateTime From { get; set;}
-		public DateTime To { get; set;}
+		public DateTime From { get; set; }
+		public DateTime To { get; set; }
 	}
 }

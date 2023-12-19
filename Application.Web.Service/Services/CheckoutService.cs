@@ -22,12 +22,12 @@ namespace Application.Web.Service.Services
 		private readonly IPaymentService _paymentService;
 
 		public CheckoutService(
-			IUnitOfWork unitOfWork, 
-			ICheckoutOrderQueries checkoutOrderQueries, 
-			IUserQueries userQueries, 
+			IUnitOfWork unitOfWork,
+			ICheckoutOrderQueries checkoutOrderQueries,
+			IUserQueries userQueries,
 			IVehicleQueries vehicleQueries,
 			IPaymentService paymentService)
-        {
+		{
 			_unitOfWork = unitOfWork;
 			_checkoutOrderRepo = unitOfWork.GetBaseRepo<CheckOutOrder>();
 			_checkoutOrderVehicleRepo = unitOfWork.GetBaseRepo<CheckOutOrderVehicle>();
@@ -43,7 +43,7 @@ namespace Application.Web.Service.Services
 		{
 			var order = await _checkoutOrderQueries.GetCheckOutOrderByUserIdAsync(checkoutOrder.UserId);
 
-			if(order == null)
+			if (order == null)
 			{
 				order = await HandleCreateNewCheckoutOrder(checkoutOrder, order);
 			}

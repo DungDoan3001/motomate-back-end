@@ -73,10 +73,10 @@ namespace Application.Web.Database.DTOs.ResponseModels
 			public List<VehicleUnavailableDateOfCheckout> RentDates { get; set; }
 		}
 
-        public class VehicleUnavailableDateOfCheckout
-        {
-            public DateTime From { get; set; }
-            public DateTime To { get; set; }
-        }
-    }
+		public class VehicleUnavailableDateOfCheckout
+		{
+			public DateTime From { get; set; }
+			public DateTime To { get; set; }
+		}
+	}
 }

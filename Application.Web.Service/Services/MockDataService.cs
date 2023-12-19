@@ -25,7 +25,7 @@ namespace Application.Web.Service.Services
 
 		private static Dictionary<string, List<Collection>> listCollections = new Dictionary<string, List<Collection>>
 		{
-			{ 
+			{
 				"HONDA", new List<Collection>
 				{
 					new Collection { Name = "WAVE", BrandId = Guid.Empty },
@@ -130,7 +130,7 @@ namespace Application.Web.Service.Services
 					},
 					{
 						new Model {Name = "RXS", Year = "2019", Capacity = "2", CollectionId = Guid.Empty },
-						new List<Color> 
+						new List<Color>
 						{
 							new Color {Name = "BLACK", HexCode = "#000000"},
 							new Color {Name = "RED", HexCode = "#FF0000"},
@@ -338,7 +338,7 @@ namespace Application.Web.Service.Services
 			{
 				var modelDictionary = listModels.Where(x => x.Key.ToUpper().Trim().Equals(collection.Name.ToUpper().Trim())).FirstOrDefault().Value;
 
-				if(modelDictionary != null)
+				if (modelDictionary != null)
 				{
 					foreach (var model in modelDictionary)
 					{
@@ -346,10 +346,10 @@ namespace Application.Web.Service.Services
 
 						if (dbModel == null)
 						{
-							var dbCollection = await _context.Collections.FirstOrDefaultAsync(x => x.Name.ToUpper().Trim().Equals(collection.Name.ToUpper().Trim())); 
-							
+							var dbCollection = await _context.Collections.FirstOrDefaultAsync(x => x.Name.ToUpper().Trim().Equals(collection.Name.ToUpper().Trim()));
+
 							model.Key.CollectionId = dbCollection.Id;
-							
+
 							_context.Models.Add(model.Key);
 
 							var modelColors = model.Value;

@@ -8,6 +8,6 @@ namespace Application.Web.Service.Interfaces
 		Task<IEnumerable<BlogCategory>> GetAllCategoryAsync();
 		Task<BlogCategory> CreateBlogCategoryAsync(BlogCategoryRequestModel requestModel);
 		Task<BlogCategory> UpdateCategoryAsync(BlogCategoryRequestModel requestModel, Guid categoryId);
-		Task<bool> DeleteCategoryAsync(Guid categoryId);	
+		Task<bool> DeleteCategoryAsync(Guid categoryId);
 	}
 }

@@ -5,7 +5,6 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using LazyCache;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Applicaton.Web.API.Controllers
 {

@@ -5,19 +5,19 @@ namespace Application.Web.Database.DTOs.ResponseModels
 	public class ViewResponseModel
 	{
 		[JsonPropertyName("view")]
-		public ViewResponse View {get; set;}
+		public ViewResponse View { get; set; }
 
 		[JsonPropertyName("viewProperties")]
-		public ViewProperties ViewProperties { get; set;}
+		public ViewProperties ViewProperties { get; set; }
 	}
 
 	public class ViewProperties
 	{
 		[JsonPropertyName("totalViewCountInToday")]
-		public int TotalViewCountInToday { get; set;}
+		public int TotalViewCountInToday { get; set; }
 
 		[JsonPropertyName("isLimit")]
-		public bool IsLimit {  get; set;}
+		public bool IsLimit { get; set; }
 	}
 
 	public class ViewResponse

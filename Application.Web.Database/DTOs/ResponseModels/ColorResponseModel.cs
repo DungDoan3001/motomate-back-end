@@ -2,8 +2,8 @@
 
 namespace Application.Web.Database.DTOs.ResponseModels
 {
-    public class ColorResponseModel
-    {
+	public class ColorResponseModel
+	{
 
 		[JsonPropertyName("id")]
 		public Guid Id { get; set; }
@@ -11,7 +11,7 @@ namespace Application.Web.Database.DTOs.ResponseModels
 		[JsonPropertyName("color")]
 		public string Color { get; set; }
 
-        [JsonPropertyName("hexCode")]
-        public string HexCode { get; set; }
-    }
+		[JsonPropertyName("hexCode")]
+		public string HexCode { get; set; }
+	}
 }

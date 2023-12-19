@@ -4,7 +4,6 @@ using Application.Web.Database.Queries.Interface;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Primitives;
 
 namespace Applicaton.Web.API.SignalR
 {

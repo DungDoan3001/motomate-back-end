@@ -27,11 +27,11 @@ namespace Application.Web.Service.Services
 		private readonly IBlogQueries _blogQueries;
 		private readonly IBlogCategoryQueries _blogCategoryQueries;
 
-		public BlogService(IMapper mapper, 
-						   IAppCache cache, 
-						   CacheKeyConstants cacheKeyConstants ,
-						   IUnitOfWork unitOfWork, 
-						   IBlogQueries blogQueries, 
+		public BlogService(IMapper mapper,
+						   IAppCache cache,
+						   CacheKeyConstants cacheKeyConstants,
+						   IUnitOfWork unitOfWork,
+						   IBlogQueries blogQueries,
 						   UserManager<User> userManager,
 						   IBlogCategoryQueries blogCategoryQueries)
 		{
@@ -114,7 +114,7 @@ namespace Application.Web.Service.Services
 		{
 			var category = await _blogCategoryQueries.GetByIdAsync(requestModel.CategoryId) ?? throw new StatusCodeException(message: "Category not found.", statusCode: StatusCodes.Status404NotFound);
 			var user = await _userManager.FindByIdAsync(requestModel.AuthorId.ToString()) ?? throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
-			
+
 			var newBlog = _mapper.Map<Blog>(requestModel);
 
 			var blogImage = new Image

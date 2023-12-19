@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Application.Web.Database.Context;
+﻿using Application.Web.Database.Context;
 using Application.Web.Database.Models;
 using Application.Web.Database.Queries.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +13,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 		{
 			_dbContext = dbContext;
 		}
-		
+
 		public async Task<bool> CheckIfUserExisted(Guid userId)
 		{
 			return await dbSet

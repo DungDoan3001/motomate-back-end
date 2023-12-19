@@ -17,7 +17,7 @@ namespace Applicaton.Web.API.SignalR
 		private readonly IChatQueries _chatQueries;
 		private readonly IHubContext<ChatHub> _chatHubContext;
 
-		public MessageHub(IMapper mapper ,IChatService chatService, IChatQueries chatQueries, IHubContext<ChatHub> chatHubContext)
+		public MessageHub(IMapper mapper, IChatService chatService, IChatQueries chatQueries, IHubContext<ChatHub> chatHubContext)
 		{
 			_mapper = mapper;
 			_chatService = chatService;
@@ -39,9 +39,9 @@ namespace Applicaton.Web.API.SignalR
 
 			var messageDto = _mapper.Map<MessageResponseModel>(message);
 
-			var result =  Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
-			
-			if(result.IsCompleted)
+			var result = Clients.Group(chatId.ToString()).SendAsync("ReceiveMessage", messageDto);
+
+			if (result.IsCompleted)
 			{
 				await SendUpdateChatClientsAsync(chatId);
 			}
@@ -84,11 +84,11 @@ namespace Applicaton.Web.API.SignalR
 			};
 
 			await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
-			
+
 			var (messages, pagination) = await _chatService.GetAllMessagesByChatId(paginationData, Guid.Parse(chatId));
 
 			var messageDtos = _mapper.Map<IEnumerable<MessageResponseModel>>(messages);
-			
+
 			await Clients.Caller.SendAsync("LoadMessages", messageDtos, pagination);
 		}
 	}

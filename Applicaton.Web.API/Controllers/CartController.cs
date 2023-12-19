@@ -3,8 +3,6 @@ using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
-using Application.Web.Service.Services;
-using Applicaton.Web.API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,11 +18,11 @@ namespace Applicaton.Web.API.Controllers
 		private const string controllerPrefix = "Cart";
 
 		public CartController(ILogger<CartController> logger, IMapper mapper, ICartService cartService)
-        {
-            _logger = logger;
-            _mapper = mapper;
-            _cartService = cartService;
-        }
+		{
+			_logger = logger;
+			_mapper = mapper;
+			_cartService = cartService;
+		}
 
 		/// <summary>
 		/// Acquire a cart by user identification

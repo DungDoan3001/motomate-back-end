@@ -100,15 +100,15 @@ namespace Application.Web.Service.Services
 
 			var tripRequestsByParentId = new List<List<TripRequest>>();
 
-            foreach (var tripRequestsByParentOrderId in groupTripRequestsByParentIds)
-            {
+			foreach (var tripRequestsByParentOrderId in groupTripRequestsByParentIds)
+			{
 				tripRequestsByParentId.Add(tripRequestsByParentOrderId.ToList());
-            }
+			}
 
 			tripRequestsByParentId = HandleTripRequestQuery(tripRequestsByParentId, query);
 
 			return Helpers.Helpers.GetPaginationModel<IEnumerable<TripRequest>>(tripRequestsByParentId, pagination);
-        }
+		}
 
 		public async Task<(IEnumerable<IEnumerable<TripRequest>>, PaginationMetadata)> GetAllTripRequests(PaginationRequestModel pagination, TripRequestQuery query)
 		{
@@ -128,7 +128,7 @@ namespace Application.Web.Service.Services
 			return Helpers.Helpers.GetPaginationModel<IEnumerable<TripRequest>>(tripRequestsByParentId, pagination);
 		}
 
-		public async Task<(IEnumerable<IEnumerable<TripRequest>>, PaginationMetadata)> GetTripRequestsByLesseeIdAsync(PaginationRequestModel pagination,Guid lesseeId, TripRequestQuery query)
+		public async Task<(IEnumerable<IEnumerable<TripRequest>>, PaginationMetadata)> GetTripRequestsByLesseeIdAsync(PaginationRequestModel pagination, Guid lesseeId, TripRequestQuery query)
 		{
 			var tripRequests = await _tripRequestQueries.GetAllTripRequestsBasedOnLesseeId(lesseeId);
 
@@ -202,10 +202,10 @@ namespace Application.Web.Service.Services
 
 			listParentIds = listParentIds.Distinct().ToList();
 
-			if(listParentIds.Count == 0)
+			if (listParentIds.Count == 0)
 				throw new StatusCodeException(message: "Must have a request to update.", statusCode: StatusCodes.Status400BadRequest);
 
-			if(listParentIds.Count > 1)
+			if (listParentIds.Count > 1)
 				throw new StatusCodeException(message: "Can only update status from one parent Order", statusCode: StatusCodes.Status400BadRequest);
 
 			foreach (var request in requestModel.RequestIds)
@@ -254,7 +254,7 @@ namespace Application.Web.Service.Services
 			var newImageList = new List<Image>();
 			var newVehicleReviewImageList = new List<VehicleReviewImage>();
 
-			foreach(var image in requestModel.Images)
+			foreach (var image in requestModel.Images)
 			{
 				var newImage = new Image
 				{
@@ -296,7 +296,7 @@ namespace Application.Web.Service.Services
 			var isUserExisted = await _userQueries.CheckIfUserExisted(requestModel.UserId);
 			var tripRequest = await _tripRequestQueries.GetTripRequestByIdAsync(requestModel.RequestId);
 
-            if (!isUserExisted)
+			if (!isUserExisted)
 				throw new StatusCodeException(message: "User not found.", statusCode: StatusCodes.Status404NotFound);
 
 			if (tripRequest == null)
@@ -309,19 +309,19 @@ namespace Application.Web.Service.Services
 				throw new StatusCodeException(message: "Rating does not allow, only allow 1, 2, 3, 4, 5.", statusCode: StatusCodes.Status400BadRequest);
 
 			return tripRequest;
-        }
+		}
 
 		private List<List<TripRequest>> HandleTripRequestQuery(List<List<TripRequest>> parentTripRequests, TripRequestQuery query)
 		{
 			var result = new List<List<TripRequest>>();
 
-			if(!query.Status.IsNullOrEmpty())
+			if (!query.Status.IsNullOrEmpty())
 			{
 				var queryStatus = query.Status.Trim().ToUpper().RemoveDiacritics();
 				if (queryStatus.Equals(Constants.PENDING.ToUpper()))
 				{
 					parentTripRequests = parentTripRequests.Where(x => Helpers.Helpers.GetParentOrderStatus(x).Equals(Constants.PENDING)).ToList();
-				} 
+				}
 				else if (queryStatus.Equals(Constants.ONGOING.ToUpper()))
 				{
 					parentTripRequests = parentTripRequests.Where(x => Helpers.Helpers.GetParentOrderStatus(x).Equals(Constants.ONGOING)).ToList();
@@ -340,8 +340,8 @@ namespace Application.Web.Service.Services
 				}
 			}
 
-            foreach (var parentTripRequest in parentTripRequests)
-            {
+			foreach (var parentTripRequest in parentTripRequests)
+			{
 				var holder = parentTripRequest;
 
 				if (!query.SearchQuery.IsNullOrEmpty())
@@ -358,7 +358,7 @@ namespace Application.Web.Service.Services
 				}
 
 				if (!query.LessorUsername.IsNullOrEmpty())
-				{					
+				{
 					holder = holder
 						.Where(x => x.Lessor.UserName
 											.ToUpper()
@@ -380,15 +380,15 @@ namespace Application.Web.Service.Services
 				}
 
 				result.Add(holder);
-            }
+			}
 
 			return result.Where(s => s.Count > 0).Distinct().ToList();
-        }
+		}
 
 		private async Task<bool> ApproveTripRequestAsync(Guid tripRequestId)
 		{
 			var tripRequest = await _tripRequestQueries.GetTripRequestByIdAsync(tripRequestId) ?? throw new StatusCodeException(message: "Trip not found.", statusCode: StatusCodes.Status404NotFound);
-		
+
 			var tripStatus = GetTripRequestStatus(tripRequest);
 
 			if (!tripStatus.Equals(Constants.PENDING))
@@ -578,7 +578,7 @@ namespace Application.Web.Service.Services
 				};
 
 				tripRequests.Add(tripRequest);
-				if (cartVehicle != null )
+				if (cartVehicle != null)
 				{
 					cartVehicleToDelete.Add(cartVehicle);
 				}

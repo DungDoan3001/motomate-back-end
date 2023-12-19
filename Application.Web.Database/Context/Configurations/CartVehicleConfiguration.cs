@@ -10,7 +10,7 @@ namespace Application.Web.Database.Context.Configurations
 		{
 			builder.ToTable("table_cart_vehicle");
 
-			builder.HasKey(cv => new {cv.CartId, cv.VehicleId});
+			builder.HasKey(cv => new { cv.CartId, cv.VehicleId });
 
 			builder
 				.HasOne(cv => cv.Vehicle)

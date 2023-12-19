@@ -23,10 +23,10 @@ namespace Application.Web.Service.Services
 		public CartService(IMapper mapper, IUnitOfWork unitOfWork, ICartQueries cartQueries, IUserQueries userQueries, IVehicleQueries vehicleQueries)
 		{
 			_mapper = mapper;
-            _unitOfWork = unitOfWork;
+			_unitOfWork = unitOfWork;
 			_cartRepo = unitOfWork.GetBaseRepo<Cart>();
 			_cartVehicleRepo = unitOfWork.GetBaseRepo<CartVehicle>();
-            _cartQueries = cartQueries;
+			_cartQueries = cartQueries;
 			_userQueries = userQueries;
 			_vehicleQueries = vehicleQueries;
 
@@ -83,16 +83,17 @@ namespace Application.Web.Service.Services
 
 				var cartVehicle = await _cartVehicleRepo.FindOne(x => x.CartId.Equals(cartId) && x.VehicleId.Equals(requestModel.VehicleId));
 
-				if(requestModel.PickUpDateTime.HasValue && requestModel.DropOffDatetime.HasValue)
+				if (requestModel.PickUpDateTime.HasValue && requestModel.DropOffDatetime.HasValue)
 				{
 					cartVehicle.PickUpDateTime = DateTime.SpecifyKind(requestModel.PickUpDateTime.Value, DateTimeKind.Utc);
 					cartVehicle.DropOffDateTime = DateTime.SpecifyKind(requestModel.DropOffDatetime.Value, DateTimeKind.Utc);
-				} else
+				}
+				else
 				{
 					cartVehicle.PickUpDateTime = null;
 					cartVehicle.DropOffDateTime = null;
 				}
-				
+
 
 				_cartVehicleRepo.Update(cartVehicle);
 
@@ -120,7 +121,7 @@ namespace Application.Web.Service.Services
 				throw new StatusCodeException(message: "Invalid Vehicle", statusCode: StatusCodes.Status400BadRequest);
 			}
 
-			if(requestModel.PickUpDateTime != null && requestModel.PickUpDateTime < DateTime.UtcNow)
+			if (requestModel.PickUpDateTime != null && requestModel.PickUpDateTime < DateTime.UtcNow)
 			{
 				throw new StatusCodeException(message: "Invalid Datetime input", statusCode: StatusCodes.Status400BadRequest);
 			}
@@ -128,7 +129,7 @@ namespace Application.Web.Service.Services
 			if (requestModel.DropOffDatetime != null && requestModel.DropOffDatetime < DateTime.UtcNow)
 			{
 				throw new StatusCodeException(message: "Invalid Datetime input", statusCode: StatusCodes.Status400BadRequest);
-			} 
+			}
 			else if (requestModel.PickUpDateTime != null && requestModel.PickUpDateTime > DateTime.UtcNow && requestModel.PickUpDateTime > requestModel.DropOffDatetime)
 			{
 				throw new StatusCodeException(message: "Pickup datetime can not larger than drop off datetime.", statusCode: StatusCodes.Status400BadRequest);
@@ -183,14 +184,15 @@ namespace Application.Web.Service.Services
 
 			var cartId = await _cartQueries.GetCartIdByUserIdAsync(requestModel.UserId);
 
-			if(cartId.Equals(Guid.Empty))
+			if (cartId.Equals(Guid.Empty))
 			{
 				throw new StatusCodeException(message: "Cart not found.", statusCode: StatusCodes.Status404NotFound);
-			} else
+			}
+			else
 			{
 				var isVehicleInCart = await _cartQueries.CheckIfVehicleExistedInCart(cartId, requestModel.VehicleId);
 
-				if(!isVehicleInCart)
+				if (!isVehicleInCart)
 				{
 					throw new StatusCodeException(message: "Vehicle not found in cart.", statusCode: StatusCodes.Status404NotFound);
 				}

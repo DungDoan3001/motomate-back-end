@@ -10,130 +10,130 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Web.Service.Services
 {
-    public class ColorService : IColorService
-    {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IGenericRepository<Color> _colorRepo;
-        private readonly IColorQueries _colorQueries;
-        private readonly IMapper _mapper;
+	public class ColorService : IColorService
+	{
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly IGenericRepository<Color> _colorRepo;
+		private readonly IColorQueries _colorQueries;
+		private readonly IMapper _mapper;
 
-        public ColorService(IUnitOfWork unitOfWork, IColorQueries colorQueries, IMapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _colorRepo = unitOfWork.GetBaseRepo<Color>();
-            _colorQueries = colorQueries;
-            _mapper = mapper;
-        }
+		public ColorService(IUnitOfWork unitOfWork, IColorQueries colorQueries, IMapper mapper)
+		{
+			_unitOfWork = unitOfWork;
+			_colorRepo = unitOfWork.GetBaseRepo<Color>();
+			_colorQueries = colorQueries;
+			_mapper = mapper;
+		}
 
-        public async Task<List<Color>> GetColorsAsync()
-        {
-            var colorsToReturn = await _colorQueries.GetAllColorsAsync();
+		public async Task<List<Color>> GetColorsAsync()
+		{
+			var colorsToReturn = await _colorQueries.GetAllColorsAsync();
 
-            return colorsToReturn;
-        }
+			return colorsToReturn;
+		}
 
-        public async Task<Color> GetColorByIdAsync(Guid colorId)
-        {
-            var result = await _colorRepo.GetById(colorId);
-            return result;
-        }
+		public async Task<Color> GetColorByIdAsync(Guid colorId)
+		{
+			var result = await _colorRepo.GetById(colorId);
+			return result;
+		}
 
-        public async Task<Color> CreateColorAsync(ColorRequestModel requestModel)
-        {
-            var newColor = _mapper.Map<Color>(requestModel);
+		public async Task<Color> CreateColorAsync(ColorRequestModel requestModel)
+		{
+			var newColor = _mapper.Map<Color>(requestModel);
 
-            var isColorExisted = await _colorQueries.CheckIfColorExistedByColorNameAsync(newColor.Name);
+			var isColorExisted = await _colorQueries.CheckIfColorExistedByColorNameAsync(newColor.Name);
 
-            if (isColorExisted)
-                throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);
-            else
-            {
-                _colorRepo.Add(newColor);
+			if (isColorExisted)
+				throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);
+			else
+			{
+				_colorRepo.Add(newColor);
 
-                await _unitOfWork.CompleteAsync();
+				await _unitOfWork.CompleteAsync();
 
-                return newColor;
-            }
-        }
+				return newColor;
+			}
+		}
 
-        // Created colors - alreadyExistedColors - colorsHitErrorWhenCreated
-        public async Task<(IEnumerable<Color>, IEnumerable<string>, IEnumerable<string>)> CreateBulkColorsAsync(List<ColorRequestModel> requestModels)
-        {
-            var colorsSuccessfullyCreated = new List<Color>();
-            var alreadyExistedColors = new List<string>();
-            var colorsHitErrorWhenCreated = new List<string>();
-            
-            foreach (var requestModel in requestModels)
-            {
-                try
-                {
-                    var newColor = _mapper.Map<Color>(requestModel);
+		// Created colors - alreadyExistedColors - colorsHitErrorWhenCreated
+		public async Task<(IEnumerable<Color>, IEnumerable<string>, IEnumerable<string>)> CreateBulkColorsAsync(List<ColorRequestModel> requestModels)
+		{
+			var colorsSuccessfullyCreated = new List<Color>();
+			var alreadyExistedColors = new List<string>();
+			var colorsHitErrorWhenCreated = new List<string>();
 
-                    var isColorExisted = await _colorQueries.CheckIfColorExistedByColorNameAsync(newColor.Name);
+			foreach (var requestModel in requestModels)
+			{
+				try
+				{
+					var newColor = _mapper.Map<Color>(requestModel);
 
-                    if (isColorExisted)
-                        throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);
-                    else
-                    {
-                        _colorRepo.Add(newColor);
+					var isColorExisted = await _colorQueries.CheckIfColorExistedByColorNameAsync(newColor.Name);
 
-                        await _unitOfWork.CompleteAsync();
+					if (isColorExisted)
+						throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);
+					else
+					{
+						_colorRepo.Add(newColor);
 
-                        colorsSuccessfullyCreated.Add(newColor);
-                    }
-                }
-                catch (StatusCodeException)
-                {
-                    alreadyExistedColors.Add(requestModel.Color);
-                }
-                catch (Exception)
-                {
-                    colorsHitErrorWhenCreated.Add(requestModel.Color);
-                }
-            }
+						await _unitOfWork.CompleteAsync();
 
-            return (colorsSuccessfullyCreated, alreadyExistedColors, colorsHitErrorWhenCreated);
-        }
+						colorsSuccessfullyCreated.Add(newColor);
+					}
+				}
+				catch (StatusCodeException)
+				{
+					alreadyExistedColors.Add(requestModel.Color);
+				}
+				catch (Exception)
+				{
+					colorsHitErrorWhenCreated.Add(requestModel.Color);
+				}
+			}
 
-        public async Task<Color> UpdateColorAsync(ColorRequestModel requestModel, Guid colorId)
-        {
-            var color = await _colorRepo.GetById(colorId);
+			return (colorsSuccessfullyCreated, alreadyExistedColors, colorsHitErrorWhenCreated);
+		}
 
-            var originalColorName = color.Name;
+		public async Task<Color> UpdateColorAsync(ColorRequestModel requestModel, Guid colorId)
+		{
+			var color = await _colorRepo.GetById(colorId);
 
-            if (color == null)
-                throw new StatusCodeException(message: "Color not found.", statusCode: StatusCodes.Status404NotFound);
-            else
-            {
-                var colorToUpdate = _mapper.Map<ColorRequestModel, Color>(requestModel, color);
+			var originalColorName = color.Name;
 
-                var isColorExisted = await _colorQueries.CheckIfColorExistedByColorNameAsync(colorToUpdate.Name);
+			if (color == null)
+				throw new StatusCodeException(message: "Color not found.", statusCode: StatusCodes.Status404NotFound);
+			else
+			{
+				var colorToUpdate = _mapper.Map<ColorRequestModel, Color>(requestModel, color);
 
-                if (isColorExisted && (colorToUpdate.Name.ToUpper() != originalColorName.ToUpper()))
-                    throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);
-                else
-                {
-                    _colorRepo.Update(colorToUpdate);
+				var isColorExisted = await _colorQueries.CheckIfColorExistedByColorNameAsync(colorToUpdate.Name);
 
-                    await _unitOfWork.CompleteAsync();
+				if (isColorExisted && (colorToUpdate.Name.ToUpper() != originalColorName.ToUpper()))
+					throw new StatusCodeException(message: "Color already exsited.", statusCode: StatusCodes.Status409Conflict);
+				else
+				{
+					_colorRepo.Update(colorToUpdate);
 
-                    return colorToUpdate;
-                }
-            }
-        }
+					await _unitOfWork.CompleteAsync();
 
-        public async Task<bool> DeleteColorAsync(Guid colorId)
-        {
-            var color = await _colorRepo.GetById(colorId);
+					return colorToUpdate;
+				}
+			}
+		}
 
-            if (color == null)
-                throw new StatusCodeException(message: "Color not found.", statusCode: StatusCodes.Status404NotFound);
+		public async Task<bool> DeleteColorAsync(Guid colorId)
+		{
+			var color = await _colorRepo.GetById(colorId);
 
-            _colorRepo.Delete(colorId);
+			if (color == null)
+				throw new StatusCodeException(message: "Color not found.", statusCode: StatusCodes.Status404NotFound);
 
-            await _unitOfWork.CompleteAsync();
+			_colorRepo.Delete(colorId);
 
-            return true;
-        }
-    }
+			await _unitOfWork.CompleteAsync();
+
+			return true;
+		}
+	}
 }

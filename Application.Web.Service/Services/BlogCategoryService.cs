@@ -27,7 +27,7 @@ namespace Application.Web.Service.Services
 			_cache = cache;
 			_mapper = mapper;
 		}
-			
+
 		public async Task<IEnumerable<BlogCategory>> GetAllCategoryAsync()
 		{
 			var key = $"{_cacheKeyConstants.BlogCategoryCacheKey}-All";
@@ -50,7 +50,7 @@ namespace Application.Web.Service.Services
 																.Equals(requestModel.Name
 																					.Trim()
 																					.ToUpper()));
-			if(category != null)
+			if (category != null)
 			{
 				throw new StatusCodeException(message: "Name already taken.", statusCode: StatusCodes.Status409Conflict);
 			}
@@ -100,7 +100,7 @@ namespace Application.Web.Service.Services
 			}
 
 			var categoryToUpate = _mapper.Map<BlogCategoryRequestModel, BlogCategory>(requestModel, category);
-			
+
 			_blogCategoryRepo.Update(categoryToUpate);
 
 			await _unitOfWork.CompleteAsync();

@@ -11,7 +11,7 @@ namespace Application.Web.Service.Services
 		private readonly string _publishableKey;
 
 		public PaymentService(IConfiguration configuration)
-        {
+		{
 			_secretKey = configuration["StripeSettings:SecretKey"];
 			_publishableKey = configuration["StripeSettings:PublishableKey"];
 		}
@@ -26,7 +26,7 @@ namespace Application.Web.Service.Services
 
 			var subTotal = order.CheckOutOrderVehicles.Sum(vehicle => vehicle.Vehicle.Price * CalculateTotalRentDays(vehicle.PickUpDateTime, vehicle.DropOffDateTime));
 
-			if(string.IsNullOrEmpty(order.PaymentIntentId))
+			if (string.IsNullOrEmpty(order.PaymentIntentId))
 			{
 				var options = new PaymentIntentCreateOptions
 				{
@@ -34,9 +34,10 @@ namespace Application.Web.Service.Services
 					Currency = "vnd",
 					PaymentMethodTypes = new List<string> { "card" }
 				};
-				
+
 				intent = await service.CreateAsync(options);
-			} else
+			}
+			else
 			{
 				var options = new PaymentIntentUpdateOptions
 				{
@@ -66,7 +67,7 @@ namespace Application.Web.Service.Services
 			};
 
 			var refundService = new RefundService();
-			
+
 			return await refundService.CreateAsync(options);
 		}
 
@@ -78,5 +79,5 @@ namespace Application.Web.Service.Services
 
 			return (int)Math.Round((decimal)totalDays, 2);
 		}
-    }
+	}
 }

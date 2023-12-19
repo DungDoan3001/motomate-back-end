@@ -11,7 +11,7 @@ namespace Application.Web.Database.DTOs.ResponseModels.ChartResponseModels
 		public string FullName { get; set; }
 
 		[JsonPropertyName("avatar")]
-		public string Avatar {  get; set; }
+		public string Avatar { get; set; }
 
 		[JsonPropertyName("totalTripRequested")]
 		public int TotalTripRequested { get; set; }

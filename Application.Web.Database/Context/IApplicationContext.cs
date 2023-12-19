@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Database.Context
 {
-    public interface IApplicationContext
-    {
+	public interface IApplicationContext
+	{
 		DbSet<Brand> Brands { get; set; }
 		DbSet<BrandImage> BrandImages { get; set; }
 		DbSet<Collection> Collections { get; set; }
@@ -19,5 +19,5 @@ namespace Application.Web.Database.Context
 		DbSet<View> Views { get; set; }
 
 		DbSet<T> GetSet<T>() where T : class;
-    }
+	}
 }

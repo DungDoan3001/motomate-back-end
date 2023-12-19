@@ -2,36 +2,36 @@
 
 namespace Application.Web.Database.DTOs.ResponseModels
 {
-    public class CollectionResponseModel
-    {
+	public class CollectionResponseModel
+	{
 		[JsonPropertyName("id")]
 		public Guid Id { get; set; }
 
 		[JsonPropertyName("name")]
 		public string Name { get; set; }
 
-        [JsonPropertyName("models")]
-        public IEnumerable<ModelsOfCollection> Models { get; set; }
+		[JsonPropertyName("models")]
+		public IEnumerable<ModelsOfCollection> Models { get; set; }
 
-        [JsonPropertyName("brand")]
-        public BrandOfCollection Brand { get; set; }
-    }
+		[JsonPropertyName("brand")]
+		public BrandOfCollection Brand { get; set; }
+	}
 
-    public class ModelsOfCollection
-    {
+	public class ModelsOfCollection
+	{
 		[JsonPropertyName("id")]
 		public Guid Id { get; set; }
 
 		[JsonPropertyName("name")]
 		public string Name { get; set; }
-    }
+	}
 
-    public class BrandOfCollection
-    {
+	public class BrandOfCollection
+	{
 		[JsonPropertyName("id")]
 		public Guid Id { get; set; }
 
 		[JsonPropertyName("name")]
 		public string Name { get; set; }
-    }
+	}
 }

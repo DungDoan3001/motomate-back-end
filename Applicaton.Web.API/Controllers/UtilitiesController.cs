@@ -8,27 +8,27 @@ using Microsoft.AspNetCore.Mvc;
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/utils")]
-    [ApiController]
-    public class UtilitiesController : ControllerBase
-    {
+	[ApiController]
+	public class UtilitiesController : ControllerBase
+	{
 		private readonly ILogger<UtilitiesController> _logger;
 		private readonly IUtilitiesService _utilitiesService;
 		private const string controllerPrefix = "Utilities";
 
 		public UtilitiesController(ILogger<UtilitiesController> logger, IUtilitiesService utilitiesService)
-        {
+		{
 			_logger = logger;
-            _utilitiesService = utilitiesService;
+			_utilitiesService = utilitiesService;
 
 		}
 
-        [HttpGet("cronjob")]
-        public async Task<IActionResult> CronJobActivator()
-        {
-            var result = await _utilitiesService.CronJobActivator();
+		[HttpGet("cronjob")]
+		public async Task<IActionResult> CronJobActivator()
+		{
+			var result = await _utilitiesService.CronJobActivator();
 
-            return Ok(result);
-        }
+			return Ok(result);
+		}
 
 		/// <summary>
 		/// Add View

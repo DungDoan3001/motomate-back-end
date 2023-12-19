@@ -1,8 +1,4 @@
-﻿using LazyCache;
-using LazyCache.Providers;
-using Microsoft.Extensions.Caching.Memory;
-
-namespace Application.Web.Service.Helpers
+﻿namespace Application.Web.Service.Helpers
 {
 	public class CacheKeyConstants
 	{
@@ -21,7 +17,7 @@ namespace Application.Web.Service.Helpers
 		{
 			var isKeyExisted = CacheKeyList.Any(x => x.Equals(key));
 
-			if(!isKeyExisted)
+			if (!isKeyExisted)
 			{
 				CacheKeyList.Add(key);
 			}

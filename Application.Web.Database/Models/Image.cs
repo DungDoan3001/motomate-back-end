@@ -1,25 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Application.Web.Database.Models
 {
-    public class Image : BaseModel
-    {
-        [Column("image_url")]
-        public string ImageUrl { get; set; }
+	public class Image : BaseModel
+	{
+		[Column("image_url")]
+		public string ImageUrl { get; set; }
 
-        [Column("public_id")]
-        public string PublicId { get; set; }
+		[Column("public_id")]
+		public string PublicId { get; set; }
 
-        [Column("created_at")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+		[Column("created_at")]
+		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual ICollection<BrandImage> BrandImages { get; set;}
+		public virtual ICollection<BrandImage> BrandImages { get; set; }
 
-        public virtual ICollection<VehicleImage> VehicleImages { get; set; }
+		public virtual ICollection<VehicleImage> VehicleImages { get; set; }
 
-        public virtual ICollection<VehicleReviewImage> VehicleReviewImages { get; set; }
+		public virtual ICollection<VehicleReviewImage> VehicleReviewImages { get; set; }
 
-        public virtual Blog Blog { get; set; }
-    }
+		public virtual Blog Blog { get; set; }
+	}
 }

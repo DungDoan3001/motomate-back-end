@@ -27,7 +27,7 @@ namespace Application.Web.Service.Services
 				.CountAsync();
 
 			decimal percentageIncreaseByLastWeek = (decimal)Math.Round((double)(100 * totalVehiclesLastWeek) / totalVehicles);
-			
+
 			return new TotalVehicleResponseModel
 			{
 				TotalVehicles = totalVehicles,
@@ -86,7 +86,7 @@ namespace Application.Web.Service.Services
 				.ToListAsync();
 
 			var percentageIncreaseByLastWeek = tripRequestAmmounts.Sum() > 0 ? Math.Round((100 * tripRequestAmmountsLastWeek.Sum()) / tripRequestAmmounts.Sum()) : 0;
-			
+
 			return new TotalProfitResponseModel
 			{
 				TotalProfits = tripRequestAmmounts.Sum(),

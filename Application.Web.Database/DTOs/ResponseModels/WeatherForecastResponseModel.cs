@@ -3,7 +3,7 @@
 namespace Application.Web.Database.DTOs.ResponseModels
 {
 	public class WeatherForecastResponseModel
-    {
+	{
 		[JsonPropertyName("date")]
 		public DateTime Date { get; set; }
 
@@ -11,12 +11,12 @@ namespace Application.Web.Database.DTOs.ResponseModels
 
 		public int TemperatureC { get; set; }
 
-        [JsonPropertyName("temperatureF")]
+		[JsonPropertyName("temperatureF")]
 
-        public int TemperatureF { get; set; }
+		public int TemperatureF { get; set; }
 
-        [JsonPropertyName("summary")]
+		[JsonPropertyName("summary")]
 
-        public string Summary { get; set; }
-    }
+		public string Summary { get; set; }
+	}
 }

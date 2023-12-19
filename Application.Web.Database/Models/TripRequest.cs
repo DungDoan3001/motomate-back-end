@@ -2,7 +2,7 @@
 
 namespace Application.Web.Database.Models
 {
-	public class TripRequest : BaseModel             
+	public class TripRequest : BaseModel
 	{
 		[Column("FK_lessee_id")]
 		public Guid LesseeId { get; set; }

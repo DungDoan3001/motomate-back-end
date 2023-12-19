@@ -3,7 +3,7 @@
 	public sealed class ChatRequestModel
 	{
 		public List<string> Members { get; set; }
-		public ChatMessage ChatMessage {  get; set; }
+		public ChatMessage ChatMessage { get; set; }
 	}
 
 	public sealed class ChatMessage

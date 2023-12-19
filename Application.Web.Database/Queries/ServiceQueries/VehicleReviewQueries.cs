@@ -17,7 +17,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 
 		public async Task<decimal> GetAverageRatingByVehicleId(Guid vehicleId)
 		{
-			return (decimal) await dbSet
+			return (decimal)await dbSet
 				.Where(x => x.VehicleId.Equals(vehicleId))
 				.AsNoTracking()
 				.AverageAsync(x => x.Rating);
