@@ -98,7 +98,7 @@ namespace Application.Web.Service.Services
 		{
 			var tripRequests = await _dbContext.TripRequests
 				.Include(x => x.CompletedTrip)
-				.Where(x => x.CompletedTrip != null && x.Created_At.Date > new DateTime(year).Date && x.Created_At.Date < new DateTime(year + 1).Date)
+				.Where(x => x.CompletedTrip != null && x.Created_At.Date > new DateTime(year,1,1).Date && x.Created_At.Date < new DateTime(year + 1,1,1).Date)
 				.ToListAsync();
 
 			var monthCounts = new Dictionary<string, decimal>
@@ -137,7 +137,7 @@ namespace Application.Web.Service.Services
 		{
 			var tripRequests = await _dbContext.TripRequests
 				.Include(x => x.CompletedTrip)
-				.Where(x => x.CompletedTrip != null && x.Created_At.Date > new DateTime(year).Date && x.Created_At.Date < new DateTime(year + 1).Date)
+				.Where(x => x.CompletedTrip != null && x.Created_At.Date > new DateTime(year,1,1).Date && x.Created_At.Date < new DateTime(year + 1,1,1).Date)
 				.ToListAsync();
 
 			var monthCounts = new Dictionary<string, int>
