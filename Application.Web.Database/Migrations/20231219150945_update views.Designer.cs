@@ -3,6 +3,7 @@ using System;
 using Application.Web.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231219150945_update views")]
+    partial class updateviews
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -551,28 +553,28 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("60929087-1227-4efd-af43-e9ae2524eb0e"),
-                            ConcurrencyStamp = "1f141839-b00d-4cbb-9b22-3126fa060960",
+                            ConcurrencyStamp = "82c816b7-72a3-4a6f-9bc8-8db2a2939eaa",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "06341368-8bd1-4cfd-919c-799f73127683",
+                            ConcurrencyStamp = "8bdd6674-c037-48fc-8b68-fc2776938180",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("20308981-486a-456e-833c-1a8821121b3e"),
-                            ConcurrencyStamp = "b57fb636-d8fa-4487-8ef2-87a3921a4f21",
+                            ConcurrencyStamp = "d36de90c-5114-4b31-89fc-50b6daa240b9",
                             Name = "Lessor",
                             NormalizedName = "LESSOR"
                         },
                         new
                         {
                             Id = new Guid("19021360-14c6-49ab-a91b-79c388115f4e"),
-                            ConcurrencyStamp = "242f8ae2-4bc8-45d9-bc95-5bfdf22946bc",
+                            ConcurrencyStamp = "bd7629e8-bc18-4332-986e-ecdd8308a89c",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         });
@@ -968,8 +970,6 @@ namespace Application.Web.Database.Migrations
                         .HasColumnName("region_geo_name_id");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
 
                     b.HasIndex("IpAddress");
 

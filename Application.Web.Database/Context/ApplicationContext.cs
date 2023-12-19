@@ -1,12 +1,11 @@
-﻿using System.Runtime.CompilerServices;
-using Application.Web.Database.Constants;
+﻿using Application.Web.Database.Constants;
 using Application.Web.Database.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Web.Database.Context
 {
-    public class ApplicationContext : IdentityDbContext<User, Role, Guid>, IApplicationContext
+	public class ApplicationContext : IdentityDbContext<User, Role, Guid>, IApplicationContext
     {
         public ApplicationContext(DbContextOptions options) : base(options) { }
 
@@ -24,6 +23,7 @@ namespace Application.Web.Database.Context
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartVehicle> CartVehicles { get; set; }
         public DbSet<TripRequest> TripRequests { get; set; }
+        public DbSet<View> Views { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
