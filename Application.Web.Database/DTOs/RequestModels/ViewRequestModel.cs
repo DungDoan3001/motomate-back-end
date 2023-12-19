@@ -33,8 +33,5 @@ namespace Application.Web.Database.DTOs.RequestModels
 
 		[JsonPropertyName("regionGeoNameId")]
 		public string RegionGeoNameId { get; set; }
-
-		[JsonPropertyName("createdAt")]
-		public DateTime CreatedAt { get; set; }
 	}
 }

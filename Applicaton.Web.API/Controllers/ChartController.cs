@@ -160,7 +160,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet("total/profits")]
-		public async Task<ActionResult<TotalUserResponseModel>> GetTotalProfitsAsync()
+		public async Task<ActionResult<TotalProfitResponseModel>> GetTotalProfitsAsync()
 		{
 			try
 			{
