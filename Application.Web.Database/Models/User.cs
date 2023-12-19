@@ -14,6 +14,9 @@ namespace Application.Web.Database.Models
         [Column("full_name")]
         public string FullName => FirstName + " " + LastName;
 
+        [Column("bio")]
+        public string Bio {  get; set; }
+
         [Column("picture")]
         public string Picture { get; set; }
 

@@ -3,6 +3,7 @@ using System;
 using Application.Web.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231219143035_add bio fields")]
+    partial class addbiofields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -551,28 +553,28 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("60929087-1227-4efd-af43-e9ae2524eb0e"),
-                            ConcurrencyStamp = "1f141839-b00d-4cbb-9b22-3126fa060960",
+                            ConcurrencyStamp = "335efc31-4104-40f3-975c-58f697706346",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "06341368-8bd1-4cfd-919c-799f73127683",
+                            ConcurrencyStamp = "97ef0aab-8e46-4caf-b1f1-ba7615156f84",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("20308981-486a-456e-833c-1a8821121b3e"),
-                            ConcurrencyStamp = "b57fb636-d8fa-4487-8ef2-87a3921a4f21",
+                            ConcurrencyStamp = "5685bc11-268c-4205-a03e-df68b4bbcbac",
                             Name = "Lessor",
                             NormalizedName = "LESSOR"
                         },
                         new
                         {
                             Id = new Guid("19021360-14c6-49ab-a91b-79c388115f4e"),
-                            ConcurrencyStamp = "242f8ae2-4bc8-45d9-bc95-5bfdf22946bc",
+                            ConcurrencyStamp = "a91b81d8-7809-49ca-a6ca-77f1c6058b5f",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         });
@@ -914,66 +916,6 @@ namespace Application.Web.Database.Migrations
                     b.HasIndex("VehicleReviewId");
 
                     b.ToTable("table_vehicle_review_image", (string)null);
-                });
-
-            modelBuilder.Entity("Application.Web.Database.Models.View", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Continent")
-                        .HasColumnType("text")
-                        .HasColumnName("continent");
-
-                    b.Property<string>("ContinentGeoNameId")
-                        .HasColumnType("text")
-                        .HasColumnName("continent_geo_name_id");
-
-                    b.Property<string>("Country")
-                        .HasColumnType("text")
-                        .HasColumnName("country");
-
-                    b.Property<string>("CountryCode")
-                        .HasColumnType("text")
-                        .HasColumnName("country_code");
-
-                    b.Property<string>("CountryGeoNameId")
-                        .HasColumnType("text")
-                        .HasColumnName("country_geo_name_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("IpAddress")
-                        .HasColumnType("text")
-                        .HasColumnName("ip_address");
-
-                    b.Property<string>("Latitude")
-                        .HasColumnType("text")
-                        .HasColumnName("latitude");
-
-                    b.Property<string>("Longitude")
-                        .HasColumnType("text")
-                        .HasColumnName("longtitude");
-
-                    b.Property<string>("Region")
-                        .HasColumnType("text")
-                        .HasColumnName("region");
-
-                    b.Property<string>("RegionGeoNameId")
-                        .HasColumnType("text")
-                        .HasColumnName("region_geo_name_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("IpAddress");
-
-                    b.ToTable("table_view", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

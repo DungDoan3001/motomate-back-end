@@ -23,7 +23,7 @@ namespace Application.Web.Service.Services
 			int totalVehicles = await _dbContext.Vehicles.CountAsync();
 
 			int totalVehiclesLastWeek = await _dbContext.Vehicles
-				.Where(x => x.CreatedAt > DateTime.UtcNow.AddDays(-7))
+				.Where(x => x.CreatedAt.Date > DateTime.UtcNow.AddDays(-7).Date)
 				.CountAsync();
 
 			decimal percentageIncreaseByLastWeek = (decimal)Math.Round((double)(100 * totalVehiclesLastWeek) / totalVehicles);
@@ -40,7 +40,7 @@ namespace Application.Web.Service.Services
 			int totalUsers = await _dbContext.Users.CountAsync();
 
 			int totalUsersLastWeek = await _dbContext.Users
-				.Where(x => x.CreatedAt > DateTime.UtcNow.AddDays(-7))
+				.Where(x => x.CreatedAt.Date > DateTime.UtcNow.AddDays(-7).Date)
 				.CountAsync();
 
 			decimal percentageIncreaseByLastWeek = (decimal)Math.Round((double)(100 * totalUsersLastWeek) / totalUsers);
@@ -48,6 +48,23 @@ namespace Application.Web.Service.Services
 			return new TotalUserResponseModel
 			{
 				TotalUsers = totalUsers,
+				PercentageIncreaseByLastWeek = percentageIncreaseByLastWeek
+			};
+		}
+
+		public async Task<TotalViewsResponseModel> GetTotalViewsAsync()
+		{
+			int totalViews = await _dbContext.Views.CountAsync();
+
+			int totalViewsLastWeek = await _dbContext.Views
+				.Where(x => x.CreatedAt.Date > DateTime.UtcNow.AddDays(-7).Date)
+				.CountAsync();
+
+			decimal percentageIncreaseByLastWeek = (decimal)Math.Round((double)(100 * totalViewsLastWeek) / totalViews);
+
+			return new TotalViewsResponseModel
+			{
+				TotalViews = totalViews,
 				PercentageIncreaseByLastWeek = percentageIncreaseByLastWeek
 			};
 		}
@@ -64,7 +81,7 @@ namespace Application.Web.Service.Services
 
 			List<decimal> tripRequestAmmountsLastWeek = await _dbContext.TripRequests
 				.Include(x => x.CompletedTrip)
-				.Where(x => x.CompletedTrip != null && x.Created_At > DateTime.UtcNow.AddDays(-7))
+				.Where(x => x.CompletedTrip != null && x.Created_At.Date > DateTime.UtcNow.AddDays(-7).Date)
 				.Select(x => calculateCost(x, true))
 				.ToListAsync();
 
@@ -81,7 +98,7 @@ namespace Application.Web.Service.Services
 		{
 			var tripRequests = await _dbContext.TripRequests
 				.Include(x => x.CompletedTrip)
-				.Where(x => x.CompletedTrip != null && x.Created_At > new DateTime(year, 1, 1) && x.Created_At < new DateTime(year + 1, 1, 1))
+				.Where(x => x.CompletedTrip != null && x.Created_At.Date > new DateTime(year).Date && x.Created_At.Date < new DateTime(year + 1).Date)
 				.ToListAsync();
 
 			var monthCounts = new Dictionary<string, decimal>
@@ -120,7 +137,7 @@ namespace Application.Web.Service.Services
 		{
 			var tripRequests = await _dbContext.TripRequests
 				.Include(x => x.CompletedTrip)
-				.Where(x => x.CompletedTrip != null && x.Created_At > new DateTime(year) && x.Created_At < new DateTime(year + 1))
+				.Where(x => x.CompletedTrip != null && x.Created_At.Date > new DateTime(year).Date && x.Created_At.Date < new DateTime(year + 1).Date)
 				.ToListAsync();
 
 			var monthCounts = new Dictionary<string, int>
@@ -151,6 +168,35 @@ namespace Application.Web.Service.Services
 				{
 					Year = year,
 					Months = monthCounts
+				}
+			};
+		}
+
+		public async Task<TotalViewsInMonth> GetTotalViewsInAMonthAsync(int year, int month)
+		{
+			var dayCounts = GetDayNumberMapping(year, month);
+
+			var daysInMonth = DateTime.DaysInMonth(year, month);
+			var firstDayInMonth = new DateTime(year, month, 1);
+			var lastDayInMonth = new DateTime(year, month, daysInMonth);
+
+			var viewsInMonth = await _dbContext.Views
+				.Where(x => x.CreatedAt.Date >= firstDayInMonth.Date && x.CreatedAt.Date <= lastDayInMonth.Date)
+				.ToListAsync();
+
+			foreach (var view in viewsInMonth)
+			{
+				string day = view.CreatedAt.Day.ToString();
+				dayCounts[day] += 1;
+			}
+
+			return new TotalViewsInMonth
+			{
+				TotalViews = new TotalViews
+				{
+					Year = year,
+					Month = month,
+					Days = dayCounts
 				}
 			};
 		}
@@ -217,6 +263,21 @@ namespace Application.Web.Service.Services
 			var total = _paymentService.CalculateTotalRentDays(tripRequest.PickUpDateTime, tripRequest.DropOffDateTime) * tripRequest.Ammount;
 
 			return isCalculateProfit ? total * Constants.PROFIT_KEEP_PERCENTAGE : total;
+		}
+
+		private static Dictionary<string, int> GetDayNumberMapping(int year, int month)
+		{
+			Dictionary<string, int> dayNumberMapping = new Dictionary<string, int>();
+
+			int daysInMonth = DateTime.DaysInMonth(year, month);
+
+			for (int day = 1; day <= daysInMonth; day++)
+			{
+				string dayNumber = day.ToString(); // Convert day number to string
+				dayNumberMapping.Add(dayNumber, 0);
+			}
+
+			return dayNumberMapping;
 		}
 	}
 }

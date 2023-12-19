@@ -16,6 +16,7 @@ namespace Application.Web.Database.Context
 		DbSet<Vehicle> Vehicles { get; set; }
 		DbSet<VehicleImage> VehicleImages { get; set; }
 		DbSet<TripRequest> TripRequests { get; set; }
+		DbSet<View> Views { get; set; }
 
 		DbSet<T> GetSet<T>() where T : class;
     }

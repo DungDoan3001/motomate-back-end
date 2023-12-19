@@ -19,6 +19,9 @@ namespace Application.Web.Database.DTOs.ResponseModels
         [JsonPropertyName("fullName")]
         public string FullName { get; set; }
 
+        [JsonPropertyName("bio")]
+        public string Bio { get; set; }
+
 		[JsonPropertyName("username")]
 		public string UserName { get; set; }
 

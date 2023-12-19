@@ -5,6 +5,7 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using LazyCache;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Applicaton.Web.API.Controllers
 {
@@ -42,6 +43,48 @@ namespace Applicaton.Web.API.Controllers
 				var result = await _cache.GetOrAddAsync(
 					key,
 					async () => await _chartService.GetTotalVehiclesAsync(),
+					TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+				_cacheKeyConstants.AddKeyToList(key);
+
+				return Ok(result);
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Get total views chart
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("total/views")]
+		public async Task<ActionResult<TotalViewsResponseModel>> GetTotalViewsAsync()
+		{
+			try
+			{
+				var key = $"chart-total-view";
+
+				var result = await _cache.GetOrAddAsync(
+					key,
+					async () => await _chartService.GetTotalViewsAsync(),
 					TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
 
 				_cacheKeyConstants.AddKeyToList(key);
@@ -268,6 +311,48 @@ namespace Applicaton.Web.API.Controllers
 					TotalRevenue = totalRevenue,
 					TotalRentedAndCompletedVehicles = totalCompletedTripRequest,
 				});
+			}
+			catch (StatusCodeException ex)
+			{
+				return StatusCode(ex.StatusCode, new ErrorResponseModel
+				{
+					Message = ex.Message,
+					StatusCode = ex.StatusCode
+				});
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"{controllerPrefix} error at {Helpers.GetCallerName()}: {ex.Message}", ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseModel
+				{
+					Message = "Error while performing action.",
+					StatusCode = StatusCodes.Status500InternalServerError,
+					Errors = { ex.Message }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Get total views in a month
+		/// </summary>
+		/// <returns>Status code of the action.</returns>
+		/// <response code="200">Successfully get items information.</response>
+		/// <response code="500">There is something wrong while execute.</response>
+		[HttpGet("total/views/{year}/{month}")]
+		public async Task<ActionResult<TotalViewsInMonth>> GetTotalViewsInAMonthAsync([FromRoute] int year, [FromRoute] int month)
+		{
+			try
+			{
+				var key = $"chart-total-views-by-month-{year}-{month}";
+
+				var result = await _cache.GetOrAddAsync(
+								key,
+								async () => await _chartService.GetTotalViewsInAMonthAsync(year, month),
+								TimeSpan.FromHours(_cacheKeyConstants.ExpirationHours));
+
+				_cacheKeyConstants.AddKeyToList(key);
+
+				return Ok(result);
 			}
 			catch (StatusCodeException ex)
 			{
