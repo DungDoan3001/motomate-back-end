@@ -14,6 +14,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 			return await dbSet
 				.Include(x => x.User)
 				.Where(x => x.BlogId.Equals(blogId))
+				.OrderByDescending(x => x.CreatedAt)
 				.ToListAsync();
 		}
 

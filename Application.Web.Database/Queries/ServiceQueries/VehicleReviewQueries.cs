@@ -28,6 +28,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.User)
 				.Include(x => x.VehicleReviewImages).ThenInclude(x => x.Image)
 				.Where(x => x.VehicleId.Equals(vehicleId))
+				.OrderByDescending(x => x.CreatedAt)
 				.ToListAsync();
 		}
 	}
