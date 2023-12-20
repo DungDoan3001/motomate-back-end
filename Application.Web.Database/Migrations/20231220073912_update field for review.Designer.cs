@@ -3,6 +3,7 @@ using System;
 using Application.Web.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Application.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20231220073912_update field for review")]
+    partial class updatefieldforreview
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -551,28 +553,28 @@ namespace Application.Web.Database.Migrations
                         new
                         {
                             Id = new Guid("60929087-1227-4efd-af43-e9ae2524eb0e"),
-                            ConcurrencyStamp = "d95e0985-0af4-4481-b6d8-a3ea0ee88cb0",
+                            ConcurrencyStamp = "fdf3eeda-8dfd-4317-aa41-aa7b4ac040ba",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = new Guid("7e8e25ca-fd0a-4271-b7e9-fe61ffcff2c1"),
-                            ConcurrencyStamp = "c90e48b6-09f2-444c-a2b8-a0d8555ffa82",
+                            ConcurrencyStamp = "b0fe4bf6-bd00-44ba-88bc-0dac71417f41",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = new Guid("20308981-486a-456e-833c-1a8821121b3e"),
-                            ConcurrencyStamp = "09a60ed4-b899-4079-a12f-f8bb52ac89a5",
+                            ConcurrencyStamp = "57ebeb5b-0eba-4492-9b85-de8840feef66",
                             Name = "Lessor",
                             NormalizedName = "LESSOR"
                         },
                         new
                         {
                             Id = new Guid("19021360-14c6-49ab-a91b-79c388115f4e"),
-                            ConcurrencyStamp = "ea79bd94-9f81-4a3b-9e68-6b3371c1e4df",
+                            ConcurrencyStamp = "50412763-247d-4d71-8085-64b2818cfd33",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         });
@@ -600,6 +602,10 @@ namespace Application.Web.Database.Migrations
                     b.Property<string>("DropOffLocation")
                         .HasColumnType("text")
                         .HasColumnName("drop_off_location");
+
+                    b.Property<bool>("IsReviewed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_reviewed");
 
                     b.Property<Guid>("LesseeId")
                         .HasColumnType("uuid")

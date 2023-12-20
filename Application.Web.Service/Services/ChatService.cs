@@ -132,7 +132,7 @@ namespace Application.Web.Service.Services
 				.Take(pagination.pageSize)
 				.ToList();
 
-			var messagesToReturn = messagePaging.OrderByDescending(x => x.CreatedAt);
+			var messagesToReturn = messagePaging.OrderBy(x => x.CreatedAt);
 
 			return (messagesToReturn, paginationMetadata);
 		}
