@@ -4,12 +4,14 @@ using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/blog/category")]
+	[Authorize]
 	[ApiController]
 	public class BlogCategoryController : ControllerBase
 	{
@@ -32,6 +34,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<BlogCategoryResponseModel>>> GetCategoriesAsync()
 		{
@@ -69,6 +72,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpPost]
 		public async Task<ActionResult<BlogCategoryResponseModel>> CreateCategoryAsync([FromBody] BlogCategoryRequestModel requestModel)
 		{
@@ -109,6 +113,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpPut("{id}")]
 		public async Task<ActionResult<BlogCategoryResponseModel>> UpdateCategoryAsync([FromBody] BlogCategoryRequestModel requestModel, [FromRoute] Guid id)
 		{
@@ -149,6 +154,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="204">Successfully deleted item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteCategoryAsync([FromRoute] Guid id)
 		{

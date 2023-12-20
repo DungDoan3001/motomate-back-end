@@ -3,12 +3,14 @@ using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/auth")]
+	[Authorize]
 	[ApiController]
 	public class AuthController : ControllerBase
 	{
@@ -28,6 +30,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="201">Successfully create a user.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpPost("sign-up")]
 		public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationRequestModel userRegistration)
 		{
@@ -71,6 +74,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully create a JWT token.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpPost("login")]
 		public async Task<ActionResult<TokenResponseModel>> Authenticate([FromBody] UserLoginRequestModel userLogin)
 		{
@@ -120,6 +124,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully send an email.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpPost("change/password")]
 		public async Task<IActionResult> SendResetPasswordEmail([FromBody] EmailResetPasswordRequestModel request)
 		{
@@ -160,6 +165,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully send an email.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpPost("{userId}/lock")]
 		public async Task<IActionResult> UpdateUserLockOrUnlockStatus([FromRoute] Guid userId)
 		{
@@ -195,6 +201,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully reset password.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpPost("change/password/{encodedToken}")]
 		public async Task<IActionResult> ChangeUserPassword([FromRoute] string encodedToken, [FromBody] ChangePasswordRequestModel changePasswordRequest)
 		{
@@ -235,6 +242,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully create a user and return JWT token.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpPost("sso/google")]
 		public async Task<ActionResult<TokenResponseModel>> GoogleSSOProvider([FromBody] GoogleTokenRequestModel tokenRequest)
 		{

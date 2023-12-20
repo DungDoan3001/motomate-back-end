@@ -3,11 +3,13 @@ using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/email")]
+	[Authorize]
 	[ApiController]
 	public class EmailController : ControllerBase
 	{
@@ -27,6 +29,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully sent the email.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPost("send")]
 		public async Task<IActionResult> SendEmailAsync([FromBody] SendEmailOptions emailOptions)
 		{
@@ -62,6 +65,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully sent the emails.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPost("send/bulk")]
 		public async Task<IActionResult> SendBulkEmailAsync([FromBody] SendBulkEmailOptions bulkEmailOptions)
 		{

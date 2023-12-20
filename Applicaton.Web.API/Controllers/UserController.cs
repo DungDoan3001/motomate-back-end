@@ -9,6 +9,7 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/user")]
+	[Authorize]
 	[ApiController]
 	public class UserController : ControllerBase
 	{
@@ -41,6 +43,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("all")]
 		public async Task<ActionResult<IEnumerable<UserResponseModel>>> GetAllUsersAsync([FromQuery] UserQuery userQuery)
 		{
@@ -78,6 +81,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<UserResponseModel>>> GetAllUsersWithPaginationAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] UserQuery userQuery)
 		{
@@ -123,6 +127,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("{username}/details")]
 		public async Task<ActionResult<UserResponseModel>> GetUserByUsernameAsync([FromRoute] string username)
 		{
@@ -163,6 +168,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpGet("role/all")]
 		public async Task<ActionResult<IEnumerable<RoleReponseModel>>> GetAllAvailableRoles()
 		{
@@ -200,6 +206,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("details")]
 		public async Task<ActionResult<UserResponseModel>> GetCurrentUserInformationAsync()
 		{
@@ -239,6 +246,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPut("{username}")]
 		public async Task<ActionResult<UserResponseModel>> UpdateUserInformation([FromRoute] string username, [FromBody] UserRequestModel requestModel)
 		{
@@ -291,6 +299,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpPut("role")]
 		public async Task<ActionResult<UserResponseModel>> UpdateUserRoleInformation([FromBody] UserRoleRequestModel requestModel)
 		{
@@ -328,6 +337,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpDelete("{username}")]
 		public async Task<IActionResult> DeleteUserInformation([FromRoute] string username)
 		{

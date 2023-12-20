@@ -5,11 +5,13 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/chat")]
+	[Authorize]
 	[ApiController]
 	public class ChatController : ControllerBase
 	{
@@ -32,6 +34,8 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("{userId}")]
 		public async Task<ActionResult<IEnumerable<ChatResponseModel>>> GetAllMessageByChatIdAsync([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid userId)
 		{
@@ -77,6 +81,8 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("message/{chatId}")]
 		public async Task<ActionResult<MessageResponseModel>> GetAllChatsByUserIdAsync([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid chatId)
 		{
@@ -122,6 +128,8 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		
+		[Authorize(Policy = "UserRight")]
 		[HttpPost("message/{chatId}")]
 		public async Task<ActionResult<MessageResponseModel>> CreateMessageAsync([FromBody] MessageRequestModel requestModel, [FromRoute] Guid chatId)
 		{
@@ -159,6 +167,8 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		
+		[Authorize(Policy = "UserRight")]
 		[HttpPost]
 		public async Task<ActionResult<ChatResponseModel>> CreateChatAsync([FromBody] ChatRequestModel requestModel)
 		{

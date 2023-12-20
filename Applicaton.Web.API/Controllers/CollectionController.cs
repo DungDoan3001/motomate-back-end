@@ -5,12 +5,14 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/collection")]
+	[Authorize]
 	[ApiController]
 	public class CollectionController : ControllerBase
 	{
@@ -33,6 +35,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get colletions information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<CollectionResponseModel>>> GetCollectionsAsync([FromQuery] PaginationRequestModel pagination)
 		{
@@ -78,6 +81,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get colletions information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("all")]
 		public async Task<ActionResult<IEnumerable<CollectionResponseModel>>> GetAllCollectionsAsync()
 		{
@@ -115,6 +119,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get colletion information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("{id}")]
 		public async Task<ActionResult<CollectionResponseModel>> GetCollectionByIdAsync([FromRoute] Guid id)
 		{
@@ -152,6 +157,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="201">Successfully created colletion information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpPost]
 		public async Task<ActionResult<CollectionResponseModel>> CreateCollectionAsync([FromBody] CollectionRequestModel requestModel)
 		{
@@ -192,6 +198,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully updated colletion information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpPut("{id}")]
 		public async Task<ActionResult<CollectionResponseModel>> UpdateCollectionAsync([FromBody] CollectionRequestModel requestModel, [FromRoute] Guid id)
 		{
@@ -232,6 +239,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="204">Successfully deleted colletion information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteCollectionAsync([FromRoute] Guid id)
 		{

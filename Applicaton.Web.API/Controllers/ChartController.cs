@@ -4,6 +4,7 @@ using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using LazyCache;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
@@ -32,6 +33,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpGet("total/vehicles")]
 		public async Task<ActionResult<TotalVehicleResponseModel>> GetTotalVehiclesAsync()
 		{
@@ -74,6 +76,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpGet("total/views")]
 		public async Task<ActionResult<TotalViewsResponseModel>> GetTotalViewsAsync()
 		{
@@ -116,6 +119,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpGet("total/users")]
 		public async Task<ActionResult<TotalUserResponseModel>> GetTotalUsersAsync()
 		{
@@ -158,6 +162,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpGet("total/profits")]
 		public async Task<ActionResult<TotalProfitResponseModel>> GetTotalProfitsAsync()
 		{
@@ -200,6 +205,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpGet("top/lessees")]
 		public async Task<ActionResult<TopLesseeResponseModel>> GetTopLesseesAsync()
 		{
@@ -242,6 +248,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpGet("top/lessors")]
 		public async Task<ActionResult<TopLessorResponseModel>> GetTopLessorsAsync()
 		{
@@ -284,6 +291,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpGet("revenue/{year}")]
 		public async Task<ActionResult<TotalRevenueChartResponseModel>> GetTotalRevenueAsync([FromRoute] int year)
 		{
@@ -337,6 +345,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpGet("total/views/{year}/{month}")]
 		public async Task<ActionResult<TotalViewsInMonth>> GetTotalViewsInAMonthAsync([FromRoute] int year, [FromRoute] int month)
 		{

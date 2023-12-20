@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using Application.Web.Database.Constants;
 using Application.Web.Database.Context;
 using Application.Web.Database.DTOs.ServiceModels;
 using Application.Web.Database.Models;
@@ -238,6 +239,25 @@ namespace Applicaton.Web.API.Extensions
 						  .AllowAnyMethod()
 						  .AllowCredentials();
 				});
+			});
+		}
+
+		public static void AuthorizedPolicies(this IServiceCollection services)
+		{
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("AdminRight", policy =>
+						policy.RequireRole(
+								SeedDatabaseConstant.ADMIN.Name, 
+								SeedDatabaseConstant.STAFF.Name));
+
+				options.AddPolicy("UserRight", policy =>
+						policy.RequireRole(
+								SeedDatabaseConstant.ADMIN.Name,
+								SeedDatabaseConstant.STAFF.Name,
+								SeedDatabaseConstant.LESSOR.Name,
+								SeedDatabaseConstant.USER.Name
+							));
 			});
 		}
 
