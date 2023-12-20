@@ -1,19 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace Application.Web.Database.DTOs.ResponseModels
 {
-    public class WeatherForecastResponseModel
-    {
-        public DateTime Date { get; set; }
+	public class WeatherForecastResponseModel
+	{
+		[JsonPropertyName("date")]
+		public DateTime Date { get; set; }
 
-        public int TemperatureC { get; set; }
+		[JsonPropertyName("temperatureC")]
 
-        public int TemperatureF { get; set; }
+		public int TemperatureC { get; set; }
 
-        public string? Summary { get; set; }
-    }
+		[JsonPropertyName("temperatureF")]
+
+		public int TemperatureF { get; set; }
+
+		[JsonPropertyName("summary")]
+
+		public string Summary { get; set; }
+	}
 }
