@@ -13,6 +13,7 @@ builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJwt(builder.Configuration);
 builder.Services.ConfigureCors();
 builder.Services.ConfigureController();
+builder.Services.AuthorizedPolicies();
 builder.Services.ConfigureSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger();

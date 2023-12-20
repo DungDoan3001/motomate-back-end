@@ -5,12 +5,14 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/brand")]
+	[Authorize]
 	[ApiController]
 	public class BrandController : ControllerBase
 	{
@@ -33,6 +35,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<BrandResponseModel>>> GetBrandsAsync([FromQuery] PaginationRequestModel pagination)
 		{
@@ -78,6 +81,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("all")]
 		public async Task<ActionResult<IEnumerable<BrandResponseModel>>> GetAllBrandsAsync()
 		{
@@ -115,6 +119,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("{id}")]
 		public async Task<ActionResult<BrandResponseModel>> GetBrandAsync([FromRoute] Guid id)
 		{
@@ -155,6 +160,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpPost]
 		public async Task<ActionResult<BrandResponseModel>> CreateBrandAsync([FromBody] BrandRequestModel requestModel)
 		{
@@ -195,6 +201,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpPut("{id}")]
 		public async Task<ActionResult<BrandResponseModel>> UpdateBrandAsync([FromBody] BrandRequestModel requestModel, [FromRoute] Guid id)
 		{
@@ -235,6 +242,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="204">Successfully deleted item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteBranchAsync([FromRoute] Guid id)
 		{

@@ -1,9 +1,11 @@
 ﻿using Application.Web.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/mock")]
+	[Authorize]
 	[ApiController]
 	public class MockDataController : ControllerBase
 	{
@@ -14,6 +16,7 @@ namespace Applicaton.Web.API.Controllers
 			_mockDataService = mockDataService;
 		}
 
+		[Authorize(Policy = "AdminRight")]
 		[HttpGet]
 		public async Task<IActionResult> Get()
 		{

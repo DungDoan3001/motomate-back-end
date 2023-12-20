@@ -4,12 +4,14 @@ using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/order/checkout")]
+	[Authorize]
 	[ApiController]
 	public class CheckoutController : ControllerBase
 	{
@@ -41,6 +43,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPost]
 		public async Task<ActionResult<CheckoutOrderResponseModel>> CreateOrUpdateCheckoutOrder([FromBody] CheckoutOrderRequestModel checkoutOrderRequest)
 		{
@@ -79,6 +82,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpPost("webhook")]
 		public async Task<ActionResult> StripeWebhook()
 		{

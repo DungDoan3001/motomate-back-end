@@ -7,11 +7,13 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/order")]
+	[Authorize]
 	[ApiController]
 	public class TripRequestController : ControllerBase
 	{
@@ -40,6 +42,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("parent/{parentOrderId}")]
 		public async Task<ActionResult<TripRequestReponseModel>> GetTripRequestByParentOrderId([FromQuery] TripRequestQuery query, [FromRoute] string parentOrderId)
 		{
@@ -77,6 +80,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("payment/{paymentIntentId}")]
 		public async Task<ActionResult<TripRequestReponseModel>> GetTripRequestByPaymentIntentId([FromQuery] TripRequestQuery query, [FromRoute] string paymentIntentId)
 		{
@@ -114,6 +118,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("")]
 		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetAllTripRequest([FromQuery] TripRequestQuery query, [FromQuery] PaginationRequestModel pagination)
 		{
@@ -159,6 +164,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("lessor/{lessorId}")]
 		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestByLessorId([FromQuery] TripRequestQuery query, [FromQuery] PaginationRequestModel pagination, [FromRoute] Guid lessorId)
 		{
@@ -204,6 +210,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("lessee/{lesseeId}")]
 		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> GetTripRequestLesseeId([FromQuery] TripRequestQuery query, [FromQuery] PaginationRequestModel pagination, [FromRoute] Guid lesseeId)
 		{
@@ -244,6 +251,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPut("status")]
 		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> UpdateTripRequestStatusAsync([FromBody] TripRequestStatusRequestModel requestModel)
 		{
@@ -281,6 +289,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPost("review")]
 		public async Task<ActionResult<IEnumerable<TripRequestReponseModel>>> CreateReviewToTripRequest([FromBody] TripRequestReviewRequestModel requestModel)
 		{

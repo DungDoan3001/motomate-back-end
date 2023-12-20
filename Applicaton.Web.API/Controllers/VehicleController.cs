@@ -6,12 +6,14 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/vehicle")]
+	[Authorize]
 	[ApiController]
 	public class VehicleController : ControllerBase
 	{
@@ -34,6 +36,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("review/{vehicleId}")]
 		public async Task<ActionResult<IEnumerable<VehicleReviewResponseModel>>> GetVehicleReviewsByVehicleId([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid vehicleId)
 		{
@@ -79,6 +82,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetVehiclesByStatusAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery)
 		{
@@ -124,6 +128,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("all")]
 		public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetAllVehiclesAsync([FromQuery] VehicleQuery vehicleQuery)
 		{
@@ -161,6 +166,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("related/{vehicleId}")]
 		public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetRelatedVehicleAsync(Guid vehicleId)
 		{
@@ -198,6 +204,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("owner/{ownerId}")]
 		public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetAllVehiclesByOwnerIdAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery, [FromRoute] Guid ownerId)
 		{
@@ -243,6 +250,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("status/{statusRoute}")]
 		public async Task<ActionResult<IEnumerable<VehicleResponseModel>>> GetVehiclesAsync([FromQuery] PaginationRequestModel pagination, [FromQuery] VehicleQuery vehicleQuery, [FromRoute] string statusRoute)
 		{
@@ -288,6 +296,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPost("{vehicleId}/lock")]
 		public async Task<IActionResult> LockVehicleAsync([FromRoute] Guid vehicleId)
 		{
@@ -327,6 +336,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPost("{vehicleId}/status/{statusNumber}")]
 		public async Task<ActionResult<VehicleResponseModel>> UpdateVehicleStatusAsync([FromRoute] Guid vehicleId, [FromRoute] int statusNumber)
 		{
@@ -371,6 +381,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("{id}")]
 		public async Task<ActionResult<VehicleResponseModel>> GetVehicleAsync([FromRoute] Guid id)
 		{
@@ -411,6 +422,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPost]
 		public async Task<ActionResult<VehicleResponseModel>> CreateVehicleAsync([FromBody] VehicleRequestModel requestModel)
 		{
@@ -450,6 +462,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPut("{id}")]
 		public async Task<ActionResult<VehicleResponseModel>> UpdateVehicleAsync([FromBody] VehicleRequestModel requestModel, [FromRoute] Guid id)
 		{
@@ -489,6 +502,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="204">Successfully deleted item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteVehicleAsync([FromRoute] Guid id)
 		{

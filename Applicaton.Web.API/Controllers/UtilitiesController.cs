@@ -3,11 +3,13 @@ using Application.Web.Database.DTOs.ResponseModels;
 using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/utils")]
+	[Authorize]
 	[ApiController]
 	public class UtilitiesController : ControllerBase
 	{
@@ -22,6 +24,7 @@ namespace Applicaton.Web.API.Controllers
 
 		}
 
+		[AllowAnonymous]
 		[HttpGet("cronjob")]
 		public async Task<IActionResult> CronJobActivator()
 		{
@@ -36,6 +39,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpPost("view")]
 		public async Task<ActionResult<ViewResponseModel>> AddViewAsync([FromBody] ViewRequestModel requestModel)
 		{
