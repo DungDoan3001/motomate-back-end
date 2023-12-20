@@ -155,9 +155,6 @@ namespace Application.Web.Service.Services
 
 			await _unitOfWork.CompleteAsync();
 
-			_unitOfWork.Detach(newMessage);
-			_unitOfWork.Detach(chat);
-
 			return await _messageQueries.GetMessageByIdAsync(newMessage.Id);
 		}
 

@@ -55,7 +55,7 @@ namespace Applicaton.Web.API.SignalR
 			var paginationRequest = new PaginationRequestModel
 			{
 				pageNumber = 1,
-				pageSize = 10
+				pageSize = 100
 			};
 
 			foreach (var member in chatMembers)
