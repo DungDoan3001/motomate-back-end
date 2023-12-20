@@ -19,7 +19,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 		{
 			return await dbSet
 				.Where(bc => bc.Id.Equals(categoryId))
-				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 	}

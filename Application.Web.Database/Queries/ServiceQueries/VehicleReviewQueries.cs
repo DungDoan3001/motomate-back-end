@@ -19,7 +19,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 		{
 			return (decimal)await dbSet
 				.Where(x => x.VehicleId.Equals(vehicleId))
-				.AsNoTracking()
 				.AverageAsync(x => x.Rating);
 		}
 
@@ -29,7 +28,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.User)
 				.Include(x => x.VehicleReviewImages).ThenInclude(x => x.Image)
 				.Where(x => x.VehicleId.Equals(vehicleId))
-				.AsNoTracking()
 				.ToListAsync();
 		}
 	}

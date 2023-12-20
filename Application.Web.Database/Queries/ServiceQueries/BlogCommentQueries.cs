@@ -14,7 +14,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 			return await dbSet
 				.Include(x => x.User)
 				.Where(x => x.BlogId.Equals(blogId))
-				.AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -23,7 +22,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 			return await dbSet
 				.Include(x => x.User)
 				.Where(x => x.Id.Equals(blogCommentId))
-				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 	}

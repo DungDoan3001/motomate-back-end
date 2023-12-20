@@ -24,7 +24,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 		{
 			var users = await dbSet
 				.Include(x => x.UserRoles).ThenInclude(x => x.Role)
-				.AsNoTracking()
 				.ToListAsync();
 
 			return users;
@@ -35,7 +34,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 			return await dbSet
 				.Include(x => x.UserRoles).ThenInclude(x => x.Role)
 				.Where(x => x.Id.Equals(userId))
-				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 
@@ -44,7 +42,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 			return await dbSet
 				.Include(x => x.UserRoles).ThenInclude(x => x.Role)
 				.Where(x => x.NormalizedEmail.Equals(email.ToUpper().Trim()))
-				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 

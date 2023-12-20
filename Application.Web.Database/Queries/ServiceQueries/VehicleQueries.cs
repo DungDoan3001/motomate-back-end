@@ -22,7 +22,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(ov => ov.TripRequests)
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
 				.Take(pagination.pageSize)
-				.AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -36,7 +35,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(c => c.Color)
 				.Include(x => x.VehicleReviews)
 				.Include(ov => ov.TripRequests)
-				.AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -51,7 +49,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.VehicleReviews)
 				.Include(ov => ov.TripRequests)
 				.Where(v => v.OwnerId.Equals(ownerId))
-				.AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -66,7 +63,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.VehicleReviews)
 				.Include(ov => ov.TripRequests)
 				.Where(v => v.Id.Equals(vehicleId))
-				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 

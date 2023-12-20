@@ -13,7 +13,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 		{
 			return await dbSet
 				.OrderBy(c => c.Name)
-				.AsNoTracking()
 				.ToListAsync();
 		}
 

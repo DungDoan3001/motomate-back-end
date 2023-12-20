@@ -22,7 +22,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
 				.Where(x => x.PaymentIntentId.ToUpper().Equals(paymentIntentId.ToUpper().Trim()))
-				.AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -39,7 +38,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
 				.Where(x => x.LessorId.Equals(lessorId))
-				.AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -55,7 +53,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.Vehicle).ThenInclude(x => x.Owner)
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
-				.AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -72,7 +69,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
 				.Where(x => x.LesseeId.Equals(lesseeId))
-				.AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -89,7 +85,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
 				.Where(x => x.Id.Equals(tripId))
-				.AsNoTracking()
 				.FirstOrDefaultAsync();
 		}
 
@@ -106,7 +101,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 				.Include(x => x.Vehicle).ThenInclude(x => x.VehicleImages).ThenInclude(x => x.Image)
 				.Include(x => x.Vehicle).ThenInclude(x => x.Model).ThenInclude(x => x.Collection).ThenInclude(x => x.Brand)
 				.Where(x => x.ParentOrderId.ToUpper().Equals(parentOrderId.ToUpper().Trim()))
-				.AsNoTracking()
 				.ToListAsync();
 		}
 
@@ -115,7 +109,6 @@ namespace Application.Web.Database.Queries.ServiceQueries
 			return await dbSet
 				.Where(x => tripRequestIds.Contains(x.Id))
 				.Select(x => x.ParentOrderId)
-				.AsNoTracking()
 				.ToListAsync();
 		}
 
