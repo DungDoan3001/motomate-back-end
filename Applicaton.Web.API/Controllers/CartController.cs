@@ -4,11 +4,13 @@ using Application.Web.Service.Exceptions;
 using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/cart")]
+	[Authorize]
 	[ApiController]
 	public class CartController : ControllerBase
 	{
@@ -30,6 +32,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpGet("{userId}")]
 		public async Task<ActionResult<CartResponseModel>> GetCartByUserIdAsync([FromRoute] Guid userId)
 		{
@@ -67,6 +70,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPost]
 		public async Task<ActionResult<CartResponseModel>> CreateCartAsync([FromBody] CartRequestModel requestModel)
 		{
@@ -104,6 +108,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPut]
 		public async Task<ActionResult<CartResponseModel>> UpdateCartVehicleAsync([FromBody] CartRequestModel requestModel)
 		{
@@ -141,6 +146,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="204">Successfully deleted item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpDelete("{UserId}/{VehicleId}")]
 		public async Task<IActionResult> DeleteCartItemAsync([FromRoute] CartRequestModel requestModel)
 		{

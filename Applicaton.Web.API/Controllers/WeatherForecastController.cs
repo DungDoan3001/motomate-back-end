@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Applicaton.Web.API.Controllers
 {
 	[ApiController]
+	[Authorize]
 	[Route("weatherforecast")]
 	public class WeatherForecastController : ControllerBase
 	{
@@ -33,7 +34,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="200">Successfully get all weather forecasts</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpGet(Name = "weatherforcast/all")]
-		[Authorize]
+		[Authorize(Policy = "UserRight")]
 		public ActionResult<IEnumerable<WeatherForecastResponseModel>> Get()
 		{
 			try
@@ -71,7 +72,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <response code="201">Successfully created the weather forecast</response>
 		/// <response code="500">There is something wrong while execute.</response>
 		[HttpPost(Name = "weatherforecast")]
-		[Authorize]
+		[Authorize(Policy = "UserRight")]
 		public ActionResult<WeatherForecastResponseModel> Create(
 			[FromBody] WeatherForecastRequestModel weatherForecastRequestModel)
 		{

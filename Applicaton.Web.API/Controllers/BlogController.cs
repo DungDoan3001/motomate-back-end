@@ -5,12 +5,14 @@ using Application.Web.Service.Helpers;
 using Application.Web.Service.Interfaces;
 using Applicaton.Web.API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Applicaton.Web.API.Controllers
 {
 	[Route("api/blog")]
+	[Authorize]
 	[ApiController]
 	public class BlogController : ControllerBase
 	{
@@ -35,6 +37,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get items information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<BlogResponseModel>>> GetBlogsAsync([FromQuery] PaginationRequestModel pagination)
 		{
@@ -80,6 +83,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("{id}")]
 		public async Task<ActionResult<BlogResponseModel>> GetBlogAsync([FromRoute] Guid id)
 		{
@@ -120,6 +124,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]		
 		[HttpGet("{id}/related")]
 		public async Task<ActionResult<BlogResponseModel>> GetBlogRelatedAsync([FromRoute] Guid id)
 		{
@@ -160,6 +165,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[AllowAnonymous]
 		[HttpGet("{blogId}/comment")]
 		public async Task<ActionResult<IEnumerable<BlogCommentResponseModel>>> GetBlogReviewsAsync([FromQuery] PaginationRequestModel pagination, [FromRoute] Guid blogId)
 		{
@@ -205,6 +211,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPost("{blogId}/comment")]
 		public async Task<ActionResult<BlogCommentResponseModel>> CreateBlogReviewAsync([FromRoute] Guid blogId, [FromBody] BlogCommentRequestModel requestModel)
 		{
@@ -242,6 +249,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpPut("comment/{commentId}")]
 		public async Task<ActionResult<BlogResponseModel>> UpdateBlogCommentAsync([FromBody] BlogCommentRequestModel requestModel, [FromRoute] Guid commentId)
 		{
@@ -279,6 +287,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="204">Successfully deleted item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "UserRight")]
 		[HttpDelete("comment/{commentId}")]
 		public async Task<IActionResult> DeleteCommentAsync([FromRoute] Guid commentId)
 		{
@@ -318,6 +327,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="201">Successfully created item.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpPost]
 		public async Task<ActionResult<BlogResponseModel>> CreateBlogAsync([FromBody] BlogRequestModel requestModel)
 		{
@@ -364,6 +374,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully updated item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpPut("{id}")]
 		public async Task<ActionResult<BlogResponseModel>> UpdateBlogAsync([FromBody] BlogRequestModel requestModel, [FromRoute] Guid id)
 		{
@@ -410,6 +421,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="204">Successfully deleted item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
+		[Authorize(Policy = "AdminRight")]
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteBlogAsync([FromRoute] Guid id)
 		{
