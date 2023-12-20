@@ -127,7 +127,7 @@ namespace Application.Web.Service.Services
 			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
 
 			var messagesToReturn = messages
-				.OrderByDescending(message => message.CreatedAt)
+				.OrderBy(message => message.CreatedAt)
 				.Skip(pagination.pageSize * (pagination.pageNumber - 1))
 				.Take(pagination.pageSize)
 				.ToList();
