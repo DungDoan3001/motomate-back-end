@@ -103,10 +103,10 @@ namespace Application.Web.Service.Services
 		{
 			var chats = await _chatQueries.GetAllChatsByUserIdAsync(userId);
 
-			foreach(var chat in chats)
+			chats.ForEach(x =>
 			{
-				chat.Messages.OrderByDescending(x => x.CreatedAt);
-			}
+				x.Messages = x.Messages.OrderByDescending(x => x.CreatedAt).ToList();
+			});
 
 			var totalItemCount = chats.Count;
 
