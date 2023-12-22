@@ -103,6 +103,11 @@ namespace Application.Web.Service.Services
 		{
 			var chats = await _chatQueries.GetAllChatsByUserIdAsync(userId);
 
+			foreach(var chat in chats)
+			{
+				chat.Messages.OrderByDescending(x => x.CreatedAt);
+			}
+
 			var totalItemCount = chats.Count;
 
 			var paginationMetadata = new PaginationMetadata(totalItemCount, pagination.pageSize, pagination.pageNumber);
