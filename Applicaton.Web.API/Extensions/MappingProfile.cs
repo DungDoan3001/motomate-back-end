@@ -196,7 +196,7 @@ namespace Applicaton.Web.API.Extensions
 					}
 
 					dest.TotalRating = src.VehicleReviews.Any() ? src.VehicleReviews.Count : 0;
-					dest.Rating = src.VehicleReviews.Any() ? (decimal)src.VehicleReviews.Average(x => x.Rating) : 0;
+					dest.Rating = src.VehicleReviews.Any() ? Math.Round((decimal)src.VehicleReviews.Average(x => x.Rating), 2) : 0;
 					dest.Address = textInfo.ToTitleCase(src.Address.ToLower());
 					dest.Ward = textInfo.ToTitleCase(src.Ward.ToLower());
 					dest.District = textInfo.ToTitleCase(src.District.ToLower());

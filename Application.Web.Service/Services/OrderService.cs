@@ -251,36 +251,36 @@ namespace Application.Web.Service.Services
 				Rating = requestModel.Rating,
 			};
 
-			var newImageList = new List<Image>();
-			var newVehicleReviewImageList = new List<VehicleReviewImage>();
-
-			foreach (var image in requestModel.Images)
-			{
-				var newImage = new Image
-				{
-					ImageUrl = image.Image,
-					PublicId = image.PublicId,
-				};
-
-				var vehicleReviewImage = new VehicleReviewImage
-				{
-					ImageId = newImage.Id,
-					VehicleReviewId = vehicleReview.Id,
-				};
-
-				newImageList.Add(newImage);
-				newVehicleReviewImageList.Add(vehicleReviewImage);
-			};
-
 			_vehicleReviewRepo.Add(vehicleReview);
-			_imageRepo.AddRange(newImageList);
-			_vehicleReviewImageRepo.AddRange(newVehicleReviewImageList);
+
+			if (requestModel.Images != null && requestModel.Images.Count > 0)
+			{
+				var newImageList = new List<Image>();
+				var newVehicleReviewImageList = new List<VehicleReviewImage>();
+
+				foreach (var image in requestModel.Images)
+				{
+					var newImage = new Image
+					{
+						ImageUrl = image.Image,
+						PublicId = image.PublicId,
+					};
+
+					var vehicleReviewImage = new VehicleReviewImage
+					{
+						ImageId = newImage.Id,
+						VehicleReviewId = vehicleReview.Id,
+					};
+
+					newImageList.Add(newImage);
+					newVehicleReviewImageList.Add(vehicleReviewImage);
+				};
+
+				_imageRepo.AddRange(newImageList);
+				_vehicleReviewImageRepo.AddRange(newVehicleReviewImageList);
+			}
 
 			await _unitOfWork.CompleteAsync();
-
-			_unitOfWork.Detach(vehicleReview);
-			_unitOfWork.DetachRange(newImageList);
-			_unitOfWork.DetachRange(newVehicleReviewImageList);
 
 			await Task.Run(() =>
 			{
