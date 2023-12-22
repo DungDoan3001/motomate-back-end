@@ -386,7 +386,11 @@ namespace Application.Web.Service.Services
 				result.Add(holder);
 			}
 
-			return result.Where(s => s.Count > 0).Distinct().ToList();
+			return result
+				.Where(s => s.Count > 0)
+				.OrderByDescending(x => x.OrderByDescending(x => x.Created_At))
+				.Distinct()
+				.ToList();
 		}
 
 		private async Task<bool> ApproveTripRequestAsync(Guid tripRequestId)
