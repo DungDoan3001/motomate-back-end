@@ -278,6 +278,10 @@ namespace Application.Web.Service.Services
 
 			await _unitOfWork.CompleteAsync();
 
+			_unitOfWork.Detach(vehicleReview);
+			_unitOfWork.DetachRange(newImageList);
+			_unitOfWork.DetachRange(newVehicleReviewImageList);
+
 			await Task.Run(() =>
 			{
 				foreach (var key in _cacheKeyConstants.CacheKeyList)
