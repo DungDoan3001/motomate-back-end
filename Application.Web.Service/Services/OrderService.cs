@@ -388,7 +388,6 @@ namespace Application.Web.Service.Services
 
 			return result
 				.Where(s => s.Count > 0)
-				.OrderByDescending(x => x.OrderByDescending(x => x.Created_At))
 				.Distinct()
 				.ToList();
 		}
