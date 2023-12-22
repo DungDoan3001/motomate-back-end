@@ -127,7 +127,7 @@ namespace Applicaton.Web.API.Controllers
 		/// <returns>Status code of the action.</returns>
 		/// <response code="200">Successfully get item information.</response>
 		/// <response code="500">There is something wrong while execute.</response>
-		[Authorize(Policy = "UserRight")]
+		[AllowAnonymous]
 		[HttpGet("{username}/details")]
 		public async Task<ActionResult<UserResponseModel>> GetUserByUsernameAsync([FromRoute] string username)
 		{
