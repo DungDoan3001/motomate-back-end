@@ -9,7 +9,7 @@ namespace Application.Web.Database.Queries.ServiceQueries
 	{
 		public ChatQueries(ApplicationContext dbContext) : base(dbContext) { }
 
-		public async Task<List<Chat>> GetAllChatsByUserIdAsync(Guid userId)
+		public async Task<List<Chat>> GetAllChatsByUserIdAsync	(Guid userId)
 		{
 			return await dbSet
 				.Include(x => x.ChatMembers).ThenInclude(x => x.User)
